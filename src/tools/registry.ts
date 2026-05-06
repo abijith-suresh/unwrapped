@@ -160,6 +160,16 @@ export const tools: Tool[] = [
     slug: "json-to-yaml",
     componentPath: "/src/tools/json-to-yaml/JsonToYamlTool.tsx",
   },
+  {
+    id: "yaml-to-json",
+    name: "YAML to JSON",
+    description: "Convert YAML documents into formatted JSON locally.",
+    category: "data",
+    keywords: ["yaml", "json", "convert", "data", "parse", "format"],
+    icon: "ArrowRightLeft",
+    slug: "yaml-to-json",
+    componentPath: "/src/tools/yaml-to-json/YamlToJsonTool.tsx",
+  },
 ];
 
 export function getToolRoute(slug: string): `/tools/${string}` {

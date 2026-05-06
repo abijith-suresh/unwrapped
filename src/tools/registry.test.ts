@@ -64,4 +64,12 @@ describe("tool registry", () => {
       componentPath: "/src/tools/json-to-yaml/JsonToYamlTool.tsx",
     });
   });
+
+  it("includes the YAML to JSON route", () => {
+    expect(getToolBySlug("yaml-to-json")).toMatchObject({
+      id: "yaml-to-json",
+      category: "data",
+      componentPath: "/src/tools/yaml-to-json/YamlToJsonTool.tsx",
+    });
+  });
 });
