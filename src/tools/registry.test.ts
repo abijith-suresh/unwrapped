@@ -32,4 +32,12 @@ describe("tool registry", () => {
       componentPath: "/src/tools/text-statistics/TextStatisticsTool.tsx",
     });
   });
+
+  it("includes the token generator route", () => {
+    expect(getToolBySlug("token-generator")).toMatchObject({
+      id: "token-generator",
+      category: "generators",
+      componentPath: "/src/tools/token-generator/TokenGenerator.tsx",
+    });
+  });
 });

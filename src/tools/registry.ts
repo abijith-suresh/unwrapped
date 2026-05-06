@@ -120,6 +120,16 @@ export const tools: Tool[] = [
     slug: "text-statistics",
     componentPath: "/src/tools/text-statistics/TextStatisticsTool.tsx",
   },
+  {
+    id: "token-generator",
+    name: "Token Generator",
+    description: "Generate configurable random tokens with browser-local cryptography.",
+    category: "generators",
+    keywords: ["token", "password", "random", "generate", "crypto", "secret"],
+    icon: "KeySquare",
+    slug: "token-generator",
+    componentPath: "/src/tools/token-generator/TokenGenerator.tsx",
+  },
 ];
 
 export function getToolRoute(slug: string): `/tools/${string}` {
