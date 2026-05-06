@@ -112,4 +112,12 @@ describe("tool registry", () => {
       componentPath: "/src/tools/hmac-generator/HmacGeneratorTool.tsx",
     });
   });
+
+  it("includes the URL inspector route", () => {
+    expect(getToolBySlug("url-inspector")).toMatchObject({
+      id: "url-inspector",
+      category: "network",
+      componentPath: "/src/tools/url-inspector/UrlInspectorTool.tsx",
+    });
+  });
 });

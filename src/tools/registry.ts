@@ -220,6 +220,16 @@ export const tools: Tool[] = [
     slug: "hmac-generator",
     componentPath: "/src/tools/hmac-generator/HmacGeneratorTool.tsx",
   },
+  {
+    id: "url-inspector",
+    name: "URL Inspector",
+    description: "Parse full URLs or raw query strings locally and inspect decoded sections.",
+    category: "network",
+    keywords: ["url", "query", "params", "parse", "inspect", "search"],
+    icon: "Globe",
+    slug: "url-inspector",
+    componentPath: "/src/tools/url-inspector/UrlInspectorTool.tsx",
+  },
 ];
 
 export function getToolRoute(slug: string): `/tools/${string}` {
