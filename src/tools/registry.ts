@@ -110,6 +110,16 @@ export const tools: Tool[] = [
     slug: "case-converter",
     componentPath: "/src/tools/case-converter/CaseConverter.tsx",
   },
+  {
+    id: "text-statistics",
+    name: "Text Statistics",
+    description: "Inspect character, word, line, and byte counts for local text input.",
+    category: "text",
+    keywords: ["text", "statistics", "count", "words", "lines", "bytes", "characters"],
+    icon: "TextCursorInput",
+    slug: "text-statistics",
+    componentPath: "/src/tools/text-statistics/TextStatisticsTool.tsx",
+  },
 ];
 
 export function getToolRoute(slug: string): `/tools/${string}` {

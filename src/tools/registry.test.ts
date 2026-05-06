@@ -24,4 +24,12 @@ describe("tool registry", () => {
       componentPath: "/src/tools/case-converter/CaseConverter.tsx",
     });
   });
+
+  it("includes the text statistics route", () => {
+    expect(getToolBySlug("text-statistics")).toMatchObject({
+      id: "text-statistics",
+      category: "text",
+      componentPath: "/src/tools/text-statistics/TextStatisticsTool.tsx",
+    });
+  });
 });
