@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { tools, validateToolRegistry } from "./registry";
+import { getToolBySlug, tools, validateToolRegistry } from "./registry";
 
 const toolComponentPaths = tools.map((tool) => tool.componentPath);
 
@@ -15,5 +15,13 @@ describe("tool registry", () => {
         `/src/tools/${tool.slug}/${tool.componentPath.split("/").at(-1)}`
       );
     }
+  });
+
+  it("includes the case converter route", () => {
+    expect(getToolBySlug("case-converter")).toMatchObject({
+      id: "case-converter",
+      category: "text",
+      componentPath: "/src/tools/case-converter/CaseConverter.tsx",
+    });
   });
 });

@@ -100,6 +100,16 @@ export const tools: Tool[] = [
     slug: "regex-tester",
     componentPath: "/src/tools/regex-tester/RegexTester.tsx",
   },
+  {
+    id: "case-converter",
+    name: "Case Converter",
+    description: "Fan out one input into common case styles for code, paths, and titles.",
+    category: "text",
+    keywords: ["case", "camel", "pascal", "snake", "kebab", "header", "convert", "text"],
+    icon: "CaseSensitive",
+    slug: "case-converter",
+    componentPath: "/src/tools/case-converter/CaseConverter.tsx",
+  },
 ];
 
 export function getToolRoute(slug: string): `/tools/${string}` {
