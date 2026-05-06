@@ -190,6 +190,16 @@ export const tools: Tool[] = [
     slug: "xml-formatter",
     componentPath: "/src/tools/xml-formatter/XmlFormatterTool.tsx",
   },
+  {
+    id: "json-to-csv",
+    name: "JSON to CSV",
+    description: "Convert arrays of JSON objects into CSV locally.",
+    category: "data",
+    keywords: ["json", "csv", "convert", "export", "table", "data"],
+    icon: "TableProperties",
+    slug: "json-to-csv",
+    componentPath: "/src/tools/json-to-csv/JsonToCsvTool.tsx",
+  },
 ];
 
 export function getToolRoute(slug: string): `/tools/${string}` {

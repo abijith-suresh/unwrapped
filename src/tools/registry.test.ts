@@ -88,4 +88,12 @@ describe("tool registry", () => {
       componentPath: "/src/tools/xml-formatter/XmlFormatterTool.tsx",
     });
   });
+
+  it("includes the JSON to CSV route", () => {
+    expect(getToolBySlug("json-to-csv")).toMatchObject({
+      id: "json-to-csv",
+      category: "data",
+      componentPath: "/src/tools/json-to-csv/JsonToCsvTool.tsx",
+    });
+  });
 });
