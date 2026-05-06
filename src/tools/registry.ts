@@ -170,6 +170,16 @@ export const tools: Tool[] = [
     slug: "yaml-to-json",
     componentPath: "/src/tools/yaml-to-json/YamlToJsonTool.tsx",
   },
+  {
+    id: "yaml-formatter",
+    name: "YAML Formatter",
+    description: "Format YAML locally with indent controls and optional key sorting.",
+    category: "data",
+    keywords: ["yaml", "format", "prettify", "indent", "sort", "lint"],
+    icon: "AlignLeft",
+    slug: "yaml-formatter",
+    componentPath: "/src/tools/yaml-formatter/YamlFormatterTool.tsx",
+  },
 ];
 
 export function getToolRoute(slug: string): `/tools/${string}` {
