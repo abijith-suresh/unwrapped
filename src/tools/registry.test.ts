@@ -56,4 +56,12 @@ describe("tool registry", () => {
       componentPath: "/src/tools/http-status-codes/HttpStatusCodesTool.tsx",
     });
   });
+
+  it("includes the JSON to YAML route", () => {
+    expect(getToolBySlug("json-to-yaml")).toMatchObject({
+      id: "json-to-yaml",
+      category: "data",
+      componentPath: "/src/tools/json-to-yaml/JsonToYamlTool.tsx",
+    });
+  });
 });

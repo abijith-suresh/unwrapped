@@ -150,6 +150,16 @@ export const tools: Tool[] = [
     slug: "http-status-codes",
     componentPath: "/src/tools/http-status-codes/HttpStatusCodesTool.tsx",
   },
+  {
+    id: "json-to-yaml",
+    name: "JSON to YAML",
+    description: "Convert JSON documents into YAML locally with stable nested key ordering.",
+    category: "data",
+    keywords: ["json", "yaml", "convert", "data", "serialize", "format"],
+    icon: "ArrowRightLeft",
+    slug: "json-to-yaml",
+    componentPath: "/src/tools/json-to-yaml/JsonToYamlTool.tsx",
+  },
 ];
 
 export function getToolRoute(slug: string): `/tools/${string}` {
