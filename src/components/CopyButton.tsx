@@ -3,6 +3,8 @@ import { createSignal } from "solid-js";
 
 import { copyToClipboard } from "@/lib/clipboard";
 
+const COPY_FEEDBACK_DURATION_MS = 2000;
+
 interface CopyButtonProps {
   text: string;
   label?: string;
@@ -15,7 +17,7 @@ export default function CopyButton(props: CopyButtonProps) {
     const success = await copyToClipboard(props.text);
     if (success) {
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(false), COPY_FEEDBACK_DURATION_MS);
     }
   }
 

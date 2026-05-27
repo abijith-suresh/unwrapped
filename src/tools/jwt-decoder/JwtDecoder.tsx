@@ -32,17 +32,7 @@ function Panel(props: PanelProps) {
           "border-bottom": "1px solid var(--border)",
         }}
       >
-        <span
-          style={{
-            "font-size": "0.75rem",
-            "font-weight": "600",
-            "letter-spacing": "0.05em",
-            "text-transform": "uppercase",
-            color: "var(--text-secondary)",
-          }}
-        >
-          {props.title}
-        </span>
+        <span class="tool-label">{props.title}</span>
         <CopyButton text={props.content} />
       </div>
 
@@ -100,17 +90,7 @@ export default function JwtDecoder() {
   });
 
   return (
-    <div
-      style={{
-        display: "flex",
-        "flex-direction": "column",
-        gap: "1.25rem",
-        padding: "1.5rem",
-        "max-width": "860px",
-        margin: "0 auto",
-        width: "100%",
-      }}
-    >
+    <div class="tool-container" style={{ "--tool-max-width": "860px" }}>
       {/* ------------------------------------------------------------------ */}
       {/* Input area                                                          */}
       {/* ------------------------------------------------------------------ */}
@@ -127,22 +107,8 @@ export default function JwtDecoder() {
           placeholder="Paste a JWT token here..."
           rows={5}
           spellcheck={false}
-          style={{
-            width: "100%",
-            padding: "0.875rem 1rem",
-            "border-radius": "0.5rem",
-            border: "1px solid var(--border)",
-            background: "var(--bg-secondary)",
-            color: "var(--text-primary)",
-            "font-family": "var(--font-mono)",
-            "font-size": "0.875rem",
-            "line-height": "1.6",
-            resize: "vertical",
-            outline: "none",
-            "box-sizing": "border-box",
-          }}
+          class="tool-textarea"
         />
-
         {/* Hint — only when input is empty */}
         <Show when={!input().trim()}>
           <p
@@ -235,17 +201,7 @@ export default function JwtDecoder() {
                     "border-bottom": "1px solid var(--border)",
                   }}
                 >
-                  <span
-                    style={{
-                      "font-size": "0.75rem",
-                      "font-weight": "600",
-                      "letter-spacing": "0.05em",
-                      "text-transform": "uppercase",
-                      color: "var(--text-secondary)",
-                    }}
-                  >
-                    Claims summary
-                  </span>
+                  <span class="tool-label">Claims summary</span>
                 </div>
                 <div
                   style={{

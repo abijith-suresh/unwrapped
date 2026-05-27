@@ -16,47 +16,26 @@ export default function YamlToJsonTool() {
     return current.ok ? "" : current.error;
   });
 
-  const labelStyle = {
-    "font-size": "0.75rem",
-    "font-weight": "600" as const,
-    "letter-spacing": "0.05em",
-    "text-transform": "uppercase" as const,
-    color: "var(--text-secondary)",
-  };
-
   return (
     <div
+      class="tool-container"
       style={{
+        "--tool-max-width": "1100px",
         display: "grid",
-        gap: "1.25rem",
-        padding: "1.5rem",
-        "max-width": "1100px",
-        margin: "0 auto",
-        width: "100%",
         "grid-template-columns": "repeat(auto-fit, minmax(320px, 1fr))",
       }}
     >
       <section style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-        <label style={labelStyle}>YAML input</label>
+        <label class="tool-label">YAML input</label>
         <textarea
           value={input()}
           onInput={(event) => setInput(event.currentTarget.value)}
           placeholder="Paste YAML to convert…"
           rows={14}
           spellcheck={false}
+          class="tool-textarea"
           style={{
-            width: "100%",
-            padding: "0.875rem 1rem",
-            "border-radius": "0.5rem",
             border: `1px solid ${error() ? "var(--accent-error)" : "var(--border)"}`,
-            background: "var(--bg-secondary)",
-            color: "var(--text-primary)",
-            "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-            "font-size": "0.875rem",
-            "line-height": "1.6",
-            resize: "vertical",
-            outline: "none",
-            "box-sizing": "border-box",
           }}
         />
       </section>
@@ -75,7 +54,7 @@ export default function YamlToJsonTool() {
         <div
           style={{ display: "flex", "align-items": "center", "justify-content": "space-between" }}
         >
-          <span style={labelStyle}>JSON output</span>
+          <span class="tool-label">JSON output</span>
           <CopyButton text={output()} label="Copy JSON" />
         </div>
 
@@ -91,7 +70,7 @@ export default function YamlToJsonTool() {
               border: "1px solid var(--border)",
               background: "var(--bg-primary)",
               color: "var(--text-primary)",
-              "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+              "font-family": "var(--font-mono)",
               "font-size": "0.875rem",
               "line-height": "1.7",
               "white-space": "pre-wrap",

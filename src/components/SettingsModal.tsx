@@ -88,14 +88,8 @@ export default function SettingsModal(props: Props) {
         <button
           onClick={openModal}
           aria-label="Open settings"
-          class="flex items-center justify-center transition-opacity focus:outline-none"
-          style={{ color: "var(--text-primary)", opacity: "0.5" }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.opacity = "0.85";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.opacity = "0.5";
-          }}
+          class="flex items-center justify-center opacity-50 hover:opacity-85 transition-opacity focus:outline-none"
+          style={{ color: "var(--text-primary)" }}
         >
           <Settings size={13} />
         </button>
@@ -134,17 +128,8 @@ export default function SettingsModal(props: Props) {
               <button
                 onClick={closeModal}
                 aria-label="Close settings"
-                class="flex items-center justify-center rounded transition-colors focus:outline-none"
+                class="flex items-center justify-center rounded transition-colors focus:outline-none hover:text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]"
                 style={{ color: "var(--text-muted)", padding: "2px" }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.color = "var(--text-primary)";
-                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                    "var(--bg-tertiary)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.color = "var(--text-muted)";
-                  (e.currentTarget as HTMLButtonElement).style.backgroundColor = "transparent";
-                }}
               >
                 <X size={14} />
               </button>
@@ -154,21 +139,13 @@ export default function SettingsModal(props: Props) {
             <div class="px-3 py-3">
               <button
                 onClick={handleClear}
-                class="w-full rounded px-3 py-1.5 text-left text-xs font-medium transition-colors focus:outline-none"
+                class="w-full rounded px-3 py-1.5 text-left text-xs font-medium transition-colors focus:outline-none hover:border-[var(--accent-error)] hover:text-[var(--accent-error)]"
                 style={{
                   "font-family": "var(--font-mono)",
                   background: "none",
                   border: "1px solid var(--border)",
                   color: "var(--text-muted)",
                   cursor: "pointer",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--accent-error)";
-                  (e.currentTarget as HTMLButtonElement).style.color = "var(--accent-error)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = "var(--border)";
-                  (e.currentTarget as HTMLButtonElement).style.color = "var(--text-muted)";
                 }}
               >
                 Clear local data

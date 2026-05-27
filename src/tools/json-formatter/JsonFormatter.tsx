@@ -25,17 +25,7 @@ export default function JsonFormatter() {
   });
 
   return (
-    <div
-      style={{
-        display: "flex",
-        "flex-direction": "column",
-        gap: "1.25rem",
-        padding: "1.5rem",
-        "max-width": "900px",
-        margin: "0 auto",
-        width: "100%",
-      }}
-    >
+    <div class="tool-container">
       <div
         style={{
           display: "flex",
@@ -131,17 +121,7 @@ export default function JsonFormatter() {
       </div>
 
       <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-        <label
-          style={{
-            "font-size": "0.75rem",
-            "font-weight": "600",
-            "letter-spacing": "0.05em",
-            "text-transform": "uppercase",
-            color: "var(--text-secondary)",
-          }}
-        >
-          Input JSON
-        </label>
+        <label class="tool-label">Input JSON</label>
         <textarea
           value={input()}
           onInput={(e) => setInput(e.currentTarget.value)}
@@ -149,19 +129,9 @@ export default function JsonFormatter() {
           rows={10}
           autofocus
           spellcheck={false}
+          class="tool-textarea"
           style={{
-            width: "100%",
-            padding: "0.875rem 1rem",
-            "border-radius": "0.5rem",
             border: `1px solid ${result().error ? "var(--accent-error)" : "var(--border)"}`,
-            background: "var(--bg-secondary)",
-            color: "var(--text-primary)",
-            "font-family": "var(--font-mono)",
-            "font-size": "0.875rem",
-            "line-height": "1.6",
-            resize: "vertical",
-            outline: "none",
-            "box-sizing": "border-box",
             transition: "border-color 0.15s",
           }}
         />
@@ -239,15 +209,7 @@ export default function JsonFormatter() {
                 "border-bottom": "1px solid var(--border)",
               }}
             >
-              <span
-                style={{
-                  "font-size": "0.75rem",
-                  "font-weight": "600",
-                  "letter-spacing": "0.05em",
-                  "text-transform": "uppercase",
-                  color: "var(--text-secondary)",
-                }}
-              >
+              <span class="tool-label">
                 {minify()
                   ? `Minified${sortKeys() ? " · sorted" : ""}`
                   : `Formatted · ${indent()} spaces${sortKeys() ? " · sorted" : ""}`}

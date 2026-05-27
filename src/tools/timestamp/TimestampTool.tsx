@@ -77,32 +77,14 @@ export default function TimestampTool() {
     border: "1px solid var(--border)",
     background: "var(--bg-secondary)",
     color: "var(--text-primary)",
-    "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+    "font-family": "var(--font-mono)",
     "font-size": "0.875rem",
     outline: "none",
     "box-sizing": "border-box" as const,
   };
 
-  const labelStyle = {
-    "font-size": "0.75rem",
-    "font-weight": "600" as const,
-    "letter-spacing": "0.05em",
-    "text-transform": "uppercase" as const,
-    color: "var(--text-secondary)",
-  };
-
   return (
-    <div
-      style={{
-        display: "flex",
-        "flex-direction": "column",
-        gap: "1.5rem",
-        padding: "1.5rem",
-        "max-width": "760px",
-        margin: "0 auto",
-        width: "100%",
-      }}
-    >
+    <div class="tool-container" style={{ "--tool-max-width": "760px", "--tool-gap": "1.5rem" }}>
       {/* ------------------------------------------------------------------ */}
       {/* Input row                                                           */}
       {/* ------------------------------------------------------------------ */}
@@ -116,7 +98,7 @@ export default function TimestampTool() {
       >
         {/* Epoch input */}
         <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-          <label style={labelStyle}>Unix timestamp</label>
+          <label class="tool-label">Unix timestamp</label>
           <input
             type="text"
             inputmode="numeric"
@@ -145,7 +127,7 @@ export default function TimestampTool() {
 
         {/* Datetime-local input */}
         <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-          <label style={labelStyle}>Date & time (local)</label>
+          <label class="tool-label">Date & time (local)</label>
           <input
             type="datetime-local"
             value={datetimeInput()}
@@ -178,7 +160,7 @@ export default function TimestampTool() {
                 padding: "0.875rem 1rem",
               }}
             >
-              <div style={labelStyle}>Epoch (seconds)</div>
+              <div class="tool-label">Epoch (seconds)</div>
               <div
                 style={{
                   display: "flex",
@@ -191,8 +173,7 @@ export default function TimestampTool() {
                   style={{
                     "font-size": "0.9375rem",
                     color: "var(--accent-primary)",
-                    "font-family":
-                      "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+                    "font-family": "var(--font-mono)",
                     flex: "1",
                     "word-break": "break-all",
                   }}
@@ -214,7 +195,7 @@ export default function TimestampTool() {
                 padding: "0.875rem 1rem",
               }}
             >
-              <div style={labelStyle}>Epoch (milliseconds)</div>
+              <div class="tool-label">Epoch (milliseconds)</div>
               <div
                 style={{
                   display: "flex",
@@ -227,8 +208,7 @@ export default function TimestampTool() {
                   style={{
                     "font-size": "0.9375rem",
                     color: "var(--accent-primary)",
-                    "font-family":
-                      "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+                    "font-family": "var(--font-mono)",
                     flex: "1",
                     "word-break": "break-all",
                   }}
@@ -250,7 +230,7 @@ export default function TimestampTool() {
                 padding: "0.875rem 1rem",
               }}
             >
-              <div style={labelStyle}>ISO 8601</div>
+              <div class="tool-label">ISO 8601</div>
               <div
                 style={{
                   display: "flex",
@@ -263,8 +243,7 @@ export default function TimestampTool() {
                   style={{
                     "font-size": "0.875rem",
                     color: "var(--accent-success)",
-                    "font-family":
-                      "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+                    "font-family": "var(--font-mono)",
                     flex: "1",
                     "word-break": "break-all",
                   }}
@@ -294,7 +273,7 @@ export default function TimestampTool() {
                 "border-bottom": "1px solid var(--border)",
               }}
             >
-              <span style={labelStyle}>Derived formats</span>
+              <span class="tool-label">Derived formats</span>
             </div>
 
             <div
@@ -318,13 +297,12 @@ export default function TimestampTool() {
                       "border-radius": "0.375rem",
                     }}
                   >
-                    <span style={labelStyle}>{item.label}</span>
+                    <span class="tool-label">{item.label}</span>
                     <code
                       style={{
                         "font-size": "0.8125rem",
                         color: "var(--text-primary)",
-                        "font-family":
-                          "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+                        "font-family": "var(--font-mono)",
                         "word-break": "break-all",
                       }}
                     >
@@ -360,7 +338,7 @@ export default function TimestampTool() {
                 "border-bottom": "1px solid var(--border)",
               }}
             >
-              <span style={labelStyle}>Timezone conversions</span>
+              <span class="tool-label">Timezone conversions</span>
             </div>
 
             <div
@@ -404,8 +382,7 @@ export default function TimestampTool() {
                       style={{
                         "font-size": "0.875rem",
                         color: "var(--text-primary)",
-                        "font-family":
-                          "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+                        "font-family": "var(--font-mono)",
                       }}
                     >
                       {formatInZone(d(), zone.tz)}

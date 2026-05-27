@@ -1,8 +1,5 @@
 :root,
-:root[data-theme="catppuccin"],
-:root[data-theme="dracula"],
-:root[data-theme="nord"],
-:root[data-theme="gruvbox"] {
+:root[data-theme="dark"] {
   --bg-primary: #09090b;
   --bg-secondary: #13141a;
   --bg-tertiary: #1c1d26;

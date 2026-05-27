@@ -30,46 +30,18 @@ export default function UrlInspectorTool() {
     return current.ok ? "" : current.error;
   });
 
-  const labelStyle = {
-    "font-size": "0.75rem",
-    "font-weight": "600" as const,
-    "letter-spacing": "0.05em",
-    "text-transform": "uppercase" as const,
-    color: "var(--text-secondary)",
-  };
-
   return (
-    <div
-      style={{
-        display: "flex",
-        "flex-direction": "column",
-        gap: "1.25rem",
-        padding: "1.5rem",
-        "max-width": "1100px",
-        margin: "0 auto",
-        width: "100%",
-      }}
-    >
+    <div class="tool-container" style={{ "--tool-max-width": "1100px" }}>
       <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-        <label style={labelStyle}>URL or raw query string</label>
+        <label class="tool-label">URL or raw query string</label>
         <textarea
           value={input()}
           onInput={(event) => setInput(event.currentTarget.value)}
           rows={5}
           spellcheck={false}
+          class="tool-textarea"
           style={{
-            width: "100%",
-            padding: "0.875rem 1rem",
-            "border-radius": "0.5rem",
             border: `1px solid ${error() ? "var(--accent-error)" : "var(--border)"}`,
-            background: "var(--bg-secondary)",
-            color: "var(--text-primary)",
-            "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-            "font-size": "0.875rem",
-            "line-height": "1.6",
-            resize: "vertical",
-            outline: "none",
-            "box-sizing": "border-box",
           }}
         />
       </div>
@@ -108,7 +80,7 @@ export default function UrlInspectorTool() {
                   <div
                     style={{ display: "flex", "justify-content": "space-between", gap: "0.75rem" }}
                   >
-                    <span style={labelStyle}>{label}</span>
+                    <span class="tool-label">{label}</span>
                     <CopyButton text={value()} label={`Copy ${label}`} />
                   </div>
                   <code
@@ -139,7 +111,7 @@ export default function UrlInspectorTool() {
           }}
         >
           <div style={{ display: "flex", "justify-content": "space-between", gap: "0.75rem" }}>
-            <span style={labelStyle}>Decoded query params</span>
+            <span class="tool-label">Decoded query params</span>
             <Show when={inspection()?.normalized}>
               <ToolStatusMessage tone="muted" style={{ padding: "0.375rem 0.625rem" }}>
                 {inspection()?.kind === "query" ? "raw query" : "full url"}
@@ -151,13 +123,22 @@ export default function UrlInspectorTool() {
             <table style={{ width: "100%", "border-collapse": "collapse" }}>
               <thead>
                 <tr>
-                  <th style={{ padding: "0.5rem 0.75rem", "text-align": "left", ...labelStyle }}>
+                  <th
+                    class="tool-label"
+                    style={{ padding: "0.5rem 0.75rem", "text-align": "left" }}
+                  >
                     #
                   </th>
-                  <th style={{ padding: "0.5rem 0.75rem", "text-align": "left", ...labelStyle }}>
+                  <th
+                    class="tool-label"
+                    style={{ padding: "0.5rem 0.75rem", "text-align": "left" }}
+                  >
                     Key
                   </th>
-                  <th style={{ padding: "0.5rem 0.75rem", "text-align": "left", ...labelStyle }}>
+                  <th
+                    class="tool-label"
+                    style={{ padding: "0.5rem 0.75rem", "text-align": "left" }}
+                  >
                     Value
                   </th>
                 </tr>

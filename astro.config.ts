@@ -14,8 +14,8 @@ export default defineConfig({
         short_name: "unwrapped",
         description:
           "A collection of fast, local-first developer tools. No server, no uploads, no tracking.",
-        theme_color: "#282a36",
-        background_color: "#282a36",
+        theme_color: "#09090b",
+        background_color: "#09090b",
         display: "standalone",
         start_url: "/",
         scope: "/",

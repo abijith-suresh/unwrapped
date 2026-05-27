@@ -35,50 +35,26 @@ export default function CronTool() {
     return current.ok ? "" : current.error.message;
   });
 
-  const labelStyle = {
-    "font-size": "0.75rem",
-    "font-weight": "600" as const,
-    "letter-spacing": "0.05em",
-    "text-transform": "uppercase" as const,
-    color: "var(--text-secondary)",
-  };
-
   return (
-    <div
-      style={{
-        display: "flex",
-        "flex-direction": "column",
-        gap: "1.25rem",
-        padding: "1.5rem",
-        "max-width": "900px",
-        margin: "0 auto",
-        width: "100%",
-      }}
-    >
+    <div class="tool-container">
       <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-        <label style={labelStyle}>Cron expression</label>
+        <label class="tool-label">Cron expression</label>
         <input
           type="text"
           value={input()}
           onInput={(event) => setInput(event.currentTarget.value)}
           spellcheck={false}
+          class="tool-input"
           style={{
-            width: "100%",
-            padding: "0.875rem 1rem",
-            "border-radius": "0.5rem",
             border: `1px solid ${error() ? "var(--accent-error)" : "var(--border)"}`,
-            background: "var(--bg-secondary)",
-            color: "var(--text-primary)",
-            "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+            "font-family": "var(--font-mono)",
             "font-size": "0.9375rem",
-            outline: "none",
-            "box-sizing": "border-box",
           }}
         />
       </div>
 
       <div style={{ display: "flex", gap: "0.5rem", "flex-wrap": "wrap", "align-items": "center" }}>
-        <span style={labelStyle}>Timezone</span>
+        <span class="tool-label">Timezone</span>
         <ToolActionButton
           active={timeZone() === "local"}
           variant={timeZone() === "local" ? "primary" : "secondary"}
@@ -110,7 +86,7 @@ export default function CronTool() {
             "border-radius": "0.75rem",
           }}
         >
-          <span style={labelStyle}>Humanized schedule</span>
+          <span class="tool-label">Humanized schedule</span>
           <strong style={{ color: "var(--text-primary)", "font-size": "1.1rem" }}>
             {description()}
           </strong>
@@ -127,7 +103,7 @@ export default function CronTool() {
             "border-radius": "0.75rem",
           }}
         >
-          <span style={labelStyle}>Next runs</span>
+          <span class="tool-label">Next runs</span>
           <div style={{ display: "flex", "flex-direction": "column", gap: "0.5rem" }}>
             <For each={nextRuns()}>
               {(run, index) => (

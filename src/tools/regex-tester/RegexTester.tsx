@@ -70,26 +70,8 @@ export default function RegexTester() {
 
   const hasCaptures = createMemo(() => result().matches.some((match) => match.groups.length > 0));
 
-  const labelStyle = {
-    "font-size": "0.75rem",
-    "font-weight": "600" as const,
-    "letter-spacing": "0.05em",
-    "text-transform": "uppercase" as const,
-    color: "var(--text-secondary)",
-  };
-
   return (
-    <div
-      style={{
-        display: "flex",
-        "flex-direction": "column",
-        gap: "1.25rem",
-        padding: "1.5rem",
-        "max-width": "900px",
-        margin: "0 auto",
-        width: "100%",
-      }}
-    >
+    <div class="tool-container">
       <div style={{ display: "flex", "flex-direction": "column", gap: "0.5rem" }}>
         <div style={{ display: "flex", gap: "0.5rem", "flex-wrap": "wrap" }}>
           <ToolActionButton
@@ -108,7 +90,7 @@ export default function RegexTester() {
           </ToolActionButton>
         </div>
 
-        <label style={labelStyle}>Pattern</label>
+        <label class="tool-label">Pattern</label>
         <div
           style={{
             display: "flex",
@@ -124,7 +106,7 @@ export default function RegexTester() {
             style={{
               padding: "0 0.5rem 0 0.875rem",
               color: "var(--text-muted)",
-              "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+              "font-family": "var(--font-mono)",
               "font-size": "1.125rem",
               "user-select": "none",
             }}
@@ -145,7 +127,7 @@ export default function RegexTester() {
               border: "none",
               outline: "none",
               color: "var(--text-primary)",
-              "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+              "font-family": "var(--font-mono)",
               "font-size": "0.9375rem",
             }}
           />
@@ -153,7 +135,7 @@ export default function RegexTester() {
           <span
             style={{
               color: "var(--text-muted)",
-              "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+              "font-family": "var(--font-mono)",
               "font-size": "1.125rem",
               "user-select": "none",
             }}
@@ -180,8 +162,7 @@ export default function RegexTester() {
                     border: "none",
                     background: flags().has(flag.key) ? "var(--accent-primary)" : "transparent",
                     color: flags().has(flag.key) ? "var(--bg-primary)" : "var(--text-muted)",
-                    "font-family":
-                      "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+                    "font-family": "var(--font-mono)",
                     "font-size": "0.875rem",
                     "font-weight": "700",
                     cursor: "pointer",
@@ -201,7 +182,7 @@ export default function RegexTester() {
           <ToolStatusMessage
             tone="error"
             style={{
-              "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+              "font-family": "var(--font-mono)",
             }}
           >
             {msg()}
@@ -210,51 +191,27 @@ export default function RegexTester() {
       </Show>
 
       <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-        <label style={labelStyle}>Test string</label>
+        <label class="tool-label">Test string</label>
         <textarea
           value={input()}
           onInput={(e) => setInput(e.currentTarget.value)}
           placeholder="Enter text to test against the pattern…"
           rows={6}
           spellcheck={false}
-          style={{
-            width: "100%",
-            padding: "0.875rem 1rem",
-            "border-radius": "0.5rem",
-            border: "1px solid var(--border)",
-            background: "var(--bg-secondary)",
-            color: "var(--text-primary)",
-            "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-            "font-size": "0.875rem",
-            "line-height": "1.6",
-            resize: "vertical",
-            outline: "none",
-            "box-sizing": "border-box",
-          }}
+          class="tool-textarea"
         />
       </div>
 
       <Show when={mode() === "replace"}>
         <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-          <label style={labelStyle}>Replacement</label>
+          <label class="tool-label">Replacement</label>
           <input
             type="text"
             value={replacement()}
             onInput={(e) => setReplacement(e.currentTarget.value)}
             placeholder="Replacement text"
             spellcheck={false}
-            style={{
-              width: "100%",
-              padding: "0.875rem 1rem",
-              "border-radius": "0.5rem",
-              border: "1px solid var(--border)",
-              background: "var(--bg-secondary)",
-              color: "var(--text-primary)",
-              "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-              "font-size": "0.875rem",
-              outline: "none",
-              "box-sizing": "border-box",
-            }}
+            class="tool-input"
           />
         </div>
       </Show>
@@ -305,7 +262,7 @@ export default function RegexTester() {
               "border-bottom": "1px solid var(--border)",
             }}
           >
-            <span style={labelStyle}>{mode() === "replace" ? "Match preview" : "Matches"}</span>
+            <span class="tool-label">{mode() === "replace" ? "Match preview" : "Matches"}</span>
             <Show
               when={pattern() && !result().error}
               fallback={
@@ -338,7 +295,7 @@ export default function RegexTester() {
               "font-size": "0.875rem",
               "line-height": "1.8",
               color: "var(--text-primary)",
-              "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+              "font-family": "var(--font-mono)",
               "white-space": "pre-wrap",
               "word-break": "break-all",
             }}
@@ -369,7 +326,7 @@ export default function RegexTester() {
               "border-bottom": "1px solid var(--border)",
             }}
           >
-            <span style={labelStyle}>Replaced output</span>
+            <span class="tool-label">Replaced output</span>
             <CopyButton text={replaceOutput()} />
           </div>
 
@@ -381,7 +338,7 @@ export default function RegexTester() {
               "font-size": "0.875rem",
               "line-height": "1.8",
               color: "var(--text-primary)",
-              "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+              "font-family": "var(--font-mono)",
               "white-space": "pre-wrap",
               "word-break": "break-all",
             }}
@@ -401,7 +358,7 @@ export default function RegexTester() {
           }}
         >
           <div style={{ padding: "0.5rem 1rem", "border-bottom": "1px solid var(--border)" }}>
-            <span style={labelStyle}>Capture groups</span>
+            <span class="tool-label">Capture groups</span>
           </div>
 
           <div style={{ overflow: "auto" }}>
@@ -410,7 +367,7 @@ export default function RegexTester() {
                 width: "100%",
                 "border-collapse": "collapse",
                 "font-size": "0.8125rem",
-                "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+                "font-family": "var(--font-mono)",
               }}
             >
               <thead>

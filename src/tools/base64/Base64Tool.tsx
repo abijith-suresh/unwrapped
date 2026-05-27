@@ -192,17 +192,7 @@ export default function Base64Tool() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        "flex-direction": "column",
-        gap: "1.25rem",
-        padding: "1.5rem",
-        "max-width": "860px",
-        margin: "0 auto",
-        width: "100%",
-      }}
-    >
+    <div class="tool-container" style={{ "--tool-max-width": "860px" }}>
       {/* ------------------------------------------------------------------ */}
       {/* Mode toggle + swap                                                  */}
       {/* ------------------------------------------------------------------ */}
@@ -284,15 +274,7 @@ export default function Base64Tool() {
       {/* Input                                                               */}
       {/* ------------------------------------------------------------------ */}
       <div style={{ display: "flex", "flex-direction": "column", gap: "0.5rem" }}>
-        <label
-          style={{
-            "font-size": "0.75rem",
-            "font-weight": "600",
-            "letter-spacing": "0.05em",
-            "text-transform": "uppercase",
-            color: "var(--text-secondary)",
-          }}
-        >
+        <label class="tool-label">
           {mode() === "encode"
             ? workflow() === "text"
               ? "Plain text"
@@ -329,20 +311,7 @@ export default function Base64Tool() {
             rows={8}
             spellcheck={false}
             readOnly={mode() === "encode" && workflow() === "file"}
-            style={{
-              width: "100%",
-              padding: "0.875rem 1rem",
-              "border-radius": "0.5rem",
-              border: "1px solid var(--border)",
-              background: "var(--bg-secondary)",
-              color: "var(--text-primary)",
-              "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-              "font-size": "0.875rem",
-              "line-height": "1.6",
-              resize: "vertical",
-              outline: "none",
-              "box-sizing": "border-box",
-            }}
+            class="tool-textarea"
           />
         </div>
 
@@ -413,15 +382,7 @@ export default function Base64Tool() {
                 "border-bottom": "1px solid var(--border)",
               }}
             >
-              <span
-                style={{
-                  "font-size": "0.75rem",
-                  "font-weight": "600",
-                  "letter-spacing": "0.05em",
-                  "text-transform": "uppercase",
-                  color: "var(--text-secondary)",
-                }}
-              >
+              <span class="tool-label">
                 {mode() === "encode"
                   ? variant() === "url"
                     ? "Base64url"
@@ -444,7 +405,7 @@ export default function Base64Tool() {
                 "font-size": "0.8125rem",
                 "line-height": "1.6",
                 color: "var(--text-primary)",
-                "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+                "font-family": "var(--font-mono)",
                 "white-space": "pre-wrap",
                 "word-break": "break-all",
               }}
