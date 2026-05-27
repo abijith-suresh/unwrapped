@@ -145,17 +145,7 @@ export default function HashGenerator() {
   });
 
   return (
-    <div
-      style={{
-        display: "flex",
-        "flex-direction": "column",
-        gap: "1.25rem",
-        padding: "1.5rem",
-        "max-width": "860px",
-        margin: "0 auto",
-        width: "100%",
-      }}
-    >
+    <div class="tool-container" style={{ "--tool-max-width": "860px" }}>
       <div
         style={{
           display: "flex",
@@ -204,17 +194,7 @@ export default function HashGenerator() {
       </div>
 
       <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-        <label
-          style={{
-            "font-size": "0.75rem",
-            "font-weight": "600",
-            "letter-spacing": "0.05em",
-            "text-transform": "uppercase",
-            color: "var(--text-secondary)",
-          }}
-        >
-          {workflow() === "text" ? "Input text" : "Input file"}
-        </label>
+        <label class="tool-label">{workflow() === "text" ? "Input text" : "Input file"}</label>
         <div
           onDragOver={(event) => event.preventDefault()}
           onDrop={onDrop}
@@ -231,20 +211,7 @@ export default function HashGenerator() {
             rows={5}
             spellcheck={false}
             readOnly={workflow() === "file"}
-            style={{
-              width: "100%",
-              padding: "0.875rem 1rem",
-              "border-radius": "0.5rem",
-              border: "1px solid var(--border)",
-              background: "var(--bg-secondary)",
-              color: "var(--text-primary)",
-              "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-              "font-size": "0.875rem",
-              "line-height": "1.6",
-              resize: "vertical",
-              outline: "none",
-              "box-sizing": "border-box",
-            }}
+            class="tool-textarea"
           />
         </div>
 
@@ -343,8 +310,7 @@ export default function HashGenerator() {
                     "font-size": "0.8125rem",
                     "line-height": "1.6",
                     color: "var(--text-primary)",
-                    "font-family":
-                      "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+                    "font-family": "var(--font-mono)",
                     "white-space": "pre-wrap",
                     "word-break": "break-all",
                   }}

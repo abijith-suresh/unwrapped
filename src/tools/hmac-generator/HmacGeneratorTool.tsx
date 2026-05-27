@@ -13,14 +13,6 @@ export default function HmacGeneratorTool() {
   const [error, setError] = createSignal("");
   const [pending, setPending] = createSignal(false);
 
-  const labelStyle = {
-    "font-size": "0.75rem",
-    "font-weight": "600" as const,
-    "letter-spacing": "0.05em",
-    "text-transform": "uppercase" as const,
-    color: "var(--text-secondary)",
-  };
-
   async function handleGenerate() {
     setPending(true);
     const result = await generateHmac({
@@ -41,17 +33,7 @@ export default function HmacGeneratorTool() {
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        "flex-direction": "column",
-        gap: "1.25rem",
-        padding: "1.5rem",
-        "max-width": "900px",
-        margin: "0 auto",
-        width: "100%",
-      }}
-    >
+    <div class="tool-container">
       <div
         style={{
           display: "grid",
@@ -60,48 +42,24 @@ export default function HmacGeneratorTool() {
         }}
       >
         <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-          <label style={labelStyle}>Message</label>
+          <label class="tool-label">Message</label>
           <textarea
             value={message()}
             onInput={(event) => setMessage(event.currentTarget.value)}
             rows={6}
             spellcheck={false}
-            style={{
-              width: "100%",
-              padding: "0.875rem 1rem",
-              "border-radius": "0.5rem",
-              border: "1px solid var(--border)",
-              background: "var(--bg-secondary)",
-              color: "var(--text-primary)",
-              "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-              "font-size": "0.875rem",
-              resize: "vertical",
-              outline: "none",
-              "box-sizing": "border-box",
-            }}
+            class="tool-textarea"
           />
         </div>
 
         <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-          <label style={labelStyle}>Secret</label>
+          <label class="tool-label">Secret</label>
           <textarea
             value={secret()}
             onInput={(event) => setSecret(event.currentTarget.value)}
             rows={6}
             spellcheck={false}
-            style={{
-              width: "100%",
-              padding: "0.875rem 1rem",
-              "border-radius": "0.5rem",
-              border: "1px solid var(--border)",
-              background: "var(--bg-secondary)",
-              color: "var(--text-primary)",
-              "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-              "font-size": "0.875rem",
-              resize: "vertical",
-              outline: "none",
-              "box-sizing": "border-box",
-            }}
+            class="tool-textarea"
           />
         </div>
       </div>
@@ -109,7 +67,7 @@ export default function HmacGeneratorTool() {
       <div
         style={{ display: "flex", gap: "0.75rem", "flex-wrap": "wrap", "align-items": "center" }}
       >
-        <label style={labelStyle}>Algorithm</label>
+        <label class="tool-label">Algorithm</label>
         <select
           value={algorithm()}
           onChange={(event) => setAlgorithm(event.currentTarget.value as HmacAlgorithm)}
@@ -152,7 +110,7 @@ export default function HmacGeneratorTool() {
         <div
           style={{ display: "flex", "align-items": "center", "justify-content": "space-between" }}
         >
-          <span style={labelStyle}>Hex output</span>
+          <span class="tool-label">Hex output</span>
           <CopyButton text={output()} label="Copy HMAC" />
         </div>
         <code
@@ -160,7 +118,7 @@ export default function HmacGeneratorTool() {
             color: "var(--text-primary)",
             "font-size": "0.95rem",
             "line-height": "1.7",
-            "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+            "font-family": "var(--font-mono)",
             "word-break": "break-all",
             "min-height": "3rem",
           }}

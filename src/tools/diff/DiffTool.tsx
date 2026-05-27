@@ -167,12 +167,8 @@ function InputPanel(props: InputPanelProps) {
           }}
         >
           <span
+            class="tool-label"
             style={{
-              "font-size": "0.75rem",
-              "font-weight": "600",
-              "letter-spacing": "0.06em",
-              "text-transform": "uppercase",
-              color: "var(--text-secondary)",
               "flex-shrink": "0",
             }}
           >
@@ -583,14 +579,12 @@ export default function DiffTool() {
   // ---------------------------------------------------------------------------
   return (
     <div
+      class="tool-container"
       style={{
-        display: "flex",
-        "flex-direction": "column",
-        gap: "1rem",
+        "--tool-max-width": "none",
+        "--tool-gap": "1rem",
         padding: "1.25rem 1.5rem",
         "font-family": "var(--font-sans)",
-        width: "100%",
-        "box-sizing": "border-box",
       }}
     >
       {/* -------------------------------------------------------------------- */}

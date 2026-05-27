@@ -25,14 +25,6 @@ export default function ChmodCalculatorTool() {
   const [permissions, setPermissions] = createSignal<ChmodPermissions>(DEFAULT_PERMISSIONS);
   const result = createMemo(() => buildChmodResult(permissions()));
 
-  const labelStyle = {
-    "font-size": "0.75rem",
-    "font-weight": "600" as const,
-    "letter-spacing": "0.05em",
-    "text-transform": "uppercase" as const,
-    color: "var(--text-secondary)",
-  };
-
   function togglePermission(
     subject: keyof ChmodPermissions,
     permission: keyof ChmodPermissions["owner"]
@@ -47,17 +39,7 @@ export default function ChmodCalculatorTool() {
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        "flex-direction": "column",
-        gap: "1.25rem",
-        padding: "1.5rem",
-        "max-width": "900px",
-        margin: "0 auto",
-        width: "100%",
-      }}
-    >
+    <div class="tool-container">
       <section
         style={{
           overflow: "auto",
@@ -69,12 +51,12 @@ export default function ChmodCalculatorTool() {
         <table style={{ width: "100%", "border-collapse": "collapse" }}>
           <thead>
             <tr>
-              <th style={{ padding: "0.75rem 1rem", "text-align": "left", ...labelStyle }}>
+              <th class="tool-label" style={{ padding: "0.75rem 1rem", "text-align": "left" }}>
                 Scope
               </th>
               <For each={PERMISSIONS}>
                 {([_, label]) => (
-                  <th style={{ padding: "0.75rem 1rem", "text-align": "left", ...labelStyle }}>
+                  <th class="tool-label" style={{ padding: "0.75rem 1rem", "text-align": "left" }}>
                     {label}
                   </th>
                 )}
@@ -120,7 +102,7 @@ export default function ChmodCalculatorTool() {
           }}
         >
           <div style={{ display: "flex", "justify-content": "space-between", gap: "0.75rem" }}>
-            <span style={labelStyle}>Octal mode</span>
+            <span class="tool-label">Octal mode</span>
             <CopyButton text={result().octal} label="Copy octal" />
           </div>
           <strong style={{ color: "var(--text-primary)", "font-size": "1.5rem" }}>
@@ -137,7 +119,7 @@ export default function ChmodCalculatorTool() {
           }}
         >
           <div style={{ display: "flex", "justify-content": "space-between", gap: "0.75rem" }}>
-            <span style={labelStyle}>Symbolic mode</span>
+            <span class="tool-label">Symbolic mode</span>
             <CopyButton text={result().symbolic} label="Copy symbolic" />
           </div>
           <strong style={{ color: "var(--text-primary)", "font-size": "1.5rem" }}>
@@ -154,7 +136,7 @@ export default function ChmodCalculatorTool() {
           }}
         >
           <div style={{ display: "flex", "justify-content": "space-between", gap: "0.75rem" }}>
-            <span style={labelStyle}>Command</span>
+            <span class="tool-label">Command</span>
             <CopyButton text={result().command} label="Copy command" />
           </div>
           <code style={{ color: "var(--text-primary)", "font-size": "0.95rem" }}>

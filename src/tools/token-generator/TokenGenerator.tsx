@@ -25,14 +25,6 @@ export default function TokenGenerator() {
   const [token, setToken] = createSignal(initial.token);
   const [error, setError] = createSignal(initial.error);
 
-  const labelStyle = {
-    "font-size": "0.75rem",
-    "font-weight": "600" as const,
-    "letter-spacing": "0.05em",
-    "text-transform": "uppercase" as const,
-    color: "var(--text-secondary)",
-  };
-
   const activeGroups = createMemo(() => {
     const current = options();
     return [
@@ -67,17 +59,7 @@ export default function TokenGenerator() {
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        "flex-direction": "column",
-        gap: "1.25rem",
-        padding: "1.5rem",
-        "max-width": "900px",
-        margin: "0 auto",
-        width: "100%",
-      }}
-    >
+    <div class="tool-container">
       <div style={{ display: "grid", gap: "1rem", "grid-template-columns": "2fr 1fr" }}>
         <div
           style={{
@@ -91,7 +73,7 @@ export default function TokenGenerator() {
           }}
         >
           <div style={{ display: "flex", "justify-content": "space-between", gap: "0.75rem" }}>
-            <span style={labelStyle}>Generated token</span>
+            <span class="tool-label">Generated token</span>
             <CopyButton text={token()} label="Copy token" />
           </div>
           <code
@@ -99,7 +81,7 @@ export default function TokenGenerator() {
               color: "var(--text-primary)",
               "font-size": "1rem",
               "line-height": "1.7",
-              "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+              "font-family": "var(--font-mono)",
               "word-break": "break-all",
               "min-height": "4.5rem",
             }}
@@ -119,7 +101,7 @@ export default function TokenGenerator() {
             "border-radius": "0.5rem",
           }}
         >
-          <span style={labelStyle}>Options</span>
+          <span class="tool-label">Options</span>
           <label style={{ color: "var(--text-secondary)", "font-size": "0.875rem" }}>Length</label>
           <input
             type="number"

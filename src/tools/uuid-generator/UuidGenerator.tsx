@@ -46,17 +46,7 @@ export default function UuidGenerator() {
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        "flex-direction": "column",
-        gap: "1.25rem",
-        padding: "1.5rem",
-        "max-width": "860px",
-        margin: "0 auto",
-        width: "100%",
-      }}
-    >
+    <div class="tool-container" style={{ "--tool-max-width": "860px" }}>
       {/* ------------------------------------------------------------------ */}
       {/* Controls                                                            */}
       {/* ------------------------------------------------------------------ */}
@@ -159,7 +149,7 @@ export default function UuidGenerator() {
                 style={{
                   "font-size": "0.875rem",
                   color: "var(--text-primary)",
-                  "font-family": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+                  "font-family": "var(--font-mono)",
                   "letter-spacing": "0.02em",
                   flex: "1",
                   "word-break": "break-all",
