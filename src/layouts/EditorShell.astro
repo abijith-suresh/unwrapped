@@ -1,11 +1,10 @@
 ---
+import Base from "@/layouts/Base.astro";
 import { ClientRouter } from "astro:transitions";
 
 import CommandPalette from "@/components/CommandPalette";
 import { getPwaRouteBootstrapScript } from "@/lib/pwaRoute";
 import SettingsModal from "@/components/SettingsModal";
-import { getThemeBootstrapScript } from "@/lib/theme";
-import "@/styles/global.css";
 import { getToolRoute, tools } from "@/tools/registry";
 import type { ToolCategory } from "@/tools/registry";
 
@@ -17,18 +16,7 @@ interface Props {
   activeSlug?: string;
 }
 
-const {
-  title,
-  description = "Fast, local-first developer tools. No server, no uploads, no tracking.",
-  ogImage = "/og-image.png",
-  activeSlug,
-} = Astro.props;
-
-const canonicalURL = new URL(
-  Astro.url.pathname,
-  Astro.site ?? "https://unwrapped-tools.vercel.app"
-);
-const fullTitle = title === "unwrapped.tools" ? title : `${title} — unwrapped.tools`;
+const { title, description, ogImage, activeSlug } = Astro.props;
 
 const SIDEBAR_PAGES = [
   { slug: "about", label: "about.ts" },
@@ -61,621 +49,579 @@ const grouped: GroupedTool[] = categoryOrder
   .filter((g) => g.items.length > 0);
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="generator" content={Astro.generator} />
-    <title>{fullTitle}</title>
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonicalURL} />
-    <!-- OG -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonicalURL} />
-    <meta property="og:title" content={fullTitle} />
-    <meta property="og:description" content={description} />
-    <meta
-      property="og:image"
-      content={new URL(ogImage, Astro.site ?? "https://unwrapped-tools.vercel.app")}
-    />
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={fullTitle} />
-    <meta name="twitter:description" content={description} />
-    <meta
-      name="twitter:image"
-      content={new URL(ogImage, Astro.site ?? "https://unwrapped-tools.vercel.app")}
-    />
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <!-- PWA -->
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <!-- Theme init: runs before paint to prevent flash -->
-    <script is:inline set:html={getThemeBootstrapScript()} />
-    <!-- Restore the last tool route when an installed session reopens at home. -->
+<Base title={title} description={description} ogImage={ogImage}>
+  <Fragment slot="head">
     <script is:inline set:html={getPwaRouteBootstrapScript()} />
     <ClientRouter />
-  </head>
-  <body>
-    <!-- ═══════════════════════════════════════════════════
-         EDITOR CHROME — persistent shell, never swapped
-         ═══════════════════════════════════════════════════ -->
-    <div class="editor-root" transition:name="editor-root" transition:animate="none">
-      <!-- ── TAB BAR ── -->
-      <header class="tab-bar" transition:name="tab-bar" transition:animate="none">
-        <!-- Brand (leftmost on all screen sizes) -->
-        <a href="/" class="tab-brand" aria-label="Go to homepage">unwrapped</a>
+  </Fragment>
 
-        <!-- Hamburger (mobile only) -->
-        <button
-          id="sidebar-toggle"
-          class="sidebar-toggle"
-          aria-label="Toggle file explorer"
-          aria-expanded="false"
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-          >
-            <rect x="2" y="4" width="12" height="1.5" rx="0.75" fill="currentColor"></rect>
-            <rect x="2" y="7.25" width="12" height="1.5" rx="0.75" fill="currentColor"></rect>
-            <rect x="2" y="10.5" width="12" height="1.5" rx="0.75" fill="currentColor"></rect>
-          </svg>
-        </button>
+  <!-- ═══════════════════════════════════════════════════
+       EDITOR CHROME — persistent shell, never swapped
+       ═══════════════════════════════════════════════════ -->
+  <div class="editor-root" transition:name="editor-root" transition:animate="none">
+    <!-- ── TAB BAR ── -->
+    <header class="tab-bar" transition:name="tab-bar" transition:animate="none">
+      <!-- Brand (leftmost on all screen sizes) -->
+      <a href="/" class="tab-brand" aria-label="Go to homepage">unwrapped</a>
 
-        <!-- Active file tab (centered via absolute positioning) -->
-        <div class="tab-filename">
-          <span class="tab-dot"></span>
-          <span class="tab-name">
-            {activeSlug ? `${activeSlug}.ts` : "readme.ts"}
-          </span>
-        </div>
-
-        <!-- Right side controls -->
-        <div class="tab-controls">
-          <CommandPalette client:load />
-        </div>
-      </header>
-
-      <!-- ── BODY: SIDEBAR + MAIN PANE ── -->
-      <div class="editor-body">
-        <!-- ── SIDEBAR ── -->
-        <nav
-          id="sidebar"
-          class:list={["sidebar", { "sidebar--open": false }]}
-          aria-label="File explorer"
-          transition:name="sidebar"
-          transition:animate="none"
-        >
-          <div class="sidebar-section-label">EXPLORER</div>
-
-          {/* Pages section */}
-          <div class="sidebar-group">
-            <div
-              class="sidebar-category"
-              tabindex="0"
-              role="button"
-              aria-expanded="true"
-              aria-controls="sidebar-cat-pages"
-            >
-              pages
-            </div>
-            <ul class="sidebar-list" id="sidebar-cat-pages">
-              {
-                SIDEBAR_PAGES.map((page) => (
-                  <li>
-                    <a
-                      href={`/${page.slug}`}
-                      class:list={[
-                        "sidebar-item",
-                        { "sidebar-item--active": page.slug === activeSlug },
-                      ]}
-                      aria-current={page.slug === activeSlug ? "page" : undefined}
-                    >
-                      <span class="sidebar-item-icon" aria-hidden="true">
-                        {page.slug === activeSlug ? "▸" : " "}
-                      </span>
-                      <span class="sidebar-item-name">{page.label}</span>
-                    </a>
-                  </li>
-                ))
-              }
-            </ul>
-          </div>
-
-          {
-            grouped.map((group) => (
-              <div class="sidebar-group">
-                <div
-                  class="sidebar-category"
-                  tabindex="0"
-                  role="button"
-                  aria-expanded="true"
-                  aria-controls={`sidebar-cat-${group.category}`}
-                >
-                  {group.category}
-                </div>
-                <ul class="sidebar-list" id={`sidebar-cat-${group.category}`}>
-                  {group.items.map((tool) => (
-                    <li>
-                      <a
-                        href={getToolRoute(tool.slug)}
-                        class:list={[
-                          "sidebar-item",
-                          { "sidebar-item--active": tool.slug === activeSlug },
-                        ]}
-                        aria-current={tool.slug === activeSlug ? "page" : undefined}
-                      >
-                        <span class="sidebar-item-icon" aria-hidden="true">
-                          {tool.slug === activeSlug ? "▸" : " "}
-                        </span>
-                        <span class="sidebar-item-name">{tool.slug}.ts</span>
-                        {tool.isNew && <span class="sidebar-item-badge">new</span>}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))
-          }
-        </nav>
-
-        <!-- Sidebar backdrop (mobile) -->
-        <div
-          id="sidebar-backdrop"
-          class:list={["sidebar-backdrop", { "sidebar-backdrop--visible": false }]}
+      <!-- Hamburger (mobile only) -->
+      <button
+        id="sidebar-toggle"
+        class="sidebar-toggle"
+        aria-label="Toggle file explorer"
+        aria-expanded="false"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
           aria-hidden="true"
         >
-        </div>
+          <rect x="2" y="4" width="12" height="1.5" rx="0.75" fill="currentColor"></rect>
+          <rect x="2" y="7.25" width="12" height="1.5" rx="0.75" fill="currentColor"></rect>
+          <rect x="2" y="10.5" width="12" height="1.5" rx="0.75" fill="currentColor"></rect>
+        </svg>
+      </button>
 
-        <!-- ── MAIN PANE ── -->
-        <main class="main-pane" id="main-pane">
-          <div transition:name="main-pane" transition:animate="fade">
-            <slot />
-          </div>
-        </main>
+      <!-- Active file tab (centered via absolute positioning) -->
+      <div class="tab-filename">
+        <span class="tab-dot"></span>
+        <span class="tab-name">
+          {activeSlug ? `${activeSlug}.ts` : "readme.ts"}
+        </span>
       </div>
 
-      <!-- ── STATUS BAR ── -->
-      <footer class="status-bar" transition:name="status-bar" transition:animate="none">
-        <div class="status-left">
-          <span class="status-item status-branch">
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              aria-hidden="true"
-              style="display:inline;vertical-align:middle;margin-right:3px;"
-            >
-              <path
-                d="M5 3.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0zm0 2.122a2.25 2.25 0 1 0-1.5 0v.878A2.25 2.25 0 0 0 5.75 8.5h1.5v2.128a2.251 2.251 0 1 0 1.5 0V8.5h1.5a2.25 2.25 0 0 0 2.25-2.25v-.878a2.25 2.25 0 1 0-1.5 0v.878a.75.75 0 0 1-.75.75h-4.5A.75.75 0 0 1 5 6.25v-.878zm3.75 7.378a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0zm3-8.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0z"
-              ></path>
-            </svg>
-            main
-          </span>
-          <span class="status-sep status-ts-sep" aria-hidden="true">|</span>
-          <span class="status-item status-ts">&#10003; TypeScript</span>
+      <!-- Right side controls -->
+      <div class="tab-controls">
+        <CommandPalette client:load />
+      </div>
+    </header>
+
+    <!-- ── BODY: SIDEBAR + MAIN PANE ── -->
+    <div class="editor-body">
+      <!-- ── SIDEBAR ── -->
+      <nav
+        id="sidebar"
+        class:list={["sidebar", { "sidebar--open": false }]}
+        aria-label="File explorer"
+        transition:name="sidebar"
+        transition:animate="none"
+      >
+        <div class="sidebar-section-label">EXPLORER</div>
+
+        {/* Pages section */}
+        <div class="sidebar-group">
+          <div
+            class="sidebar-category"
+            tabindex="0"
+            role="button"
+            aria-expanded="true"
+            aria-controls="sidebar-cat-pages"
+          >
+            pages
+          </div>
+          <ul class="sidebar-list" id="sidebar-cat-pages">
+            {
+              SIDEBAR_PAGES.map((page) => (
+                <li>
+                  <a
+                    href={`/${page.slug}`}
+                    class:list={[
+                      "sidebar-item",
+                      { "sidebar-item--active": page.slug === activeSlug },
+                    ]}
+                    aria-current={page.slug === activeSlug ? "page" : undefined}
+                  >
+                    <span class="sidebar-item-icon" aria-hidden="true">
+                      {page.slug === activeSlug ? "▸" : " "}
+                    </span>
+                    <span class="sidebar-item-name">{page.label}</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
         </div>
 
-        <div class="status-right">
-          <SettingsModal client:load />
-          <span class="status-sep" aria-hidden="true">|</span>
-          <span class="status-item status-gh">
-            <a
-              href="https://github.com/abijith-suresh/unwrapped-tools"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="GitHub repository"
-              class="status-gh-link"
-            >
-              ~/gh
-            </a>
-          </span>
+        {
+          grouped.map((group) => (
+            <div class="sidebar-group">
+              <div
+                class="sidebar-category"
+                tabindex="0"
+                role="button"
+                aria-expanded="true"
+                aria-controls={`sidebar-cat-${group.category}`}
+              >
+                {group.category}
+              </div>
+              <ul class="sidebar-list" id={`sidebar-cat-${group.category}`}>
+                {group.items.map((tool) => (
+                  <li>
+                    <a
+                      href={getToolRoute(tool.slug)}
+                      class:list={[
+                        "sidebar-item",
+                        { "sidebar-item--active": tool.slug === activeSlug },
+                      ]}
+                      aria-current={tool.slug === activeSlug ? "page" : undefined}
+                    >
+                      <span class="sidebar-item-icon" aria-hidden="true">
+                        {tool.slug === activeSlug ? "▸" : " "}
+                      </span>
+                      <span class="sidebar-item-name">{tool.slug}.ts</span>
+                      {tool.isNew && <span class="sidebar-item-badge">new</span>}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </nav>
+
+      <!-- Sidebar backdrop (mobile) -->
+      <div
+        id="sidebar-backdrop"
+        class:list={["sidebar-backdrop", { "sidebar-backdrop--visible": false }]}
+        aria-hidden="true"
+      >
+      </div>
+
+      <!-- ── MAIN PANE ── -->
+      <main class="main-pane" id="main-pane">
+        <div transition:name="main-pane" transition:animate="fade">
+          <slot />
         </div>
-      </footer>
+      </main>
     </div>
 
-    <!-- Mobile sidebar toggle script -->
-    <script>
-      function initSidebarToggle() {
-        const toggle = document.getElementById("sidebar-toggle");
-        const sidebar = document.getElementById("sidebar");
-        const backdrop = document.getElementById("sidebar-backdrop");
+    <!-- ── STATUS BAR ── -->
+    <footer class="status-bar" transition:name="status-bar" transition:animate="none">
+      <div class="status-left">
+        <span class="status-item status-branch">
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            aria-hidden="true"
+            style="display:inline;vertical-align:middle;margin-right:3px;"
+          >
+            <path
+              d="M5 3.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0zm0 2.122a2.25 2.25 0 1 0-1.5 0v.878A2.25 2.25 0 0 0 5.75 8.5h1.5v2.128a2.251 2.251 0 1 0 1.5 0V8.5h1.5a2.25 2.25 0 0 0 2.25-2.25v-.878a2.25 2.25 0 1 0-1.5 0v.878a.75.75 0 0 1-.75.75h-4.5A.75.75 0 0 1 5 6.25v-.878zm3.75 7.378a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0zm3-8.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0z"
+            ></path>
+          </svg>
+          main
+        </span>
+        <span class="status-sep status-ts-sep" aria-hidden="true">|</span>
+        <span class="status-item status-ts">&#10003; TypeScript</span>
+      </div>
 
-        if (!toggle || !sidebar || !backdrop) return;
+      <div class="status-right">
+        <SettingsModal client:load />
+        <span class="status-sep" aria-hidden="true">|</span>
+        <span class="status-item status-gh">
+          <a
+            href="https://github.com/abijith-suresh/unwrapped-tools"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub repository"
+            class="status-gh-link"
+          >
+            ~/gh
+          </a>
+        </span>
+      </div>
+    </footer>
+  </div>
 
-        toggle.onclick = function () {
-          const isOpen = sidebar.classList.contains("sidebar--open");
-          if (isOpen) {
-            sidebar.classList.remove("sidebar--open");
-            backdrop.classList.remove("sidebar-backdrop--visible");
-            toggle.setAttribute("aria-expanded", "false");
-          } else {
-            sidebar.classList.add("sidebar--open");
-            backdrop.classList.add("sidebar-backdrop--visible");
-            toggle.setAttribute("aria-expanded", "true");
-          }
-        };
+  <!-- Mobile sidebar toggle script -->
+  <script>
+    function initSidebarToggle() {
+      const toggle = document.getElementById("sidebar-toggle");
+      const sidebar = document.getElementById("sidebar");
+      const backdrop = document.getElementById("sidebar-backdrop");
 
-        backdrop.onclick = function () {
+      if (!toggle || !sidebar || !backdrop) return;
+
+      toggle.onclick = function () {
+        const isOpen = sidebar.classList.contains("sidebar--open");
+        if (isOpen) {
           sidebar.classList.remove("sidebar--open");
           backdrop.classList.remove("sidebar-backdrop--visible");
           toggle.setAttribute("aria-expanded", "false");
-        };
-      }
+        } else {
+          sidebar.classList.add("sidebar--open");
+          backdrop.classList.add("sidebar-backdrop--visible");
+          toggle.setAttribute("aria-expanded", "true");
+        }
+      };
 
-      function initSidebarCategories() {
-        const STORAGE_KEY = "sidebar-collapsed";
-        const stored = sessionStorage.getItem(STORAGE_KEY);
-        const collapsed: string[] = stored ? (JSON.parse(stored) as string[]) : [];
+      backdrop.onclick = function () {
+        sidebar.classList.remove("sidebar--open");
+        backdrop.classList.remove("sidebar-backdrop--visible");
+        toggle.setAttribute("aria-expanded", "false");
+      };
+    }
 
-        const categories = document.querySelectorAll<HTMLElement>(".sidebar-category");
-        categories.forEach((cat) => {
-          const id = cat.getAttribute("aria-controls");
-          if (!id) return;
-          const list = document.getElementById(id);
-          if (!list) return;
+    function initSidebarCategories() {
+      const STORAGE_KEY = "sidebar-collapsed";
+      const stored = sessionStorage.getItem(STORAGE_KEY);
+      const collapsed: string[] = stored ? (JSON.parse(stored) as string[]) : [];
 
-          // Restore persisted collapsed state
-          if (collapsed.includes(id)) {
-            cat.setAttribute("aria-expanded", "false");
-            list.classList.add("sidebar-list--collapsed");
+      const categories = document.querySelectorAll<HTMLElement>(".sidebar-category");
+      categories.forEach((cat) => {
+        const id = cat.getAttribute("aria-controls");
+        if (!id) return;
+        const list = document.getElementById(id);
+        if (!list) return;
+
+        // Restore persisted collapsed state
+        if (collapsed.includes(id)) {
+          cat.setAttribute("aria-expanded", "false");
+          list.classList.add("sidebar-list--collapsed");
+        }
+
+        function toggle() {
+          const isExpanded = cat.getAttribute("aria-expanded") !== "false";
+          cat.setAttribute("aria-expanded", isExpanded ? "false" : "true");
+          list!.classList.toggle("sidebar-list--collapsed", isExpanded);
+
+          // Persist
+          const nowCollapsed = Array.from(
+            document.querySelectorAll<HTMLElement>(".sidebar-category[aria-expanded='false']")
+          )
+            .map((el) => el.getAttribute("aria-controls"))
+            .filter(Boolean) as string[];
+          sessionStorage.setItem(STORAGE_KEY, JSON.stringify(nowCollapsed));
+        }
+
+        cat.addEventListener("click", toggle);
+        cat.addEventListener("keydown", (e: KeyboardEvent) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggle();
           }
-
-          function toggle() {
-            const isExpanded = cat.getAttribute("aria-expanded") !== "false";
-            cat.setAttribute("aria-expanded", isExpanded ? "false" : "true");
-            list!.classList.toggle("sidebar-list--collapsed", isExpanded);
-
-            // Persist
-            const nowCollapsed = Array.from(
-              document.querySelectorAll<HTMLElement>(".sidebar-category[aria-expanded='false']")
-            )
-              .map((el) => el.getAttribute("aria-controls"))
-              .filter(Boolean) as string[];
-            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(nowCollapsed));
-          }
-
-          cat.addEventListener("click", toggle);
-          cat.addEventListener("keydown", (e: KeyboardEvent) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              toggle();
-            }
-          });
         });
-      }
-
-      document.addEventListener("astro:page-load", initSidebarToggle);
-      document.addEventListener("astro:page-load", initSidebarCategories);
-
-      // Persist data-theme across View Transitions navigations.
-      // astro:before-swap fires before the incoming DOM replaces the current DOM,
-      // giving us a chance to copy the runtime attribute to the new document so
-      // the CSS theme vars are never absent after a page swap.
-      document.addEventListener("astro:before-swap", (ev) => {
-        const e = ev as Event & { newDocument: Document };
-        const theme = document.documentElement.getAttribute("data-theme");
-        if (theme) e.newDocument.documentElement.setAttribute("data-theme", theme);
       });
-    </script>
+    }
 
-    <style>
-      /* ── LAYOUT ── */
-      .editor-root {
-        display: flex;
-        flex-direction: column;
-        height: 100dvh;
-        overflow: hidden;
-        background-color: var(--bg-primary);
-        color: var(--text-primary);
-        font-family: var(--font-mono);
-      }
+    document.addEventListener("astro:page-load", initSidebarToggle);
+    document.addEventListener("astro:page-load", initSidebarCategories);
+  </script>
+</Base>
 
-      /* ── TAB BAR ── */
-      .tab-bar {
-        display: flex;
-        align-items: center;
-        height: 2.5rem;
-        min-height: 2.5rem;
-        background-color: var(--bg-secondary);
-        border-bottom: 1px solid var(--border);
-        padding: 0 0.75rem;
-        gap: 0.5rem;
-        flex-shrink: 0;
-        z-index: 20;
-        position: relative;
-      }
+<style>
+  /* ── LAYOUT ── */
+  .editor-root {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    overflow: hidden;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+  }
 
-      .sidebar-toggle {
-        display: none;
-        align-items: center;
-        justify-content: center;
-        background: none;
-        border: none;
-        color: var(--text-secondary);
-        cursor: pointer;
-        padding: 0.25rem;
-        border-radius: 4px;
-        flex-shrink: 0;
-      }
-      .sidebar-toggle:hover {
-        color: var(--text-primary);
-        background-color: var(--bg-tertiary);
-      }
+  /* ── TAB BAR ── */
+  .tab-bar {
+    display: flex;
+    align-items: center;
+    height: 2.5rem;
+    min-height: 2.5rem;
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    padding: 0 0.75rem;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    z-index: 20;
+    position: relative;
+  }
 
-      .tab-filename {
-        display: flex;
-        align-items: center;
-        gap: 0.375rem;
-        background-color: var(--bg-primary);
-        border-left: 1px solid var(--border);
-        border-right: 1px solid var(--border);
-        border-bottom: 1px solid var(--bg-primary);
-        padding: 0 0.875rem;
-        height: 100%;
-        font-size: 0.8rem;
-        color: var(--text-secondary);
-        flex-shrink: 0;
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-      }
+  .sidebar-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .sidebar-toggle:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-tertiary);
+  }
 
-      .tab-dot {
-        display: inline-block;
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background-color: var(--accent-primary);
-        flex-shrink: 0;
-      }
+  .tab-filename {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    background-color: var(--bg-primary);
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--bg-primary);
+    padding: 0 0.875rem;
+    height: 100%;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 
-      .tab-name {
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        color: var(--text-primary);
-        white-space: nowrap;
-      }
+  .tab-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--accent-primary);
+    flex-shrink: 0;
+  }
 
-      .tab-controls {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-left: auto;
-      }
+  .tab-name {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
 
-      .tab-brand {
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: var(--text-secondary);
-        text-decoration: none;
-        letter-spacing: -0.01em;
-        white-space: nowrap;
-      }
-      .tab-brand:hover {
-        color: var(--text-primary);
-      }
+  .tab-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+  }
 
-      /* ── EDITOR BODY ── */
-      .editor-body {
-        display: flex;
-        flex: 1;
-        min-height: 0;
-        overflow: hidden;
-        position: relative;
-      }
+  .tab-brand {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+  .tab-brand:hover {
+    color: var(--text-primary);
+  }
 
-      /* ── SIDEBAR ── */
-      .sidebar {
-        width: 13rem;
-        min-width: 13rem;
-        background-color: var(--bg-secondary);
-        border-right: 1px solid var(--border);
-        overflow-y: auto;
-        flex-shrink: 0;
-        padding: 0.5rem 0;
-        font-family: var(--font-mono);
-        font-size: 0.75rem;
-      }
+  /* ── EDITOR BODY ── */
+  .editor-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    position: relative;
+  }
 
-      .sidebar-section-label {
-        padding: 0.375rem 0.75rem 0.25rem;
-        font-size: 0.65rem;
-        font-weight: 700;
-        letter-spacing: 0.1em;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-      }
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 13rem;
+    min-width: 13rem;
+    background-color: var(--bg-secondary);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    flex-shrink: 0;
+    padding: 0.5rem 0;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
 
-      .sidebar-group {
-        margin-bottom: 0.125rem;
-      }
+  .sidebar-section-label {
+    padding: 0.375rem 0.75rem 0.25rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+  }
 
-      .sidebar-category {
-        padding: 0.25rem 0.75rem 0.125rem;
-        font-size: 0.7rem;
-        font-weight: 600;
-        color: var(--text-secondary);
-        letter-spacing: 0.04em;
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-        cursor: pointer;
-        user-select: none;
-      }
-      .sidebar-category:hover {
-        color: var(--text-primary);
-      }
-      .sidebar-category::before {
-        content: "▾";
-        font-size: 0.65rem;
-        color: var(--text-secondary);
-        display: inline-block;
-        transition: transform 0.15s ease;
-      }
-      .sidebar-category[aria-expanded="false"]::before {
-        transform: rotate(-90deg);
-      }
-      .sidebar-list--collapsed {
-        display: none;
-      }
+  .sidebar-group {
+    margin-bottom: 0.125rem;
+  }
 
-      .sidebar-list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-      }
+  .sidebar-category {
+    padding: 0.25rem 0.75rem 0.125rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  .sidebar-category:hover {
+    color: var(--text-primary);
+  }
+  .sidebar-category::before {
+    content: "▾";
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    display: inline-block;
+    transition: transform 0.15s ease;
+  }
+  .sidebar-category[aria-expanded="false"]::before {
+    transform: rotate(-90deg);
+  }
+  .sidebar-list--collapsed {
+    display: none;
+  }
 
-      .sidebar-item {
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-        padding: 0.2rem 0.75rem 0.2rem 1.25rem;
-        color: var(--text-secondary);
-        text-decoration: none;
-        font-size: 0.75rem;
-        line-height: 1.4;
-        transition: background-color 0.1s;
-        white-space: nowrap;
-      }
-      .sidebar-item:hover {
-        background-color: var(--bg-tertiary);
-        color: var(--text-primary);
-      }
-      .sidebar-item--active {
-        background-color: color-mix(in srgb, var(--accent-primary) 15%, transparent);
-        color: var(--text-primary);
-      }
+  .sidebar-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
 
-      .sidebar-item-icon {
-        width: 0.75rem;
-        flex-shrink: 0;
-        color: var(--accent-primary);
-        font-size: 0.65rem;
-      }
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.75rem 0.2rem 1.25rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    transition: background-color 0.1s;
+    white-space: nowrap;
+  }
+  .sidebar-item:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+  }
+  .sidebar-item--active {
+    background-color: color-mix(in srgb, var(--accent-primary) 15%, transparent);
+    color: var(--text-primary);
+  }
 
-      .sidebar-item-name {
-        flex: 1;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+  .sidebar-item-icon {
+    width: 0.75rem;
+    flex-shrink: 0;
+    color: var(--accent-primary);
+    font-size: 0.65rem;
+  }
 
-      .sidebar-item-badge {
-        font-size: 0.6rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: var(--accent-primary);
-        border: 1px solid var(--accent-primary);
-        border-radius: 3px;
-        padding: 0 3px;
-        line-height: 1.4;
-        opacity: 0.8;
-        flex-shrink: 0;
-      }
+  .sidebar-item-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-      /* ── SIDEBAR BACKDROP (mobile) ── */
-      .sidebar-backdrop {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 29;
-      }
+  .sidebar-item-badge {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent-primary);
+    border: 1px solid var(--accent-primary);
+    border-radius: 3px;
+    padding: 0 3px;
+    line-height: 1.4;
+    opacity: 0.8;
+    flex-shrink: 0;
+  }
 
-      /* ── MAIN PANE ── */
-      .main-pane {
-        flex: 1;
-        min-width: 0;
-        overflow-y: auto;
-        background-color: var(--bg-primary);
-      }
+  /* ── SIDEBAR BACKDROP (mobile) ── */
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 29;
+  }
 
-      /* ── STATUS BAR ── */
-      .status-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        height: 1.625rem;
-        min-height: 1.625rem;
-        background-color: var(--accent-primary);
-        padding: 0 0.75rem;
-        font-family: var(--font-mono);
-        font-size: 0.7rem;
-        color: var(--bg-primary);
-        flex-shrink: 0;
-        z-index: 10;
-      }
+  /* ── MAIN PANE ── */
+  .main-pane {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    background-color: var(--bg-primary);
+  }
 
-      .status-left,
-      .status-right {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
+  /* ── STATUS BAR ── */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 1.625rem;
+    min-height: 1.625rem;
+    background-color: var(--accent-primary);
+    padding: 0 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--bg-primary);
+    flex-shrink: 0;
+    z-index: 10;
+  }
 
-      .status-item {
-        white-space: nowrap;
-      }
+  .status-left,
+  .status-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
 
-      .status-sep {
-        opacity: 0.4;
-      }
+  .status-item {
+    white-space: nowrap;
+  }
 
-      .status-gh-link {
-        color: inherit;
-        text-decoration: none;
-      }
-      .status-gh-link:hover {
-        text-decoration: underline;
-      }
+  .status-sep {
+    opacity: 0.4;
+  }
 
-      /* ── MOBILE ── */
-      @media (max-width: 767px) {
-        .sidebar-toggle {
-          display: flex;
-        }
+  .status-gh-link {
+    color: inherit;
+    text-decoration: none;
+  }
+  .status-gh-link:hover {
+    text-decoration: underline;
+  }
 
-        .sidebar {
-          position: fixed;
-          top: 2.5rem;
-          left: 0;
-          bottom: 1.625rem;
-          z-index: 30;
-          transform: translateX(-100%);
-          transition: transform 0.2s ease;
-          width: 14rem;
-          min-width: 14rem;
-          border-right: 1px solid var(--border);
-        }
+  /* ── MOBILE ── */
+  @media (max-width: 767px) {
+    .sidebar-toggle {
+      display: flex;
+    }
 
-        .sidebar--open {
-          transform: translateX(0);
-        }
+    .sidebar {
+      position: fixed;
+      top: 2.5rem;
+      left: 0;
+      bottom: 1.625rem;
+      z-index: 30;
+      transform: translateX(-100%);
+      transition: transform 0.2s ease;
+      width: 14rem;
+      min-width: 14rem;
+      border-right: 1px solid var(--border);
+    }
 
-        .sidebar-backdrop--visible {
-          display: block;
-        }
+    .sidebar--open {
+      transform: translateX(0);
+    }
 
-        .status-ts-sep,
-        .status-ts {
-          display: none;
-        }
-      }
+    .sidebar-backdrop--visible {
+      display: block;
+    }
 
-      @media (min-width: 768px) {
-        .sidebar-backdrop {
-          display: none !important;
-        }
-      }
-    </style>
-  </body>
-</html>
+    .status-ts-sep,
+    .status-ts {
+      display: none;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .sidebar-backdrop {
+      display: none !important;
+    }
+  }
+</style>
