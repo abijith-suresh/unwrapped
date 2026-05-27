@@ -42,6 +42,9 @@ html {
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color-scheme: dark;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg-tertiary) var(--bg-primary);
 }
 
 body {
@@ -69,6 +72,106 @@ body {
 :focus-visible {
   outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
+}
+
+/* ── Shared tool layout classes ── */
+.tool-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tool-gap, 1.25rem);
+  padding: 1.5rem;
+  max-width: var(--tool-max-width, 900px);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.tool-textarea {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.tool-input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.tool-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* ── Shared code block layout (used by privacy, about, features, changelog) ── */
+.readme-pane {
+  padding: 1.5rem 2rem;
+  min-height: 100%;
+  font-family: var(--font-mono);
+}
+
+.code-block {
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.75;
+  color: var(--text-primary);
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.code-block code {
+  display: block;
+}
+
+/* Token syntax coloring */
+.tok-kw {
+  color: var(--accent-primary);
+}
+.tok-id {
+  color: var(--text-primary);
+}
+.tok-str {
+  color: var(--accent-success);
+}
+.tok-bool {
+  color: var(--accent-secondary);
+}
+.tok-comment {
+  color: var(--text-muted);
+  font-style: italic;
+}
+.tok-punct {
+  color: var(--text-secondary);
+}
+
+@media (max-width: 600px) {
+  .readme-pane {
+    padding: 1rem;
+  }
+  .code-block {
+    font-size: 0.78rem;
+  }
 }
 
 /* Utility: monospace text */
