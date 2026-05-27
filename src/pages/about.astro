@@ -72,46 +72,6 @@ import EditorShell from "@/layouts/EditorShell.astro";
 </EditorShell>
 
 <style>
-  .readme-pane {
-    padding: 1.5rem 2rem;
-    min-height: 100%;
-    font-family: var(--font-mono);
-  }
-
-  .code-block {
-    margin: 0;
-    padding: 0;
-    background: none;
-    border: none;
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
-    line-height: 1.75;
-    color: var(--text-primary);
-    white-space: pre;
-    overflow-x: auto;
-  }
-
-  .code-block code {
-    display: block;
-  }
-
-  .tok-kw {
-    color: var(--accent-primary);
-  }
-  .tok-id {
-    color: var(--text-primary);
-  }
-  .tok-str {
-    color: var(--accent-success);
-  }
-  .tok-comment {
-    color: var(--text-muted);
-    font-style: italic;
-  }
-  .tok-punct {
-    color: var(--text-secondary);
-  }
-
   .ref-section {
     border-top: 1px solid var(--border);
     margin-top: 1.5rem;
@@ -160,14 +120,5 @@ import EditorShell from "@/layouts/EditorShell.astro";
   .ref-value {
     color: var(--accent-primary);
     font-size: 0.75rem;
-  }
-
-  @media (max-width: 600px) {
-    .readme-pane {
-      padding: 1rem;
-    }
-    .code-block {
-      font-size: 0.78rem;
-    }
   }
 </style>
