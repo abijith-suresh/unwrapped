@@ -2,7 +2,6 @@
 import Base from "@/layouts/Base.astro";
 import { ClientRouter } from "astro:transitions";
 
-import SettingsModal from "@/components/SettingsModal";
 import { getToolRoute, tools } from "@/tools/registry";
 import type { ToolCategory } from "@/tools/registry";
 
@@ -15,13 +14,6 @@ interface Props {
 }
 
 const { title, description, ogImage, activeSlug } = Astro.props;
-
-const SIDEBAR_PAGES = [
-  { slug: "about", label: "about.ts" },
-  { slug: "features", label: "features.ts" },
-  { slug: "privacy", label: "privacy.ts" },
-  { slug: "changelog", label: "changelog.ts" },
-];
 
 // Group tools by category, preserving registry order
 const categoryOrder: ToolCategory[] = [
@@ -106,40 +98,6 @@ const grouped: GroupedTool[] = categoryOrder
       >
         <div class="sidebar-section-label">EXPLORER</div>
 
-        {/* Pages section */}
-        <div class="sidebar-group">
-          <div
-            class="sidebar-category"
-            tabindex="0"
-            role="button"
-            aria-expanded="true"
-            aria-controls="sidebar-cat-pages"
-          >
-            pages
-          </div>
-          <ul class="sidebar-list" id="sidebar-cat-pages">
-            {
-              SIDEBAR_PAGES.map((page) => (
-                <li>
-                  <a
-                    href={`/${page.slug}`}
-                    class:list={[
-                      "sidebar-item",
-                      { "sidebar-item--active": page.slug === activeSlug },
-                    ]}
-                    aria-current={page.slug === activeSlug ? "page" : undefined}
-                  >
-                    <span class="sidebar-item-icon" aria-hidden="true">
-                      {page.slug === activeSlug ? "▸" : " "}
-                    </span>
-                    <span class="sidebar-item-name">{page.label}</span>
-                  </a>
-                </li>
-              ))
-            }
-          </ul>
-        </div>
-
         {
           grouped.map((group) => (
             <div class="sidebar-group">
@@ -216,8 +174,6 @@ const grouped: GroupedTool[] = categoryOrder
       </div>
 
       <div class="status-right">
-        <SettingsModal client:load />
-        <span class="status-sep" aria-hidden="true">|</span>
         <span class="status-item status-gh">
           <a
             href="https://github.com/abijith-suresh/unwrapped"
