@@ -195,12 +195,7 @@ export default function ToolSearch() {
                   onMouseLeave={() => setActiveIndex(-1)}
                 >
                   <span class="lp-row-icon">{Icon ? <Icon size={15} /> : null}</span>
-                  <span class="lp-row-name">
-                    {tool.name}
-                    <Show when={tool.isNew}>
-                      <span class="lp-badge">new</span>
-                    </Show>
-                  </span>
+                  <span class="lp-row-name">{tool.name}</span>
                   <span class="lp-row-cat">{tool.category}</span>
                   <span class="lp-row-desc">{tool.description}</span>
                 </a>

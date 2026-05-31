@@ -16,7 +16,6 @@ export interface Tool {
   icon: string; // lucide icon name
   slug: string; // matches folder name, used in URL
   componentPath: string;
-  isNew?: boolean;
 }
 
 export const tools: Tool[] = [
