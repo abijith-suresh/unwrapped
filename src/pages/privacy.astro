@@ -1,38 +1,169 @@
 ---
-import EditorShell from "@/layouts/EditorShell.astro";
+import LandingShell from "@/layouts/LandingShell.astro";
 ---
 
-<EditorShell
+<LandingShell
   title="Local Persistence Contract"
   description="How unwrapped.tools stores local preferences and what it does not persist by default."
-  activeSlug="privacy"
 >
-  <div class="readme-pane">
-    <pre
-      class="code-block"><code><span class="tok-comment">/**
- * privacy.ts — Local Persistence Contract
- *
- * unwrapped.tools runs entirely in your browser.
- * Nothing is sent to a server. Tool inputs are never persisted.
- */</span>
+  <div class="pp-page">
+    <h1 class="pp-title">Privacy</h1>
 
-<span class="tok-kw">const</span> <span class="tok-id">contract</span> <span class="tok-punct">=</span> <span class="tok-punct">{"{"}</span>
+    <p class="pp-intro">
+      unwrapped.tools runs entirely in your browser. Nothing is sent to a server. Tool inputs are
+      never persisted.
+    </p>
 
-  <span class="tok-comment">// Preferences that survive a reload — stored in localStorage</span>
-  <span class="tok-id">persists</span><span class="tok-punct">:</span> <span class="tok-punct">{"{"}</span>
-    <span class="tok-id">diffPrefs</span><span class="tok-punct">:</span>  <span class="tok-str">"diff display preferences — language and view mode"</span><span class="tok-punct">,</span>
-  <span class="tok-punct">{"}"}</span><span class="tok-punct">,</span>
+    <section class="pp-section">
+      <h2 class="pp-heading">Persists</h2>
+      <p class="pp-subhead">Preferences that survive a reload — stored in localStorage</p>
+      <div class="pp-items">
+        <div class="pp-item">
+          <span class="pp-item-key">diffPrefs</span>
+          <span class="pp-item-desc">diff display preferences — language and view mode</span>
+        </div>
+      </div>
+    </section>
 
-  <span class="tok-comment">// All tool I/O is ephemeral — cleared when the tab closes</span>
-  <span class="tok-id">neverPersists</span><span class="tok-punct">:</span> <span class="tok-str">"tool inputs, outputs, and clipboard payloads"</span><span class="tok-punct">,</span>
+    <section class="pp-section">
+      <h2 class="pp-heading">Never persists</h2>
+      <ul class="pp-list">
+        <li class="pp-list-item">tool inputs</li>
+        <li class="pp-list-item">tool outputs</li>
+        <li class="pp-list-item">clipboard payloads</li>
+      </ul>
+    </section>
 
-  <span class="tok-comment">// To erase stored preferences: open Settings → Clear local data</span>
-  <span class="tok-id">manage</span><span class="tok-punct">:</span>       <span class="tok-str">"gear icon — bottom-right of the shell"</span><span class="tok-punct">,</span>
-
-<span class="tok-punct">{"}"}</span> <span class="tok-kw">as</span> <span class="tok-kw">const</span><span class="tok-punct">;</span>
-
-<span class="tok-cursor">▌</span></code></pre>
+    <section class="pp-section">
+      <h2 class="pp-heading">Manage</h2>
+      <p class="pp-desc">
+        To erase stored preferences, open <strong>Settings → Clear local data</strong>.
+      </p>
+    </section>
   </div>
-</EditorShell>
+</LandingShell>
 
-<style></style>
+<style>
+  .pp-page {
+    max-width: 680px;
+    margin: 0 auto;
+    padding-bottom: 3rem;
+  }
+
+  .pp-title {
+    font-family: var(--font-mono);
+    font-size: clamp(1.5rem, 2vw + 0.5rem, 2rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1.5rem;
+    letter-spacing: -0.03em;
+  }
+
+  .pp-intro {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin: 0 0 2rem;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    background: var(--bg-secondary);
+  }
+
+  .pp-section {
+    margin-bottom: 2rem;
+  }
+
+  .pp-heading {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin: 0 0 0.25rem;
+  }
+
+  .pp-subhead {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin: 0 0 0.75rem;
+    line-height: 1.5;
+  }
+
+  .pp-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .pp-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.625rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    background: var(--bg-secondary);
+  }
+
+  .pp-item-key {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--accent-primary);
+    flex-shrink: 0;
+    min-width: 6rem;
+  }
+
+  .pp-item-desc {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .pp-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .pp-list-item {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    background: var(--bg-secondary);
+  }
+
+  .pp-list-item::before {
+    content: "✗ ";
+    color: var(--accent-error);
+    font-weight: 700;
+  }
+
+  .pp-desc {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    background: var(--bg-secondary);
+  }
+
+  .pp-desc strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+</style>
