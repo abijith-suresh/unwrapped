@@ -3,6 +3,10 @@ import { createMemo, createSignal, For, Show } from "solid-js";
 import CopyButton from "@/components/CopyButton";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import Card from "@/components/primitives/solid/Card";
+import Input from "@/components/primitives/solid/Input";
+import Label from "@/components/primitives/solid/Label";
+import Textarea from "@/components/primitives/solid/Textarea";
 import {
   buildRegexReplaceResult,
   buildRegexResult,
@@ -71,9 +75,9 @@ export default function RegexTester() {
   const hasCaptures = createMemo(() => result().matches.some((match) => match.groups.length > 0));
 
   return (
-    <div class="tool-container">
-      <div style={{ display: "flex", "flex-direction": "column", gap: "0.5rem" }}>
-        <div style={{ display: "flex", gap: "0.5rem", "flex-wrap": "wrap" }}>
+    <div class="flex flex-col gap-5 p-6 mx-auto w-full">
+      <div class="flex flex-col gap-2">
+        <div class="flex gap-2 flex-wrap">
           <ToolActionButton
             active={mode() === "match"}
             variant={mode() === "match" ? "primary" : "ghost"}
@@ -90,29 +94,15 @@ export default function RegexTester() {
           </ToolActionButton>
         </div>
 
-        <label class="tool-label">Pattern</label>
+        <Label>Pattern</Label>
         <div
-          style={{
-            display: "flex",
-            "align-items": "center",
-            background: "var(--bg-secondary)",
-            border: `1px solid ${result().error ? "var(--accent-error)" : "var(--border)"}`,
-            "border-radius": "0.5rem",
-            overflow: "hidden",
-            transition: "border-color 0.15s",
+          class="flex items-center bg-[var(--bg-secondary)] rounded-lg overflow-hidden transition-[border-color] duration-150"
+          classList={{
+            "border border-[var(--accent-error)]": !!result().error,
+            "border border-[var(--border)]": !result().error,
           }}
         >
-          <span
-            style={{
-              padding: "0 0.5rem 0 0.875rem",
-              color: "var(--text-muted)",
-              "font-family": "var(--font-mono)",
-              "font-size": "1.125rem",
-              "user-select": "none",
-            }}
-          >
-            /
-          </span>
+          <span class="pl-3.5 pr-2 text-[var(--text-muted)] font-mono text-lg select-none">/</span>
 
           <input
             type="text"
@@ -120,53 +110,21 @@ export default function RegexTester() {
             onInput={(e) => setPattern(e.currentTarget.value)}
             placeholder="pattern"
             spellcheck={false}
-            style={{
-              flex: "1",
-              padding: "0.625rem 0",
-              background: "transparent",
-              border: "none",
-              outline: "none",
-              color: "var(--text-primary)",
-              "font-family": "var(--font-mono)",
-              "font-size": "0.9375rem",
-            }}
+            class="flex-1 py-2.5 bg-transparent border-none outline-none text-[var(--text-primary)] font-mono text-[0.9375rem]"
           />
 
-          <span
-            style={{
-              color: "var(--text-muted)",
-              "font-family": "var(--font-mono)",
-              "font-size": "1.125rem",
-              "user-select": "none",
-            }}
-          >
-            /
-          </span>
+          <span class="text-[var(--text-muted)] font-mono text-lg select-none">/</span>
 
-          <div
-            style={{
-              display: "flex",
-              "align-items": "center",
-              gap: "0.125rem",
-              padding: "0 0.75rem",
-            }}
-          >
+          <div class="flex items-center gap-0.5 px-3">
             <For each={ALL_FLAGS}>
               {(flag) => (
                 <button
                   title={flag.title}
                   onClick={() => toggleFlag(flag.key)}
-                  style={{
-                    padding: "0.125rem 0.375rem",
-                    "border-radius": "0.25rem",
-                    border: "none",
-                    background: flags().has(flag.key) ? "var(--accent-primary)" : "transparent",
-                    color: flags().has(flag.key) ? "var(--bg-primary)" : "var(--text-muted)",
-                    "font-family": "var(--font-mono)",
-                    "font-size": "0.875rem",
-                    "font-weight": "700",
-                    cursor: "pointer",
-                    transition: "background 0.1s, color 0.1s",
+                  class="px-1.5 py-0.5 rounded border-none font-mono text-sm font-bold cursor-pointer transition-[background,color] duration-100"
+                  classList={{
+                    "bg-[var(--accent-primary)] text-[var(--bg-primary)]": flags().has(flag.key),
+                    "bg-transparent text-[var(--text-muted)]": !flags().has(flag.key),
                   }}
                 >
                   {flag.label}
@@ -179,65 +137,49 @@ export default function RegexTester() {
 
       <Show when={result().error}>
         {(msg) => (
-          <ToolStatusMessage
-            tone="error"
-            style={{
-              "font-family": "var(--font-mono)",
-            }}
-          >
+          <ToolStatusMessage tone="error" class="font-mono">
             {msg()}
           </ToolStatusMessage>
         )}
       </Show>
 
-      <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-        <label class="tool-label">Test string</label>
-        <textarea
+      <div class="flex flex-col gap-1.5">
+        <Label>Test string</Label>
+        <Textarea
           value={input()}
-          onInput={(e) => setInput(e.currentTarget.value)}
+          onInput={setInput}
           placeholder="Enter text to test against the pattern…"
           rows={6}
           spellcheck={false}
-          class="tool-textarea"
         />
       </div>
 
       <Show when={mode() === "replace"}>
-        <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-          <label class="tool-label">Replacement</label>
-          <input
-            type="text"
-            value={replacement()}
-            onInput={(e) => setReplacement(e.currentTarget.value)}
-            placeholder="Replacement text"
-            spellcheck={false}
-            class="tool-input"
-          />
+        <div class="flex flex-col gap-1.5">
+          <Label>Replacement</Label>
+          <Input value={replacement()} onInput={setReplacement} placeholder="Replacement text" />
         </div>
       </Show>
 
       <Show when={pattern() && !result().error}>
-        <div style={{ display: "flex", gap: "0.75rem", "flex-wrap": "wrap" }}>
-          <ToolStatusMessage
-            tone={matchCount() > 0 ? "success" : "muted"}
-            style={{ padding: "0.625rem 0.875rem" }}
-          >
+        <div class="flex gap-3 flex-wrap">
+          <ToolStatusMessage tone={matchCount() > 0 ? "success" : "muted"}>
             {matchCount() === 0
               ? "No matches"
               : `${matchCount()} ${matchCount() === 1 ? "match" : "matches"}`}
           </ToolStatusMessage>
-          <ToolStatusMessage tone="muted" style={{ padding: "0.625rem 0.875rem" }}>
+          <ToolStatusMessage tone="muted">
             {result().summary.captureGroupCount} capture{" "}
             {result().summary.captureGroupCount === 1 ? "group" : "groups"}
           </ToolStatusMessage>
           <Show when={result().summary.emptyMatchCount > 0}>
-            <ToolStatusMessage tone="warning" style={{ padding: "0.625rem 0.875rem" }}>
+            <ToolStatusMessage tone="warning">
               {result().summary.emptyMatchCount} empty
               {result().summary.emptyMatchCount === 1 ? " match" : " matches"}
             </ToolStatusMessage>
           </Show>
           <Show when={result().summary.firstMatchIndex !== null}>
-            <ToolStatusMessage tone="muted" style={{ padding: "0.625rem 0.875rem" }}>
+            <ToolStatusMessage tone="muted">
               First match at index {result().summary.firstMatchIndex}
             </ToolStatusMessage>
           </Show>
@@ -245,35 +187,18 @@ export default function RegexTester() {
       </Show>
 
       <Show when={input().trim()}>
-        <div
-          style={{
-            background: "var(--bg-secondary)",
-            border: "1px solid var(--border)",
-            "border-radius": "0.5rem",
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              "align-items": "center",
-              "justify-content": "space-between",
-              padding: "0.5rem 1rem",
-              "border-bottom": "1px solid var(--border)",
-            }}
-          >
-            <span class="tool-label">{mode() === "replace" ? "Match preview" : "Matches"}</span>
+        <Card class="overflow-hidden p-0">
+          <div class="flex items-center justify-between px-4 py-2 border-b border-[var(--border)]">
+            <Label>{mode() === "replace" ? "Match preview" : "Matches"}</Label>
             <Show
               when={pattern() && !result().error}
-              fallback={
-                <span style={{ "font-size": "0.8125rem", color: "var(--text-muted)" }}>—</span>
-              }
+              fallback={<span class="text-xs text-[var(--text-muted)]">—</span>}
             >
               <span
-                style={{
-                  "font-size": "0.8125rem",
-                  "font-weight": "600",
-                  color: matchCount() > 0 ? "var(--accent-success)" : "var(--text-muted)",
+                class="text-xs font-semibold"
+                classList={{
+                  "text-[var(--accent-success)]": matchCount() > 0,
+                  "text-[var(--text-muted)]": matchCount() === 0,
                 }}
               >
                 {mode() === "replace"
@@ -288,20 +213,10 @@ export default function RegexTester() {
           </div>
 
           <pre
-            style={{
-              margin: "0",
-              padding: "1rem",
-              "overflow-x": "auto",
-              "font-size": "0.875rem",
-              "line-height": "1.8",
-              color: "var(--text-primary)",
-              "font-family": "var(--font-mono)",
-              "white-space": "pre-wrap",
-              "word-break": "break-all",
-            }}
+            class="m-0 p-4 overflow-x-auto text-sm leading-relaxed text-[var(--text-primary)] font-mono whitespace-pre-wrap break-all"
             innerHTML={result().highlighted}
           />
-        </div>
+        </Card>
       </Show>
 
       <Show
@@ -309,105 +224,38 @@ export default function RegexTester() {
           mode() === "replace" && input().trim() && !result().error && !("error" in replaceResult())
         }
       >
-        <div
-          style={{
-            background: "var(--bg-secondary)",
-            border: "1px solid var(--border)",
-            "border-radius": "0.5rem",
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              "align-items": "center",
-              "justify-content": "space-between",
-              padding: "0.5rem 1rem",
-              "border-bottom": "1px solid var(--border)",
-            }}
-          >
-            <span class="tool-label">Replaced output</span>
+        <Card class="overflow-hidden p-0">
+          <div class="flex items-center justify-between px-4 py-2 border-b border-[var(--border)]">
+            <Label>Replaced output</Label>
             <CopyButton text={replaceOutput()} />
           </div>
 
-          <pre
-            style={{
-              margin: "0",
-              padding: "1rem",
-              "overflow-x": "auto",
-              "font-size": "0.875rem",
-              "line-height": "1.8",
-              color: "var(--text-primary)",
-              "font-family": "var(--font-mono)",
-              "white-space": "pre-wrap",
-              "word-break": "break-all",
-            }}
-          >
+          <pre class="m-0 p-4 overflow-x-auto text-sm leading-relaxed text-[var(--text-primary)] font-mono whitespace-pre-wrap break-all">
             {replaceOutput()}
           </pre>
-        </div>
+        </Card>
       </Show>
 
       <Show when={hasCaptures() && matchCount() > 0}>
-        <div
-          style={{
-            background: "var(--bg-secondary)",
-            border: "1px solid var(--border)",
-            "border-radius": "0.5rem",
-            overflow: "hidden",
-          }}
-        >
-          <div style={{ padding: "0.5rem 1rem", "border-bottom": "1px solid var(--border)" }}>
-            <span class="tool-label">Capture groups</span>
+        <Card class="overflow-hidden p-0">
+          <div class="px-4 py-2 border-b border-[var(--border)]">
+            <Label>Capture groups</Label>
           </div>
 
-          <div style={{ overflow: "auto" }}>
-            <table
-              style={{
-                width: "100%",
-                "border-collapse": "collapse",
-                "font-size": "0.8125rem",
-                "font-family": "var(--font-mono)",
-              }}
-            >
+          <div class="overflow-auto">
+            <table class="w-full border-collapse font-mono text-sm">
               <thead>
                 <tr>
-                  <th
-                    style={{
-                      padding: "0.5rem 1rem",
-                      "text-align": "left",
-                      color: "var(--text-muted)",
-                      "font-weight": "600",
-                      "border-bottom": "1px solid var(--border)",
-                      "white-space": "nowrap",
-                    }}
-                  >
+                  <th class="px-4 py-2 text-left text-[var(--text-muted)] font-semibold border-b border-[var(--border)] whitespace-nowrap">
                     Match #
                   </th>
-                  <th
-                    style={{
-                      padding: "0.5rem 1rem",
-                      "text-align": "left",
-                      color: "var(--text-muted)",
-                      "font-weight": "600",
-                      "border-bottom": "1px solid var(--border)",
-                    }}
-                  >
+                  <th class="px-4 py-2 text-left text-[var(--text-muted)] font-semibold border-b border-[var(--border)]">
                     Full match
                   </th>
                   <Show when={namedGroupNames().length > 0}>
                     <For each={namedGroupNames()}>
                       {(name) => (
-                        <th
-                          style={{
-                            padding: "0.5rem 1rem",
-                            "text-align": "left",
-                            color: "var(--accent-primary)",
-                            "font-weight": "600",
-                            "border-bottom": "1px solid var(--border)",
-                            "white-space": "nowrap",
-                          }}
-                        >
+                        <th class="px-4 py-2 text-left text-[var(--accent-primary)] font-semibold border-b border-[var(--border)] whitespace-nowrap">
                           {name}
                         </th>
                       )}
@@ -418,15 +266,7 @@ export default function RegexTester() {
                       match.groups.some((group) => group.name === null)
                     )}
                   >
-                    <th
-                      style={{
-                        padding: "0.5rem 1rem",
-                        "text-align": "left",
-                        color: "var(--text-muted)",
-                        "font-weight": "600",
-                        "border-bottom": "1px solid var(--border)",
-                      }}
-                    >
+                    <th class="px-4 py-2 text-left text-[var(--text-muted)] font-semibold border-b border-[var(--border)]">
                       Groups
                     </th>
                   </Show>
@@ -436,31 +276,12 @@ export default function RegexTester() {
                 <For each={result().matches}>
                   {(match: MatchResult, index) => (
                     <tr>
-                      <td
-                        style={{
-                          padding: "0.375rem 1rem",
-                          color: "var(--text-muted)",
-                          "border-bottom": "1px solid var(--border)",
-                          "white-space": "nowrap",
-                        }}
-                      >
+                      <td class="px-4 py-1.5 text-[var(--text-muted)] border-b border-[var(--border)] whitespace-nowrap">
                         {index() + 1}
                       </td>
-                      <td
-                        style={{
-                          padding: "0.375rem 1rem",
-                          color: "var(--text-primary)",
-                          "border-bottom": "1px solid var(--border)",
-                          "max-width": "200px",
-                          overflow: "hidden",
-                          "text-overflow": "ellipsis",
-                          "white-space": "nowrap",
-                        }}
-                      >
-                        <div style={{ display: "flex", "align-items": "center", gap: "0.5rem" }}>
-                          <span
-                            style={{ flex: "1", overflow: "hidden", "text-overflow": "ellipsis" }}
-                          >
+                      <td class="px-4 py-1.5 text-[var(--text-primary)] border-b border-[var(--border)] max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">
+                        <div class="flex items-center gap-2">
+                          <span class="flex-1 overflow-hidden text-ellipsis">
                             {match.fullMatch}
                           </span>
                           <CopyButton text={match.fullMatch} />
@@ -472,10 +293,10 @@ export default function RegexTester() {
                             const group = match.groups.find((candidate) => candidate.name === name);
                             return (
                               <td
-                                style={{
-                                  padding: "0.375rem 1rem",
-                                  color: group ? "var(--accent-success)" : "var(--text-muted)",
-                                  "border-bottom": "1px solid var(--border)",
+                                class="px-4 py-1.5 border-b border-[var(--border)]"
+                                classList={{
+                                  "text-[var(--accent-success)]": !!group,
+                                  "text-[var(--text-muted)]": !group,
                                 }}
                               >
                                 {group ? group.value : "—"}
@@ -485,13 +306,7 @@ export default function RegexTester() {
                         </For>
                       </Show>
                       <Show when={match.groups.some((group) => group.name === null)}>
-                        <td
-                          style={{
-                            padding: "0.375rem 1rem",
-                            color: "var(--text-primary)",
-                            "border-bottom": "1px solid var(--border)",
-                          }}
-                        >
+                        <td class="px-4 py-1.5 text-[var(--text-primary)] border-b border-[var(--border)]">
                           {match.groups
                             .filter((group) => group.name === null)
                             .map((group) => group.value)
@@ -504,7 +319,7 @@ export default function RegexTester() {
               </tbody>
             </table>
           </div>
-        </div>
+        </Card>
       </Show>
 
       <Show when={!pattern() && !input().trim()}>

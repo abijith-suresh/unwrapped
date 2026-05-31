@@ -11,6 +11,7 @@ export interface TextareaProps {
   error?: boolean;
   autofocus?: boolean;
   spellcheck?: boolean;
+  readonly?: boolean;
 }
 
 export default function Textarea(props: TextareaProps) {
@@ -24,6 +25,7 @@ export default function Textarea(props: TextareaProps) {
         rows={props.rows ?? 4}
         autofocus={props.autofocus}
         spellcheck={props.spellcheck ?? true}
+        readonly={props.readonly}
         class={cn(
           "w-full rounded-lg border bg-[var(--bg-secondary)] px-4 py-2.5 text-sm text-[var(--text-primary)] outline-none font-mono resize-y transition-[border-color] duration-150 focus:border-[var(--accent-primary)]",
           props.error ? "border-[var(--accent-error)]" : "border-[var(--border)]"

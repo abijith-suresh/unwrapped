@@ -3,6 +3,9 @@ import { createMemo, createSignal, For, onCleanup, Show } from "solid-js";
 import CopyButton from "@/components/CopyButton";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import Card from "@/components/primitives/solid/Card";
+import Label from "@/components/primitives/solid/Label";
+import Textarea from "@/components/primitives/solid/Textarea";
 import {
   DEFAULT_IMPORT_MAX_BYTES,
   type FileImportError,
@@ -145,16 +148,9 @@ export default function HashGenerator() {
   });
 
   return (
-    <div class="tool-container" style={{ "--tool-max-width": "860px" }}>
-      <div
-        style={{
-          display: "flex",
-          "flex-wrap": "wrap",
-          "align-items": "center",
-          gap: "0.75rem",
-        }}
-      >
-        <div style={{ display: "flex", gap: "0.25rem", "align-items": "center" }}>
+    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[860px]">
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="flex gap-1 items-center">
           <ToolActionButton
             active={workflow() === "text"}
             variant={workflow() === "text" ? "primary" : "ghost"}
@@ -188,21 +184,17 @@ export default function HashGenerator() {
         >
           Clear
         </ToolActionButton>
-        <span style={{ "font-size": "0.8125rem", color: "var(--text-muted)" }}>
+        <span class="text-xs text-[var(--text-muted)]">
           Local-only hashing via the browser&apos;s Web Crypto API
         </span>
       </div>
 
-      <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-        <label class="tool-label">{workflow() === "text" ? "Input text" : "Input file"}</label>
-        <div
-          onDragOver={(event) => event.preventDefault()}
-          onDrop={onDrop}
-          style={{ position: "relative" }}
-        >
-          <textarea
+      <div class="flex flex-col gap-1.5">
+        <Label>{workflow() === "text" ? "Input text" : "Input file"}</Label>
+        <div onDragOver={(event) => event.preventDefault()} onDrop={onDrop}>
+          <Textarea
             value={workflow() === "file" ? fileSummary() : input()}
-            onInput={(event) => handleInput(event.currentTarget.value)}
+            onInput={(event) => handleInput(event)}
             placeholder={
               workflow() === "text"
                 ? "Type or paste text to hash…"
@@ -210,23 +202,16 @@ export default function HashGenerator() {
             }
             rows={5}
             spellcheck={false}
-            readOnly={workflow() === "file"}
-            class="tool-textarea"
+            readonly={workflow() === "file"}
           />
         </div>
 
-        <div style={{ display: "flex", "align-items": "center", gap: "0.5rem" }}>
-          <label
-            style={{
-              "font-size": "0.8125rem",
-              color: "var(--accent-primary)",
-              cursor: "pointer",
-            }}
-          >
+        <div class="flex items-center gap-2">
+          <label class="text-sm text-[var(--accent-primary)] cursor-pointer">
             Open file
             <input
               type="file"
-              style={{ display: "none" }}
+              class="hidden"
               onChange={(event) => {
                 const file = event.currentTarget.files?.[0];
                 if (file) {
@@ -236,7 +221,7 @@ export default function HashGenerator() {
               }}
             />
           </label>
-          <span style={{ "font-size": "0.8125rem", color: "var(--text-muted)" }}>
+          <span class="text-sm text-[var(--text-muted)]">
             Shared local file import flow with explicit read and size failures
           </span>
         </div>
@@ -263,61 +248,21 @@ export default function HashGenerator() {
       </Show>
 
       <Show when={results().length > 0}>
-        <div
-          style={{
-            display: "flex",
-            "flex-direction": "column",
-            gap: "0.75rem",
-          }}
-        >
+        <div class="flex flex-col gap-3">
           <For each={results()}>
             {(result) => (
-              <div
-                style={{
-                  background: "var(--bg-secondary)",
-                  border: "1px solid var(--border)",
-                  "border-radius": "0.5rem",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    "align-items": "center",
-                    "justify-content": "space-between",
-                    padding: "0.5rem 1rem",
-                    "border-bottom": "1px solid var(--border)",
-                  }}
-                >
-                  <span
-                    style={{
-                      "font-size": "0.75rem",
-                      "font-weight": "700",
-                      "letter-spacing": "0.05em",
-                      "text-transform": "uppercase",
-                      color: "var(--accent-primary)",
-                    }}
-                  >
+              <Card class="overflow-hidden p-0">
+                <div class="flex items-center justify-between px-4 py-2 border-b border-[var(--border)]">
+                  <span class="text-xs font-bold tracking-wider uppercase text-[var(--accent-primary)]">
                     {result.algorithm}
                   </span>
                   <CopyButton text={result.hex} />
                 </div>
 
-                <pre
-                  style={{
-                    margin: "0",
-                    padding: "0.75rem 1rem",
-                    "font-size": "0.8125rem",
-                    "line-height": "1.6",
-                    color: "var(--text-primary)",
-                    "font-family": "var(--font-mono)",
-                    "white-space": "pre-wrap",
-                    "word-break": "break-all",
-                  }}
-                >
+                <pre class="m-0 p-3 px-4 text-xs leading-relaxed text-[var(--text-primary)] font-mono whitespace-pre-wrap break-all">
                   {result.hex}
                 </pre>
-              </div>
+              </Card>
             )}
           </For>
         </div>
