@@ -80,7 +80,7 @@ function InputPanel(props: InputPanelProps) {
 
   function handleDragOver(e: DragEvent) {
     e.preventDefault();
-    setDragging(true);
+    if (!dragging()) setDragging(true);
   }
 
   function handleDragLeave(e: DragEvent) {

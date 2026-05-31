@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, Show } from "solid-js";
+import { createMemo, createSignal, For, onCleanup, Show } from "solid-js";
 
 import CopyButton from "@/components/CopyButton";
 import ToolActionButton from "@/components/ToolActionButton";
@@ -35,6 +35,9 @@ export default function RegexTester() {
   const [flags, setFlags] = createSignal<Set<FlagKey>>(new Set(["g"]));
   const [input, setInput] = createSignal("");
   const [replacement, setReplacement] = createSignal("");
+  let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+  onCleanup(() => clearTimeout(debounceTimer));
+  const [debouncedInput, setDebouncedInput] = createSignal("");
 
   function toggleFlag(key: FlagKey) {
     setFlags((prev) => {
@@ -48,10 +51,10 @@ export default function RegexTester() {
     });
   }
 
-  const result = createMemo(() => buildRegexResult(pattern(), flags(), input()));
+  const result = createMemo(() => buildRegexResult(pattern(), flags(), debouncedInput()));
   const matchCount = createMemo(() => result().matches.length);
   const replaceResult = createMemo(() =>
-    buildRegexReplaceResult(pattern(), flags(), input(), replacement())
+    buildRegexReplaceResult(pattern(), flags(), debouncedInput(), replacement())
   );
   const replaceOutput = createMemo(() => {
     const current = replaceResult();
@@ -147,7 +150,11 @@ export default function RegexTester() {
         <Label>Test string</Label>
         <Textarea
           value={input()}
-          onInput={setInput}
+          onInput={(v) => {
+            setInput(v);
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => setDebouncedInput(v), 250);
+          }}
           placeholder="Enter text to test against the pattern…"
           rows={6}
           spellcheck={false}
@@ -157,7 +164,15 @@ export default function RegexTester() {
       <Show when={mode() === "replace"}>
         <div class="flex flex-col gap-1.5">
           <Label>Replacement</Label>
-          <Input value={replacement()} onInput={setReplacement} placeholder="Replacement text" />
+          <Input
+            value={replacement()}
+            onInput={(v) => {
+              setReplacement(v);
+              clearTimeout(debounceTimer);
+              debounceTimer = setTimeout(() => setDebouncedInput(v), 250);
+            }}
+            placeholder="Replacement text"
+          />
         </div>
       </Show>
 

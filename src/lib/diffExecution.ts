@@ -8,6 +8,7 @@ import {
 } from "./diff";
 
 export const DIFF_WORKER_THRESHOLD_CHARS = 75_000;
+const WORKER_TIMEOUT_MS = 10_000;
 const STRUCTURED_COMPARE_LANGUAGES = new Set<
   Pick<DiffAnalysisInput, "leftLanguage">["leftLanguage"]
 >(["json", "toml", "yaml", "env"]);
@@ -203,9 +204,17 @@ export function createDiffAnalysisExecutor(
       return new Promise((resolve) => {
         pendingRequests.set(requestId, { input, requestId, resolve });
 
+        const timeoutId = setTimeout(() => {
+          if (pendingRequests.has(requestId)) {
+            pendingRequests.delete(requestId);
+            void createFullSyncResponse(requestId, input).then(resolve);
+          }
+        }, WORKER_TIMEOUT_MS);
+
         try {
           activeWorker.postMessage({ requestId, input });
         } catch {
+          clearTimeout(timeoutId);
           pendingRequests.delete(requestId);
           disposeWorker();
           void createFullSyncResponse(requestId, input).then(resolve);
