@@ -1,6 +1,9 @@
 import { createMemo, createSignal, Show } from "solid-js";
 
 import CopyButton from "@/components/CopyButton";
+import Card from "@/components/primitives/solid/Card";
+import Label from "@/components/primitives/solid/Label";
+import Textarea from "@/components/primitives/solid/Textarea";
 import { getJwtClaimsSummary, getJwtExpiryStatus, parseJwt, prettyJson } from "@/lib/jwt";
 
 // ---------------------------------------------------------------------------
@@ -14,45 +17,18 @@ interface PanelProps {
 
 function Panel(props: PanelProps) {
   return (
-    <div
-      style={{
-        background: "var(--bg-secondary)",
-        border: "1px solid var(--border)",
-        "border-radius": "0.5rem",
-        overflow: "hidden",
-      }}
-    >
+    <Card class="overflow-hidden p-0">
       {/* Panel header */}
-      <div
-        style={{
-          display: "flex",
-          "align-items": "center",
-          "justify-content": "space-between",
-          padding: "0.625rem 1rem",
-          "border-bottom": "1px solid var(--border)",
-        }}
-      >
-        <span class="tool-label">{props.title}</span>
+      <div class="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border)]">
+        <Label>{props.title}</Label>
         <CopyButton text={props.content} />
       </div>
 
       {/* Panel body */}
-      <pre
-        style={{
-          margin: "0",
-          padding: "1rem",
-          "overflow-x": "auto",
-          "font-family": "var(--font-mono)",
-          "font-size": "0.8125rem",
-          "line-height": "1.6",
-          color: "var(--text-primary)",
-          "white-space": "pre-wrap",
-          "word-break": "break-all",
-        }}
-      >
+      <pre class="m-0 p-4 overflow-x-auto font-mono text-xs leading-relaxed text-[var(--text-primary)] whitespace-pre-wrap break-all">
         <code>{props.content}</code>
       </pre>
-    </div>
+    </Card>
   );
 }
 
@@ -90,34 +66,21 @@ export default function JwtDecoder() {
   });
 
   return (
-    <div class="tool-container" style={{ "--tool-max-width": "860px" }}>
+    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[860px]">
       {/* ------------------------------------------------------------------ */}
       {/* Input area                                                          */}
       {/* ------------------------------------------------------------------ */}
-      <div
-        style={{
-          display: "flex",
-          "flex-direction": "column",
-          gap: "0.5rem",
-        }}
-      >
-        <textarea
+      <div class="flex flex-col gap-2">
+        <Textarea
           value={input()}
-          onInput={(e) => setInput(e.currentTarget.value)}
+          onInput={setInput}
           placeholder="Paste a JWT token here..."
           rows={5}
           spellcheck={false}
-          class="tool-textarea"
         />
         {/* Hint — only when input is empty */}
         <Show when={!input().trim()}>
-          <p
-            style={{
-              "font-size": "0.8125rem",
-              color: "var(--text-muted)",
-              margin: "0",
-            }}
-          >
+          <p class="text-xs text-[var(--text-muted)] m-0">
             Supports RS256, HS256, and all standard JWT algorithms
           </p>
         </Show>
@@ -129,14 +92,7 @@ export default function JwtDecoder() {
       <Show when={error()}>
         <div
           role="alert"
-          style={{
-            padding: "0.75rem 1rem",
-            "border-radius": "0.5rem",
-            border: "1px solid var(--accent-error)",
-            background: "color-mix(in srgb, var(--accent-error) 12%, transparent)",
-            color: "var(--accent-error)",
-            "font-size": "0.875rem",
-          }}
+          class="px-4 py-3 rounded-lg border border-[var(--accent-error)] bg-[color-mix(in_srgb,var(--accent-error)_12%,transparent)] text-[var(--accent-error)] text-sm"
         >
           {error()}
         </div>
@@ -152,114 +108,43 @@ export default function JwtDecoder() {
             <Show when={expiryStatus()}>
               {(status) => (
                 <div
-                  style={{
-                    display: "inline-flex",
-                    "align-self": "flex-start",
-                    "align-items": "center",
-                    gap: "0.375rem",
-                    padding: "0.375rem 0.75rem",
-                    "border-radius": "9999px",
-                    "font-size": "0.8125rem",
-                    "font-weight": "500",
-                    border: `1px solid ${status().expired ? "var(--accent-error)" : "var(--accent-success)"}`,
-                    background: status().expired
-                      ? "color-mix(in srgb, var(--accent-error) 12%, transparent)"
-                      : "color-mix(in srgb, var(--accent-success) 12%, transparent)",
-                    color: status().expired ? "var(--accent-error)" : "var(--accent-success)",
+                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium self-start"
+                  classList={{
+                    "border border-[var(--accent-error)] bg-[color-mix(in_srgb,var(--accent-error)_12%,transparent)] text-[var(--accent-error)]":
+                      status().expired,
+                    "border border-[var(--accent-success)] bg-[color-mix(in_srgb,var(--accent-success)_12%,transparent)] text-[var(--accent-success)]":
+                      !status().expired,
                   }}
                 >
-                  <span
-                    style={{
-                      width: "6px",
-                      height: "6px",
-                      "border-radius": "50%",
-                      background: "currentColor",
-                      display: "inline-block",
-                      "flex-shrink": "0",
-                    }}
-                  />
+                  <span class="w-1.5 h-1.5 rounded-full bg-current shrink-0" />
                   {status().label}
                 </div>
               )}
             </Show>
 
             <Show when={claimsSummary().length > 0}>
-              <div
-                style={{
-                  background: "var(--bg-secondary)",
-                  border: "1px solid var(--border)",
-                  "border-radius": "0.5rem",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    "align-items": "center",
-                    "justify-content": "space-between",
-                    padding: "0.625rem 1rem",
-                    "border-bottom": "1px solid var(--border)",
-                  }}
-                >
-                  <span class="tool-label">Claims summary</span>
+              <Card class="overflow-hidden p-0">
+                <div class="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border)]">
+                  <Label>Claims summary</Label>
                 </div>
-                <div
-                  style={{
-                    display: "grid",
-                    "grid-template-columns": "repeat(auto-fit, minmax(220px, 1fr))",
-                    gap: "0.75rem",
-                    padding: "1rem",
-                  }}
-                >
+                <div class="p-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3">
                   {claimsSummary().map((item) => (
-                    <div
-                      style={{
-                        display: "flex",
-                        "flex-direction": "column",
-                        gap: "0.25rem",
-                        padding: "0.75rem",
-                        background: "var(--bg-primary)",
-                        border: "1px solid var(--border)",
-                        "border-radius": "0.375rem",
-                      }}
-                    >
-                      <span
-                        style={{
-                          "font-size": "0.6875rem",
-                          "font-weight": "700",
-                          "letter-spacing": "0.06em",
-                          "text-transform": "uppercase",
-                          color: "var(--text-muted)",
-                        }}
-                      >
+                    <div class="flex flex-col gap-1 p-3 bg-[var(--bg-primary)] border border-[var(--border)] rounded">
+                      <span class="text-[0.6875rem] font-bold tracking-wider uppercase text-[var(--text-muted)]">
                         {item.section} · {item.label}
                       </span>
-                      <code
-                        style={{
-                          color: "var(--text-primary)",
-                          "font-size": "0.8125rem",
-                          "font-family": "var(--font-mono)",
-                          "word-break": "break-word",
-                        }}
-                      >
+                      <code class="text-[var(--text-primary)] text-xs font-mono break-words">
                         {item.displayValue}
                       </code>
                       <Show when={item.displayValue !== item.rawValue}>
-                        <span
-                          style={{
-                            color: "var(--text-secondary)",
-                            "font-size": "0.75rem",
-                            "font-family": "var(--font-mono)",
-                            "word-break": "break-word",
-                          }}
-                        >
+                        <span class="text-[var(--text-secondary)] text-xs font-mono break-words">
                           raw: {item.rawValue}
                         </span>
                       </Show>
                     </div>
                   ))}
                 </div>
-              </div>
+              </Card>
             </Show>
 
             {/* Header panel */}

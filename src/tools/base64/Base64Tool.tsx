@@ -3,6 +3,9 @@ import { createMemo, createSignal, Show } from "solid-js";
 import CopyButton from "@/components/CopyButton";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import Card from "@/components/primitives/solid/Card";
+import Label from "@/components/primitives/solid/Label";
+import Textarea from "@/components/primitives/solid/Textarea";
 import {
   type Base64Mode,
   type Base64Variant,
@@ -192,22 +195,12 @@ export default function Base64Tool() {
   };
 
   return (
-    <div class="tool-container" style={{ "--tool-max-width": "860px" }}>
+    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[860px]">
       {/* ------------------------------------------------------------------ */}
       {/* Mode toggle + swap                                                  */}
       {/* ------------------------------------------------------------------ */}
-      <div style={{ display: "flex", "flex-wrap": "wrap", gap: "0.5rem", "align-items": "center" }}>
-        <div
-          style={{
-            display: "flex",
-            "align-items": "center",
-            gap: "0.25rem",
-            padding: "0.25rem",
-            background: "var(--bg-secondary)",
-            border: "1px solid var(--border)",
-            "border-radius": "0.5rem",
-          }}
-        >
+      <div class="flex flex-wrap gap-2 items-center">
+        <div class="flex items-center gap-1 p-1 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg">
           <ToolActionButton
             active={mode() === "encode"}
             variant={mode() === "encode" ? "primary" : "ghost"}
@@ -224,7 +217,7 @@ export default function Base64Tool() {
           </ToolActionButton>
         </div>
 
-        <div style={{ display: "flex", gap: "0.25rem", "align-items": "center" }}>
+        <div class="flex gap-1 items-center">
           <ToolActionButton
             active={variant() === "standard"}
             variant={variant() === "standard" ? "primary" : "ghost"}
@@ -241,7 +234,7 @@ export default function Base64Tool() {
           </ToolActionButton>
         </div>
 
-        <div style={{ display: "flex", gap: "0.25rem", "align-items": "center" }}>
+        <div class="flex gap-1 items-center">
           <ToolActionButton
             active={workflow() === "text"}
             variant={workflow() === "text" ? "primary" : "ghost"}
@@ -258,9 +251,7 @@ export default function Base64Tool() {
           </ToolActionButton>
         </div>
 
-        <div
-          style={{ display: "flex", gap: "0.5rem", "align-items": "center", "margin-left": "auto" }}
-        >
+        <div class="flex gap-2 items-center ml-auto">
           <ToolActionButton onClick={swap} title="Swap input/output">
             ⇅ Swap
           </ToolActionButton>
@@ -273,8 +264,8 @@ export default function Base64Tool() {
       {/* ------------------------------------------------------------------ */}
       {/* Input                                                               */}
       {/* ------------------------------------------------------------------ */}
-      <div style={{ display: "flex", "flex-direction": "column", gap: "0.5rem" }}>
-        <label class="tool-label">
+      <div class="flex flex-col gap-2">
+        <Label>
           {mode() === "encode"
             ? workflow() === "text"
               ? "Plain text"
@@ -282,22 +273,18 @@ export default function Base64Tool() {
             : variant() === "url"
               ? "Base64url"
               : "Base64"}
-        </label>
+        </Label>
 
         {/* Drop zone wrapper */}
-        <div
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={onDrop}
-          style={{ position: "relative" }}
-        >
-          <textarea
+        <div onDragOver={(e) => e.preventDefault()} onDrop={onDrop}>
+          <Textarea
             value={mode() === "encode" && workflow() === "file" ? fileSummary() : input()}
             onInput={(e) => {
               setFileError(null);
               setFileNotice(null);
               setLoadedFile(null);
               setLoadedFileBytes(null);
-              setInput(e.currentTarget.value);
+              setInput(e);
             }}
             placeholder={
               mode() === "encode"
@@ -310,24 +297,17 @@ export default function Base64Tool() {
             }
             rows={8}
             spellcheck={false}
-            readOnly={mode() === "encode" && workflow() === "file"}
-            class="tool-textarea"
+            readonly={mode() === "encode" && workflow() === "file"}
           />
         </div>
 
         {/* File open button */}
-        <div style={{ display: "flex", "align-items": "center", gap: "0.5rem" }}>
-          <label
-            style={{
-              "font-size": "0.8125rem",
-              color: "var(--accent-primary)",
-              cursor: "pointer",
-            }}
-          >
+        <div class="flex items-center gap-2">
+          <label class="text-sm text-[var(--accent-primary)] cursor-pointer">
             Open file
             <input
               type="file"
-              style={{ display: "none" }}
+              class="hidden"
               onChange={(e) => {
                 const file = e.currentTarget.files?.[0];
                 if (file) handleFile(file);
@@ -335,7 +315,7 @@ export default function Base64Tool() {
               }}
             />
           </label>
-          <span style={{ "font-size": "0.8125rem", color: "var(--text-muted)" }}>
+          <span class="text-sm text-[var(--text-muted)]">
             Local-only input handling with explicit text and file workflows
           </span>
         </div>
@@ -364,25 +344,10 @@ export default function Base64Tool() {
       {/* ------------------------------------------------------------------ */}
       <Show when={outputValue()}>
         {(value) => (
-          <div
-            style={{
-              background: "var(--bg-secondary)",
-              border: "1px solid var(--border)",
-              "border-radius": "0.5rem",
-              overflow: "hidden",
-            }}
-          >
+          <Card class="overflow-hidden p-0">
             {/* Output header */}
-            <div
-              style={{
-                display: "flex",
-                "align-items": "center",
-                "justify-content": "space-between",
-                padding: "0.625rem 1rem",
-                "border-bottom": "1px solid var(--border)",
-              }}
-            >
-              <span class="tool-label">
+            <div class="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border)]">
+              <Label>
                 {mode() === "encode"
                   ? variant() === "url"
                     ? "Base64url"
@@ -390,29 +355,17 @@ export default function Base64Tool() {
                   : workflow() === "file"
                     ? "Decoded bytes · binary output"
                     : "Decoded text"}
-              </span>
+              </Label>
               <Show when={binaryOutput()} fallback={<CopyButton text={value()} />}>
                 <ToolActionButton onClick={downloadDecodedBytes}>Download file</ToolActionButton>
               </Show>
             </div>
 
             {/* Output body */}
-            <pre
-              style={{
-                margin: "0",
-                padding: "1rem",
-                "overflow-x": "auto",
-                "font-size": "0.8125rem",
-                "line-height": "1.6",
-                color: "var(--text-primary)",
-                "font-family": "var(--font-mono)",
-                "white-space": "pre-wrap",
-                "word-break": "break-all",
-              }}
-            >
+            <pre class="m-0 p-4 overflow-x-auto text-xs leading-relaxed text-[var(--text-primary)] font-mono whitespace-pre-wrap break-all">
               <code>{value()}</code>
             </pre>
-          </div>
+          </Card>
         )}
       </Show>
 

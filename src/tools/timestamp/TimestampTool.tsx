@@ -3,6 +3,10 @@ import { createMemo, createSignal, For, Show } from "solid-js";
 import CopyButton from "@/components/CopyButton";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import Card from "@/components/primitives/solid/Card";
+import Input from "@/components/primitives/solid/Input";
+import Label from "@/components/primitives/solid/Label";
+import Select from "@/components/primitives/solid/Select";
 import {
   DEFAULT_ZONES,
   formatInZone,
@@ -71,52 +75,31 @@ export default function TimestampTool() {
     setZones((prev) => prev.map((z, i) => (i === index ? { ...z, tz } : z)));
   }
 
-  const inputStyle = {
-    padding: "0.625rem 0.875rem",
-    "border-radius": "0.375rem",
-    border: "1px solid var(--border)",
-    background: "var(--bg-secondary)",
-    color: "var(--text-primary)",
-    "font-family": "var(--font-mono)",
-    "font-size": "0.875rem",
-    outline: "none",
-    "box-sizing": "border-box" as const,
-  };
-
   return (
-    <div class="tool-container" style={{ "--tool-max-width": "760px", "--tool-gap": "1.5rem" }}>
+    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[760px]">
       {/* ------------------------------------------------------------------ */}
       {/* Input row                                                           */}
       {/* ------------------------------------------------------------------ */}
-      <div
-        style={{
-          display: "grid",
-          "grid-template-columns": "1fr auto 1fr",
-          gap: "1rem",
-          "align-items": "end",
-        }}
-      >
+      <div class="grid grid-cols-[1fr_auto_1fr] gap-4 items-end">
         {/* Epoch input */}
-        <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-          <label class="tool-label">Unix timestamp</label>
-          <input
+        <div class="flex flex-col gap-1.5">
+          <Label>Unix timestamp</Label>
+          <Input
             type="text"
-            inputmode="numeric"
             value={epochInput()}
-            onInput={(e) => handleEpochInput(e.currentTarget.value)}
+            onInput={handleEpochInput}
             placeholder="e.g. 1700000000"
-            style={{ ...inputStyle, width: "100%" }}
           />
           <Show when={parsed()}>
             {(p) => (
-              <span style={{ "font-size": "0.75rem", color: "var(--text-muted)" }}>
+              <span class="text-xs text-[var(--text-muted)]">
                 Detected: {p().unit === "s" ? "seconds" : "milliseconds"}
               </span>
             )}
           </Show>
         </div>
 
-        <div style={{ display: "flex", gap: "0.5rem", "align-items": "center" }}>
+        <div class="flex gap-2 items-center">
           <ToolActionButton onClick={useNow} variant="primary">
             Use now
           </ToolActionButton>
@@ -126,14 +109,9 @@ export default function TimestampTool() {
         </div>
 
         {/* Datetime-local input */}
-        <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-          <label class="tool-label">Date & time (local)</label>
-          <input
-            type="datetime-local"
-            value={datetimeInput()}
-            onInput={(e) => handleDatetimeInput(e.currentTarget.value)}
-            style={{ ...inputStyle, width: "100%" }}
-          />
+        <div class="flex flex-col gap-1.5">
+          <Label>Date & time (local)</Label>
+          <Input type="datetime-local" value={datetimeInput()} onInput={handleDatetimeInput} />
         </div>
       </div>
 
@@ -142,180 +120,69 @@ export default function TimestampTool() {
       {/* ------------------------------------------------------------------ */}
       <Show when={date()}>
         {(d) => (
-          <div
-            style={{
-              display: "flex",
-              gap: "0.75rem",
-              "flex-wrap": "wrap",
-            }}
-          >
+          <div class="flex gap-3 flex-wrap">
             {/* Seconds */}
-            <div
-              style={{
-                flex: "1",
-                "min-width": "160px",
-                background: "var(--bg-secondary)",
-                border: "1px solid var(--border)",
-                "border-radius": "0.5rem",
-                padding: "0.875rem 1rem",
-              }}
-            >
-              <div class="tool-label">Epoch (seconds)</div>
-              <div
-                style={{
-                  display: "flex",
-                  "align-items": "center",
-                  gap: "0.5rem",
-                  "margin-top": "0.375rem",
-                }}
-              >
-                <code
-                  style={{
-                    "font-size": "0.9375rem",
-                    color: "var(--accent-primary)",
-                    "font-family": "var(--font-mono)",
-                    flex: "1",
-                    "word-break": "break-all",
-                  }}
-                >
+            <Card class="flex-1 min-w-[160px]">
+              <Label>Epoch (seconds)</Label>
+              <div class="flex items-center gap-2 mt-1.5">
+                <code class="text-[0.9375rem] text-[var(--accent-primary)] font-mono flex-1 break-all">
                   {String(Math.floor(d().getTime() / 1000))}
                 </code>
                 <CopyButton text={String(Math.floor(d().getTime() / 1000))} />
               </div>
-            </div>
+            </Card>
 
             {/* Milliseconds */}
-            <div
-              style={{
-                flex: "1",
-                "min-width": "160px",
-                background: "var(--bg-secondary)",
-                border: "1px solid var(--border)",
-                "border-radius": "0.5rem",
-                padding: "0.875rem 1rem",
-              }}
-            >
-              <div class="tool-label">Epoch (milliseconds)</div>
-              <div
-                style={{
-                  display: "flex",
-                  "align-items": "center",
-                  gap: "0.5rem",
-                  "margin-top": "0.375rem",
-                }}
-              >
-                <code
-                  style={{
-                    "font-size": "0.9375rem",
-                    color: "var(--accent-primary)",
-                    "font-family": "var(--font-mono)",
-                    flex: "1",
-                    "word-break": "break-all",
-                  }}
-                >
+            <Card class="flex-1 min-w-[160px]">
+              <Label>Epoch (milliseconds)</Label>
+              <div class="flex items-center gap-2 mt-1.5">
+                <code class="text-[0.9375rem] text-[var(--accent-primary)] font-mono flex-1 break-all">
                   {String(d().getTime())}
                 </code>
                 <CopyButton text={String(d().getTime())} />
               </div>
-            </div>
+            </Card>
 
             {/* ISO 8601 */}
-            <div
-              style={{
-                flex: "2",
-                "min-width": "220px",
-                background: "var(--bg-secondary)",
-                border: "1px solid var(--border)",
-                "border-radius": "0.5rem",
-                padding: "0.875rem 1rem",
-              }}
-            >
-              <div class="tool-label">ISO 8601</div>
-              <div
-                style={{
-                  display: "flex",
-                  "align-items": "center",
-                  gap: "0.5rem",
-                  "margin-top": "0.375rem",
-                }}
-              >
-                <code
-                  style={{
-                    "font-size": "0.875rem",
-                    color: "var(--accent-success)",
-                    "font-family": "var(--font-mono)",
-                    flex: "1",
-                    "word-break": "break-all",
-                  }}
-                >
+            <Card class="flex-[2] min-w-[220px]">
+              <Label>ISO 8601</Label>
+              <div class="flex items-center gap-2 mt-1.5">
+                <code class="text-sm text-[var(--accent-success)] font-mono flex-1 break-all">
                   {d().toISOString()}
                 </code>
                 <CopyButton text={d().toISOString()} />
               </div>
-            </div>
+            </Card>
           </div>
         )}
       </Show>
 
+      {/* ------------------------------------------------------------------ */}
+      {/* Derived formats                                                     */}
+      {/* ------------------------------------------------------------------ */}
       <Show when={date()}>
         {(d) => (
-          <div
-            style={{
-              background: "var(--bg-secondary)",
-              border: "1px solid var(--border)",
-              "border-radius": "0.5rem",
-              overflow: "hidden",
-            }}
-          >
-            <div
-              style={{
-                padding: "0.625rem 1rem",
-                "border-bottom": "1px solid var(--border)",
-              }}
-            >
-              <span class="tool-label">Derived formats</span>
+          <Card class="overflow-hidden p-0">
+            <div class="px-4 py-2.5 border-b border-[var(--border)]">
+              <Label>Derived formats</Label>
             </div>
 
-            <div
-              style={{
-                padding: "0.75rem 1rem",
-                display: "grid",
-                "grid-template-columns": "repeat(auto-fit, minmax(220px, 1fr))",
-                gap: "0.75rem",
-              }}
-            >
+            <div class="p-3 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3">
               <For each={getDerivedTimestampFormats(d())}>
                 {(item) => (
-                  <div
-                    style={{
-                      display: "flex",
-                      "flex-direction": "column",
-                      gap: "0.375rem",
-                      padding: "0.75rem",
-                      background: "var(--bg-primary)",
-                      border: "1px solid var(--border)",
-                      "border-radius": "0.375rem",
-                    }}
-                  >
-                    <span class="tool-label">{item.label}</span>
-                    <code
-                      style={{
-                        "font-size": "0.8125rem",
-                        color: "var(--text-primary)",
-                        "font-family": "var(--font-mono)",
-                        "word-break": "break-all",
-                      }}
-                    >
+                  <div class="flex flex-col gap-1.5 p-3 bg-[var(--bg-primary)] border border-[var(--border)] rounded">
+                    <Label>{item.label}</Label>
+                    <code class="text-[0.8125rem] text-[var(--text-primary)] font-mono break-all">
                       {item.value}
                     </code>
-                    <div style={{ display: "flex", "justify-content": "flex-end" }}>
+                    <div class="flex justify-end">
                       <CopyButton text={item.value} />
                     </div>
                   </div>
                 )}
               </For>
             </div>
-          </div>
+          </Card>
         )}
       </Show>
 
@@ -324,67 +191,22 @@ export default function TimestampTool() {
       {/* ------------------------------------------------------------------ */}
       <Show when={date()}>
         {(d) => (
-          <div
-            style={{
-              background: "var(--bg-secondary)",
-              border: "1px solid var(--border)",
-              "border-radius": "0.5rem",
-              overflow: "hidden",
-            }}
-          >
-            <div
-              style={{
-                padding: "0.625rem 1rem",
-                "border-bottom": "1px solid var(--border)",
-              }}
-            >
-              <span class="tool-label">Timezone conversions</span>
+          <Card class="overflow-hidden p-0">
+            <div class="px-4 py-2.5 border-b border-[var(--border)]">
+              <Label>Timezone conversions</Label>
             </div>
 
-            <div
-              style={{
-                padding: "0.75rem 1rem",
-                display: "flex",
-                "flex-direction": "column",
-                gap: "0.75rem",
-              }}
-            >
+            <div class="p-3 flex flex-col gap-3">
               <For each={zones()}>
                 {(zone, i) => (
-                  <div
-                    style={{
-                      display: "grid",
-                      "grid-template-columns": "180px 1fr auto",
-                      gap: "0.75rem",
-                      "align-items": "center",
-                    }}
-                  >
-                    <select
+                  <div class="grid grid-cols-[180px_1fr_auto] gap-3 items-center">
+                    <Select
                       value={zone.tz}
-                      onChange={(e) => changeZone(i(), e.currentTarget.value)}
-                      style={{
-                        padding: "0.25rem 0.5rem",
-                        "border-radius": "0.25rem",
-                        border: "1px solid var(--border)",
-                        background: "var(--bg-tertiary)",
-                        color: "var(--text-secondary)",
-                        "font-size": "0.75rem",
-                        cursor: "pointer",
-                        outline: "none",
-                      }}
-                    >
-                      <For each={PRESET_ZONES}>
-                        {(preset) => <option value={preset.tz}>{preset.label}</option>}
-                      </For>
-                    </select>
+                      onChange={(tz) => changeZone(i(), tz)}
+                      options={PRESET_ZONES.map((z) => ({ value: z.tz, label: z.label }))}
+                    />
 
-                    <code
-                      style={{
-                        "font-size": "0.875rem",
-                        color: "var(--text-primary)",
-                        "font-family": "var(--font-mono)",
-                      }}
-                    >
+                    <code class="text-sm text-[var(--text-primary)] font-mono">
                       {formatInZone(d(), zone.tz)}
                     </code>
 
@@ -393,7 +215,7 @@ export default function TimestampTool() {
                 )}
               </For>
             </div>
-          </div>
+          </Card>
         )}
       </Show>
 
