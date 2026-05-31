@@ -12,7 +12,7 @@ export interface JsonFormatResult {
   errorContext: string | null;
 }
 
-export interface JsonErrorSourceContext {
+interface JsonErrorSourceContext {
   line: number;
   column: number;
   context: string;
@@ -56,12 +56,6 @@ export function sortJsonKeys<T>(value: T): T {
   }
 
   return value;
-}
-
-export function parseJsonErrorPosition(message: string): number | null {
-  const match = /line (\d+)/.exec(message) ?? /position (\d+)/.exec(message);
-  if (!match) return null;
-  return parseInt(match[1], 10);
 }
 
 export function parseJsonErrorSourceContext(

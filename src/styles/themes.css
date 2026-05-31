@@ -1,5 +1,4 @@
-:root,
-:root[data-theme="dark"] {
+:root {
   --bg-primary: #09090b;
   --bg-secondary: #13141a;
   --bg-tertiary: #1c1d26;

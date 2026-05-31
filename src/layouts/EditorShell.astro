@@ -2,8 +2,6 @@
 import Base from "@/layouts/Base.astro";
 import { ClientRouter } from "astro:transitions";
 
-import CommandPalette from "@/components/CommandPalette";
-import { getPwaRouteBootstrapScript } from "@/lib/pwaRoute";
 import SettingsModal from "@/components/SettingsModal";
 import { getToolRoute, tools } from "@/tools/registry";
 import type { ToolCategory } from "@/tools/registry";
@@ -51,7 +49,6 @@ const grouped: GroupedTool[] = categoryOrder
 
 <Base title={title} description={description} ogImage={ogImage}>
   <Fragment slot="head">
-    <script is:inline set:html={getPwaRouteBootstrapScript()} />
     <ClientRouter />
   </Fragment>
 
@@ -94,9 +91,7 @@ const grouped: GroupedTool[] = categoryOrder
       </div>
 
       <!-- Right side controls -->
-      <div class="tab-controls">
-        <CommandPalette client:load />
-      </div>
+      <div class="tab-controls"></div>
     </header>
 
     <!-- ── BODY: SIDEBAR + MAIN PANE ── -->

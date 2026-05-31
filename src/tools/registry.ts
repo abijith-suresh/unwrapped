@@ -186,7 +186,7 @@ export const tools: Tool[] = [
     description: "Format XML locally with indentation control and clear invalid-input feedback.",
     category: "data",
     keywords: ["xml", "format", "prettify", "indent", "markup", "validate"],
-    icon: "Brackets",
+    icon: "Tag",
     slug: "xml-formatter",
     componentPath: "/src/tools/xml-formatter/XmlFormatterTool.tsx",
   },
@@ -226,7 +226,7 @@ export const tools: Tool[] = [
     description: "Parse full URLs or raw query strings locally and inspect decoded sections.",
     category: "network",
     keywords: ["url", "query", "params", "parse", "inspect", "search"],
-    icon: "Globe",
+    icon: "Search",
     slug: "url-inspector",
     componentPath: "/src/tools/url-inspector/UrlInspectorTool.tsx",
   },
@@ -277,8 +277,4 @@ export function validateToolRegistry(availableComponentPaths: readonly string[] 
 
 export function getToolBySlug(slug: string): Tool | undefined {
   return tools.find((t) => t.slug === slug);
-}
-
-export function getToolsByCategory(category: ToolCategory): Tool[] {
-  return tools.filter((t) => t.category === category);
 }

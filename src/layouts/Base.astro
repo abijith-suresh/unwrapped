@@ -49,18 +49,8 @@ const fullTitle = title === "unwrapped.tools" ? title : `${title} — unwrapped.
     />
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <!-- PWA -->
-    <link rel="manifest" href="/manifest.webmanifest" />
     <slot name="head" />
-    <!-- Theme init: runs before paint to prevent flash -->
     <script is:inline set:html={getThemeBootstrapScript()} />
-    <!-- Persist data-theme across View Transitions -->
-    <script is:inline>
-      document.addEventListener("astro:before-swap", (ev) => {
-        const theme = document.documentElement.getAttribute("data-theme");
-        if (theme) ev.newDocument.documentElement.setAttribute("data-theme", theme);
-      });
-    </script>
   </head>
   <body>
     <slot />
