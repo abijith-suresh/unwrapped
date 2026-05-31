@@ -2,6 +2,9 @@ import { createMemo, createSignal, For, Show } from "solid-js";
 
 import CopyButton from "@/components/CopyButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import Textarea from "@/components/primitives/solid/Textarea";
+import Card from "@/components/primitives/solid/Card";
+import Label from "@/components/primitives/solid/Label";
 import { inspectUrl } from "@/lib/urlInspector";
 
 const SECTION_LABELS = [
@@ -31,32 +34,21 @@ export default function UrlInspectorTool() {
   });
 
   return (
-    <div class="tool-container" style={{ "--tool-max-width": "1100px" }}>
-      <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-        <label class="tool-label">URL or raw query string</label>
-        <textarea
-          value={input()}
-          onInput={(event) => setInput(event.currentTarget.value)}
-          rows={5}
-          spellcheck={false}
-          class="tool-textarea"
-          style={{
-            border: `1px solid ${error() ? "var(--accent-error)" : "var(--border)"}`,
-          }}
-        />
-      </div>
+    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[1100px]">
+      <Textarea
+        label="URL or raw query string"
+        value={input()}
+        onInput={(value) => setInput(value)}
+        rows={5}
+        spellcheck={false}
+        error={!!error()}
+      />
 
       <Show
         when={!error()}
         fallback={<ToolStatusMessage tone="error">{error()}</ToolStatusMessage>}
       >
-        <div
-          style={{
-            display: "grid",
-            gap: "0.75rem",
-            "grid-template-columns": "repeat(auto-fit, minmax(220px, 1fr))",
-          }}
-        >
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3">
           <For each={SECTION_LABELS}>
             {([key, label]) => {
               const value = () => {
@@ -66,80 +58,42 @@ export default function UrlInspectorTool() {
               };
 
               return (
-                <section
-                  style={{
-                    display: "flex",
-                    "flex-direction": "column",
-                    gap: "0.5rem",
-                    padding: "0.875rem",
-                    background: "var(--bg-secondary)",
-                    border: "1px solid var(--border)",
-                    "border-radius": "0.5rem",
-                  }}
-                >
-                  <div
-                    style={{ display: "flex", "justify-content": "space-between", gap: "0.75rem" }}
-                  >
-                    <span class="tool-label">{label}</span>
+                <Card class="flex flex-col gap-2">
+                  <div class="flex justify-between gap-3">
+                    <Label>{label}</Label>
                     <CopyButton text={value()} label={`Copy ${label}`} />
                   </div>
-                  <code
-                    style={{
-                      color: "var(--text-primary)",
-                      "font-size": "0.875rem",
-                      "line-height": "1.6",
-                      "word-break": "break-all",
-                    }}
-                  >
+                  <code class="text-[var(--text-primary)] text-sm leading-relaxed break-all">
                     {value() || "—"}
                   </code>
-                </section>
+                </Card>
               );
             }}
           </For>
         </div>
 
-        <section
-          style={{
-            display: "flex",
-            "flex-direction": "column",
-            gap: "0.75rem",
-            padding: "1rem",
-            background: "var(--bg-secondary)",
-            border: "1px solid var(--border)",
-            "border-radius": "0.75rem",
-          }}
-        >
-          <div style={{ display: "flex", "justify-content": "space-between", gap: "0.75rem" }}>
-            <span class="tool-label">Decoded query params</span>
+        <Card class="flex flex-col gap-3">
+          <div class="flex justify-between gap-3">
+            <Label>Decoded query params</Label>
             <Show when={inspection()?.normalized}>
-              <ToolStatusMessage tone="muted" style={{ padding: "0.375rem 0.625rem" }}>
+              <span class="text-xs px-1.5 py-1 rounded bg-[var(--bg-tertiary)] text-[var(--text-secondary)]">
                 {inspection()?.kind === "query" ? "raw query" : "full url"}
-              </ToolStatusMessage>
+              </span>
             </Show>
           </div>
 
-          <div style={{ overflow: "auto" }}>
-            <table style={{ width: "100%", "border-collapse": "collapse" }}>
+          <div class="overflow-auto">
+            <table class="w-full border-collapse">
               <thead>
                 <tr>
-                  <th
-                    class="tool-label"
-                    style={{ padding: "0.5rem 0.75rem", "text-align": "left" }}
-                  >
-                    #
+                  <th class="px-3 py-2 text-left">
+                    <Label>#</Label>
                   </th>
-                  <th
-                    class="tool-label"
-                    style={{ padding: "0.5rem 0.75rem", "text-align": "left" }}
-                  >
-                    Key
+                  <th class="px-3 py-2 text-left">
+                    <Label>Key</Label>
                   </th>
-                  <th
-                    class="tool-label"
-                    style={{ padding: "0.5rem 0.75rem", "text-align": "left" }}
-                  >
-                    Value
+                  <th class="px-3 py-2 text-left">
+                    <Label>Value</Label>
                   </th>
                 </tr>
               </thead>
@@ -147,13 +101,11 @@ export default function UrlInspectorTool() {
                 <For each={inspection()?.queryParams ?? []}>
                   {(param, index) => (
                     <tr>
-                      <td style={{ padding: "0.5rem 0.75rem", color: "var(--text-muted)" }}>
-                        {index() + 1}
-                      </td>
-                      <td style={{ padding: "0.5rem 0.75rem", color: "var(--text-primary)" }}>
+                      <td class="px-3 py-2 text-[var(--text-muted)]">{index() + 1}</td>
+                      <td class="px-3 py-2 text-[var(--text-primary)]">
                         <code>{param.key || "—"}</code>
                       </td>
-                      <td style={{ padding: "0.5rem 0.75rem", color: "var(--text-primary)" }}>
+                      <td class="px-3 py-2 text-[var(--text-primary)]">
                         <code>{param.value || "—"}</code>
                       </td>
                     </tr>
@@ -166,7 +118,7 @@ export default function UrlInspectorTool() {
           <Show when={(inspection()?.queryParams.length ?? 0) === 0}>
             <ToolStatusMessage tone="muted">No query params found.</ToolStatusMessage>
           </Show>
-        </section>
+        </Card>
       </Show>
     </div>
   );
