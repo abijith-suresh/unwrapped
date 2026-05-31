@@ -1,5 +1,3 @@
-export const THEME_STORAGE_KEY = "unwrapped-theme";
-export const LAST_TOOL_ROUTE_STORAGE_KEY = "unwrapped-last-tool-route";
 export const DIFF_SESSION_STORAGE_KEY = "unwrapped-tool-session:diff";
 
 export interface LocalPersistenceEntry {
@@ -9,17 +7,6 @@ export interface LocalPersistenceEntry {
 }
 
 export const LOCAL_PERSISTENCE_ENTRIES: LocalPersistenceEntry[] = [
-  {
-    key: THEME_STORAGE_KEY,
-    label: "Theme preference",
-    description: "Stores the selected color theme locally so the shell keeps the same palette.",
-  },
-  {
-    key: LAST_TOOL_ROUTE_STORAGE_KEY,
-    label: "Installed route recovery",
-    description:
-      "Stores the last visited tool route locally so installed sessions can reopen there.",
-  },
   {
     key: DIFF_SESSION_STORAGE_KEY,
     label: "Diff view preferences",
