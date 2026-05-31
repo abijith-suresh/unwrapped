@@ -1,6 +1,8 @@
 import { createMemo, createSignal, Show } from "solid-js";
 
 import CopyButton from "@/components/CopyButton";
+import Textarea from "@/components/primitives/solid/Textarea";
+import Label from "@/components/primitives/solid/Label";
 import { formatJson, type IndentSize, type JsonFormatResult } from "@/lib/jsonFormatter";
 
 export default function JsonFormatter() {
@@ -12,41 +14,16 @@ export default function JsonFormatter() {
     (): JsonFormatResult => formatJson(input(), indent(), minify(), sortKeys())
   );
 
-  const tabStyle = (active: boolean) => ({
-    padding: "0.25rem 0.625rem",
-    "border-radius": "0.25rem",
-    "font-size": "0.75rem",
-    "font-weight": "600",
-    cursor: "pointer",
-    border: "none",
-    background: active ? "var(--accent-primary)" : "transparent",
-    color: active ? "var(--bg-primary)" : "var(--text-secondary)",
-    transition: "background 0.15s, color 0.15s",
-  });
-
   return (
-    <div class="tool-container">
-      <div
-        style={{
-          display: "flex",
-          "align-items": "center",
-          "flex-wrap": "wrap",
-          gap: "0.75rem",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            "align-items": "center",
-            gap: "0.25rem",
-            padding: "0.25rem",
-            background: "var(--bg-secondary)",
-            border: "1px solid var(--border)",
-            "border-radius": "0.375rem",
-          }}
-        >
+    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[900px]">
+      <div class="flex items-center flex-wrap gap-3">
+        <div class="flex items-center gap-1 p-1 rounded-md border border-[var(--border)] bg-[var(--bg-secondary)]">
           <button
-            style={tabStyle(indent() === 2 && !minify())}
+            classList={{
+              "px-2.5 py-1 text-xs font-semibold rounded cursor-pointer border-none transition-[background,color] duration-150": true,
+              "bg-[var(--accent-primary)] text-[var(--bg-primary)]": indent() === 2 && !minify(),
+              "bg-transparent text-[var(--text-secondary)]": !(indent() === 2 && !minify()),
+            }}
             onClick={() => {
               setIndent(2);
               setMinify(false);
@@ -55,7 +32,11 @@ export default function JsonFormatter() {
             2 spaces
           </button>
           <button
-            style={tabStyle(indent() === 4 && !minify())}
+            classList={{
+              "px-2.5 py-1 text-xs font-semibold rounded cursor-pointer border-none transition-[background,color] duration-150": true,
+              "bg-[var(--accent-primary)] text-[var(--bg-primary)]": indent() === 4 && !minify(),
+              "bg-transparent text-[var(--text-secondary)]": !(indent() === 4 && !minify()),
+            }}
             onClick={() => {
               setIndent(4);
               setMinify(false);
@@ -66,17 +47,12 @@ export default function JsonFormatter() {
         </div>
 
         <button
-          style={{
-            padding: "0.25rem 0.75rem",
-            "border-radius": "0.375rem",
-            border: `1px solid ${minify() ? "var(--accent-primary)" : "var(--border)"}`,
-            background: minify()
-              ? "color-mix(in srgb, var(--accent-primary) 15%, transparent)"
-              : "var(--bg-secondary)",
-            color: minify() ? "var(--accent-primary)" : "var(--text-secondary)",
-            "font-size": "0.75rem",
-            "font-weight": "600",
-            cursor: "pointer",
+          classList={{
+            "px-3 py-1 text-xs font-semibold rounded-md cursor-pointer border transition-[background,color] duration-150": true,
+            "bg-[color-mix(in_srgb,var(--accent-primary)_15%,transparent)] text-[var(--accent-primary)] border-[var(--accent-primary)]":
+              minify(),
+            "bg-[var(--bg-secondary)] text-[var(--text-secondary)] border-[var(--border)]":
+              !minify(),
           }}
           onClick={() => setMinify((value) => !value)}
         >
@@ -84,17 +60,12 @@ export default function JsonFormatter() {
         </button>
 
         <button
-          style={{
-            padding: "0.25rem 0.75rem",
-            "border-radius": "0.375rem",
-            border: `1px solid ${sortKeys() ? "var(--accent-primary)" : "var(--border)"}`,
-            background: sortKeys()
-              ? "color-mix(in srgb, var(--accent-primary) 15%, transparent)"
-              : "var(--bg-secondary)",
-            color: sortKeys() ? "var(--accent-primary)" : "var(--text-secondary)",
-            "font-size": "0.75rem",
-            "font-weight": "600",
-            cursor: "pointer",
+          classList={{
+            "px-3 py-1 text-xs font-semibold rounded-md cursor-pointer border transition-[background,color] duration-150": true,
+            "bg-[color-mix(in_srgb,var(--accent-primary)_15%,transparent)] text-[var(--accent-primary)] border-[var(--accent-primary)]":
+              sortKeys(),
+            "bg-[var(--bg-secondary)] text-[var(--text-secondary)] border-[var(--border)]":
+              !sortKeys(),
           }}
           onClick={() => setSortKeys((value) => !value)}
         >
@@ -103,16 +74,7 @@ export default function JsonFormatter() {
 
         <Show when={input().trim()}>
           <button
-            style={{
-              "margin-left": "auto",
-              padding: "0.25rem 0.75rem",
-              "border-radius": "0.375rem",
-              border: "1px solid var(--border)",
-              background: "var(--bg-secondary)",
-              color: "var(--text-muted)",
-              "font-size": "0.75rem",
-              cursor: "pointer",
-            }}
+            class="ml-auto px-3 py-1 text-xs font-semibold rounded-md cursor-pointer border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--text-muted)]"
             onClick={() => setInput("")}
           >
             Clear
@@ -120,68 +82,32 @@ export default function JsonFormatter() {
         </Show>
       </div>
 
-      <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-        <label class="tool-label">Input JSON</label>
-        <textarea
-          value={input()}
-          onInput={(e) => setInput(e.currentTarget.value)}
-          placeholder="Paste JSON here…"
-          rows={10}
-          autofocus
-          spellcheck={false}
-          class="tool-textarea"
-          style={{
-            border: `1px solid ${result().error ? "var(--accent-error)" : "var(--border)"}`,
-            transition: "border-color 0.15s",
-          }}
-        />
-      </div>
+      <Textarea
+        label="Input JSON"
+        value={input()}
+        onInput={(value) => setInput(value)}
+        placeholder="Paste JSON here…"
+        rows={10}
+        autofocus
+        spellcheck={false}
+        error={!!result().error}
+      />
 
       <Show when={result().error}>
         {(msg) => (
           <div
             role="alert"
-            style={{
-              display: "flex",
-              "flex-direction": "column",
-              gap: "0.75rem",
-              padding: "0.75rem 1rem",
-              "border-radius": "0.5rem",
-              border: "1px solid var(--accent-error)",
-              background: "color-mix(in srgb, var(--accent-error) 12%, transparent)",
-              color: "var(--accent-error)",
-              "font-size": "0.875rem",
-            }}
+            class="flex flex-col gap-3 p-3 rounded-lg border border-[var(--accent-error)] bg-[color-mix(in_srgb,var(--accent-error)_12%,transparent)] text-[var(--accent-error)] text-sm"
           >
-            <div style={{ "font-family": "var(--font-mono)" }}>{msg()}</div>
+            <div class="font-mono">{msg()}</div>
             <Show when={result().errorLine && result().errorColumn}>
-              <div
-                style={{
-                  color: "var(--text-secondary)",
-                  "font-size": "0.8125rem",
-                  "font-family": "var(--font-mono)",
-                }}
-              >
+              <div class="text-[var(--text-secondary)] text-[0.8125rem] font-mono">
                 Line {result().errorLine}, column {result().errorColumn}
               </div>
             </Show>
             <Show when={result().errorContext}>
               {(context) => (
-                <pre
-                  style={{
-                    margin: "0",
-                    padding: "0.75rem",
-                    background: "color-mix(in srgb, var(--bg-secondary) 88%, transparent)",
-                    color: "var(--text-primary)",
-                    border: "1px solid var(--border)",
-                    "border-radius": "0.375rem",
-                    "font-size": "0.8125rem",
-                    "line-height": "1.5",
-                    "font-family": "var(--font-mono)",
-                    "white-space": "pre-wrap",
-                    "word-break": "break-word",
-                  }}
-                >
+                <pre class="m-0 p-3 bg-[color-mix(in_srgb,var(--bg-secondary)_88%,transparent)] text-[var(--text-primary)] border border-[var(--border)] rounded-md text-[0.8125rem] leading-normal font-mono whitespace-pre-wrap break-words">
                   {context()}
                 </pre>
               )}
@@ -192,43 +118,18 @@ export default function JsonFormatter() {
 
       <Show when={result().html}>
         {(html) => (
-          <div
-            style={{
-              background: "var(--bg-secondary)",
-              border: "1px solid var(--border)",
-              "border-radius": "0.5rem",
-              overflow: "hidden",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                "align-items": "center",
-                "justify-content": "space-between",
-                padding: "0.625rem 1rem",
-                "border-bottom": "1px solid var(--border)",
-              }}
-            >
-              <span class="tool-label">
+          <div class="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg overflow-hidden">
+            <div class="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border)]">
+              <Label>
                 {minify()
                   ? `Minified${sortKeys() ? " · sorted" : ""}`
                   : `Formatted · ${indent()} spaces${sortKeys() ? " · sorted" : ""}`}
-              </span>
+              </Label>
               <CopyButton text={result().raw} />
             </div>
 
             <pre
-              style={{
-                margin: "0",
-                padding: "1rem",
-                "overflow-x": "auto",
-                "font-size": "0.8125rem",
-                "line-height": "1.6",
-                color: "var(--text-primary)",
-                "font-family": "var(--font-mono)",
-                "white-space": "pre-wrap",
-                "word-break": "break-all",
-              }}
+              class="m-0 p-4 overflow-x-auto text-[0.8125rem] leading-[1.6] text-[var(--text-primary)] font-mono whitespace-pre-wrap break-all"
               innerHTML={html()}
             />
           </div>
