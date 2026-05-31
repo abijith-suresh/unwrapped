@@ -10,6 +10,8 @@ import {
   MIN_TOKEN_LENGTH,
   type TokenGeneratorOptions,
 } from "@/lib/tokenGenerator";
+import Label from "@/components/primitives/solid/Label";
+import Card from "@/components/primitives/solid/Card";
 
 function createInitialState() {
   const result = generateToken(DEFAULT_TOKEN_OPTIONS);
@@ -59,72 +61,36 @@ export default function TokenGenerator() {
   }
 
   return (
-    <div class="tool-container">
-      <div style={{ display: "grid", gap: "1rem", "grid-template-columns": "2fr 1fr" }}>
-        <div
-          style={{
-            display: "flex",
-            "flex-direction": "column",
-            gap: "0.375rem",
-            padding: "0.875rem",
-            background: "var(--bg-secondary)",
-            border: "1px solid var(--border)",
-            "border-radius": "0.5rem",
-          }}
-        >
-          <div style={{ display: "flex", "justify-content": "space-between", gap: "0.75rem" }}>
-            <span class="tool-label">Generated token</span>
+    <div class="flex flex-col gap-5 p-6 mx-auto w-full" style="max-width: 900px">
+      <div class="grid grid-cols-[2fr_1fr] gap-4">
+        <Card class="flex flex-col gap-1.5">
+          <div class="flex justify-between gap-3">
+            <Label>Generated token</Label>
             <CopyButton text={token()} label="Copy token" />
           </div>
-          <code
-            style={{
-              color: "var(--text-primary)",
-              "font-size": "1rem",
-              "line-height": "1.7",
-              "font-family": "var(--font-mono)",
-              "word-break": "break-all",
-              "min-height": "4.5rem",
-            }}
-          >
+          <code class="text-[var(--text-primary)] text-base leading-relaxed font-mono break-all min-h-[4.5rem] block">
             {token() || "—"}
           </code>
-        </div>
+        </Card>
 
-        <div
-          style={{
-            display: "flex",
-            "flex-direction": "column",
-            gap: "0.375rem",
-            padding: "0.875rem",
-            background: "var(--bg-secondary)",
-            border: "1px solid var(--border)",
-            "border-radius": "0.5rem",
-          }}
-        >
-          <span class="tool-label">Options</span>
-          <label style={{ color: "var(--text-secondary)", "font-size": "0.875rem" }}>Length</label>
+        <Card class="flex flex-col gap-1.5">
+          <Label>Options</Label>
+          <label class="text-sm text-[var(--text-secondary)]">Length</label>
           <input
             type="number"
             min={MIN_TOKEN_LENGTH}
             max={MAX_TOKEN_LENGTH}
             value={options().length}
             onInput={(event) => updateOption("length", Number(event.currentTarget.value) || 0)}
-            style={{
-              width: "100%",
-              padding: "0.625rem 0.75rem",
-              border: "1px solid var(--border)",
-              "border-radius": "0.5rem",
-              background: "var(--bg-primary)",
-              color: "var(--text-primary)",
-            }}
+            class="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-primary)] px-4 py-2.5 text-sm text-[var(--text-primary)] outline-none font-mono focus:border-[var(--accent-primary)]"
           />
           <ToolActionButton onClick={() => regenerate()} variant="primary">
             Regenerate
           </ToolActionButton>
-        </div>
+        </Card>
       </div>
 
-      <div style={{ display: "flex", gap: "0.5rem", "flex-wrap": "wrap" }}>
+      <div class="flex gap-2 flex-wrap">
         <ToolActionButton
           active={options().uppercase}
           onClick={() => updateOption("uppercase", !options().uppercase)}

@@ -1,9 +1,13 @@
-import { createSignal, For, Show } from "solid-js";
+import { createSignal, Show } from "solid-js";
 
 import CopyButton from "@/components/CopyButton";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import { generateHmac, HMAC_ALGORITHMS, type HmacAlgorithm } from "@/lib/hmac";
+import Textarea from "@/components/primitives/solid/Textarea";
+import Select from "@/components/primitives/solid/Select";
+import Card from "@/components/primitives/solid/Card";
+import Label from "@/components/primitives/solid/Label";
 
 export default function HmacGeneratorTool() {
   const [message, setMessage] = createSignal("");
@@ -33,56 +37,19 @@ export default function HmacGeneratorTool() {
   }
 
   return (
-    <div class="tool-container">
-      <div
-        style={{
-          display: "grid",
-          gap: "1rem",
-          "grid-template-columns": "repeat(auto-fit, minmax(260px, 1fr))",
-        }}
-      >
-        <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-          <label class="tool-label">Message</label>
-          <textarea
-            value={message()}
-            onInput={(event) => setMessage(event.currentTarget.value)}
-            rows={6}
-            spellcheck={false}
-            class="tool-textarea"
-          />
-        </div>
-
-        <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-          <label class="tool-label">Secret</label>
-          <textarea
-            value={secret()}
-            onInput={(event) => setSecret(event.currentTarget.value)}
-            rows={6}
-            spellcheck={false}
-            class="tool-textarea"
-          />
-        </div>
+    <div class="flex flex-col gap-5 p-6 mx-auto w-full" style="max-width: 900px">
+      <div class="grid gap-4 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
+        <Textarea label="Message" value={message()} onInput={(v) => setMessage(v)} rows={6} />
+        <Textarea label="Secret" value={secret()} onInput={(v) => setSecret(v)} rows={6} />
       </div>
 
-      <div
-        style={{ display: "flex", gap: "0.75rem", "flex-wrap": "wrap", "align-items": "center" }}
-      >
-        <label class="tool-label">Algorithm</label>
-        <select
+      <div class="flex gap-3 flex-wrap items-center">
+        <Select
+          label="Algorithm"
           value={algorithm()}
-          onChange={(event) => setAlgorithm(event.currentTarget.value as HmacAlgorithm)}
-          style={{
-            padding: "0.5rem 0.75rem",
-            "border-radius": "0.5rem",
-            border: "1px solid var(--border)",
-            background: "var(--bg-secondary)",
-            color: "var(--text-primary)",
-          }}
-        >
-          <For each={HMAC_ALGORITHMS}>
-            {(item) => <option value={item.id}>{item.label}</option>}
-          </For>
-        </select>
+          onChange={(v) => setAlgorithm(v as HmacAlgorithm)}
+          options={HMAC_ALGORITHMS.map((a) => ({ value: a.id, label: a.label }))}
+        />
         <ToolActionButton
           onClick={() => void handleGenerate()}
           variant="primary"
@@ -96,36 +63,15 @@ export default function HmacGeneratorTool() {
         {(message) => <ToolStatusMessage tone="error">{message()}</ToolStatusMessage>}
       </Show>
 
-      <section
-        style={{
-          display: "flex",
-          "flex-direction": "column",
-          gap: "0.75rem",
-          padding: "1rem",
-          background: "var(--bg-secondary)",
-          border: "1px solid var(--border)",
-          "border-radius": "0.75rem",
-        }}
-      >
-        <div
-          style={{ display: "flex", "align-items": "center", "justify-content": "space-between" }}
-        >
-          <span class="tool-label">Hex output</span>
+      <Card>
+        <div class="flex items-center justify-between">
+          <Label>Hex output</Label>
           <CopyButton text={output()} label="Copy HMAC" />
         </div>
-        <code
-          style={{
-            color: "var(--text-primary)",
-            "font-size": "0.95rem",
-            "line-height": "1.7",
-            "font-family": "var(--font-mono)",
-            "word-break": "break-all",
-            "min-height": "3rem",
-          }}
-        >
+        <code class="text-[var(--text-primary)] text-[0.95rem] leading-relaxed font-mono break-all min-h-[3rem] block">
           {output() || "—"}
         </code>
-      </section>
+      </Card>
 
       <ToolStatusMessage tone="muted">
         Secrets remain in memory only and are processed with the browser&apos;s Web Crypto API.

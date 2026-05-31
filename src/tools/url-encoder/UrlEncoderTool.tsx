@@ -3,6 +3,9 @@ import { createMemo, createSignal, Show } from "solid-js";
 import CopyButton from "@/components/CopyButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import { decodeUrlText, encodeUrlText } from "@/lib/urlEncoding";
+import Label from "@/components/primitives/solid/Label";
+import Textarea from "@/components/primitives/solid/Textarea";
+import Card from "@/components/primitives/solid/Card";
 
 export default function UrlEncoderTool() {
   const [plainText, setPlainText] = createSignal("");
@@ -20,121 +23,57 @@ export default function UrlEncoderTool() {
   });
 
   return (
-    <div
-      class="tool-container"
-      style={{
-        "--tool-max-width": "1100px",
-        display: "grid",
-        "grid-template-columns": "repeat(auto-fit, minmax(320px, 1fr))",
-      }}
-    >
-      <section
-        style={{
-          display: "flex",
-          "flex-direction": "column",
-          gap: "1rem",
-          padding: "1rem",
-          background: "var(--bg-secondary)",
-          border: "1px solid var(--border)",
-          "border-radius": "0.75rem",
-        }}
-      >
-        <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-          <label class="tool-label">Plain text</label>
-          <textarea
+    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[1100px]">
+      <div class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-5">
+        <Card class="flex flex-col gap-4">
+          <Textarea
+            label="Plain text"
             value={plainText()}
-            onInput={(event) => setPlainText(event.currentTarget.value)}
+            onInput={(v) => setPlainText(v)}
             placeholder="Enter text to percent-encode…"
             rows={7}
-            spellcheck={false}
-            class="tool-textarea"
-            style={{ background: "var(--bg-primary)" }}
           />
-        </div>
 
-        <div
-          style={{ display: "flex", "align-items": "center", "justify-content": "space-between" }}
-        >
-          <span class="tool-label">Encoded output</span>
-          <CopyButton text={encodedOutput()} label="Copy encoded" />
-        </div>
-        <pre
-          style={{
-            margin: "0",
-            padding: "0.875rem 1rem",
-            "border-radius": "0.5rem",
-            border: "1px solid var(--border)",
-            background: "var(--bg-primary)",
-            color: "var(--text-primary)",
-            "font-family": "var(--font-mono)",
-            "font-size": "0.875rem",
-            "line-height": "1.7",
-            "min-height": "7rem",
-            "white-space": "pre-wrap",
-            "word-break": "break-all",
-          }}
-        >
-          {encodedOutput() || "—"}
-        </pre>
-      </section>
-
-      <section
-        style={{
-          display: "flex",
-          "flex-direction": "column",
-          gap: "1rem",
-          padding: "1rem",
-          background: "var(--bg-secondary)",
-          border: "1px solid var(--border)",
-          "border-radius": "0.75rem",
-        }}
-      >
-        <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-          <label class="tool-label">Percent-encoded text</label>
-          <textarea
-            value={encodedText()}
-            onInput={(event) => setEncodedText(event.currentTarget.value)}
-            placeholder="Enter percent-encoded text to decode…"
-            rows={7}
-            spellcheck={false}
-            class="tool-textarea"
-            style={{
-              border: `1px solid ${decodeError() ? "var(--accent-error)" : "var(--border)"}`,
-              background: "var(--bg-primary)",
-            }}
-          />
-        </div>
-
-        <Show
-          when={!decodeError()}
-          fallback={<ToolStatusMessage tone="error">{decodeError()}</ToolStatusMessage>}
-        >
-          <div
-            style={{ display: "flex", "align-items": "center", "justify-content": "space-between" }}
-          >
-            <span class="tool-label">Decoded output</span>
-            <CopyButton text={decodedValue()} label="Copy decoded" />
+          <div class="flex items-center justify-between">
+            <Label>Encoded output</Label>
+            <CopyButton text={encodedOutput()} label="Copy encoded" />
           </div>
-          <pre
-            style={{
-              margin: "0",
-              padding: "0.875rem 1rem",
-              "border-radius": "0.5rem",
-              border: "1px solid var(--border)",
-              background: "var(--bg-primary)",
-              color: "var(--text-primary)",
-              "font-family": "var(--font-mono)",
-              "font-size": "0.875rem",
-              "line-height": "1.7",
-              "min-height": "7rem",
-              "white-space": "pre-wrap",
-              "word-break": "break-all",
-            }}
-          >
-            {decodedValue() || "—"}
+          <pre class="m-0 px-4 py-3.5 rounded-lg border border-[var(--border)] bg-[var(--bg-primary)] text-[var(--text-primary)] font-mono text-sm leading-[1.7] min-h-[7rem] whitespace-pre-wrap break-all">
+            {encodedOutput() || "—"}
           </pre>
-        </Show>
-      </section>
+        </Card>
+
+        <Card class="flex flex-col gap-4">
+          <div class="flex flex-col gap-1.5">
+            <Label>Percent-encoded text</Label>
+            <textarea
+              value={encodedText()}
+              onInput={(event) => setEncodedText(event.currentTarget.value)}
+              placeholder="Enter percent-encoded text to decode…"
+              rows={7}
+              spellcheck={false}
+              class="w-full rounded-lg border bg-[var(--bg-primary)] px-4 py-2.5 text-sm text-[var(--text-primary)] outline-none font-mono resize-y focus:border-[var(--accent-primary)]"
+              classList={{
+                "border-[var(--border)]": !decodeError(),
+                "border-[var(--accent-error)]": !!decodeError(),
+              }}
+            />
+          </div>
+
+          <Show
+            when={!decodeError()}
+            fallback={<ToolStatusMessage tone="error">{decodeError()}</ToolStatusMessage>}
+          >
+            <div class="flex items-center justify-between">
+              <Label>Decoded output</Label>
+              <CopyButton text={decodedValue()} label="Copy decoded" />
+            </div>
+            <pre class="m-0 px-4 py-3.5 rounded-lg border border-[var(--border)] bg-[var(--bg-primary)] text-[var(--text-primary)] font-mono text-sm leading-[1.7] min-h-[7rem] whitespace-pre-wrap break-all">
+              {decodedValue() || "—"}
+            </pre>
+          </Show>
+        </Card>
+      </div>
     </div>
   );
 }

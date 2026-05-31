@@ -2,6 +2,8 @@ import { createMemo, createSignal, For } from "solid-js";
 
 import CopyButton from "@/components/CopyButton";
 import { buildChmodResult, type ChmodPermissions } from "@/lib/chmod";
+import Label from "@/components/primitives/solid/Label";
+import Card from "@/components/primitives/solid/Card";
 
 const SUBJECTS = [
   ["owner", "Owner"],
@@ -39,25 +41,18 @@ export default function ChmodCalculatorTool() {
   }
 
   return (
-    <div class="tool-container">
-      <section
-        style={{
-          overflow: "auto",
-          background: "var(--bg-secondary)",
-          border: "1px solid var(--border)",
-          "border-radius": "0.75rem",
-        }}
-      >
-        <table style={{ width: "100%", "border-collapse": "collapse" }}>
+    <div class="flex flex-col gap-5 p-6 mx-auto w-full" style="max-width: 900px">
+      <Card class="overflow-auto">
+        <table class="w-full border-collapse">
           <thead>
             <tr>
-              <th class="tool-label" style={{ padding: "0.75rem 1rem", "text-align": "left" }}>
-                Scope
+              <th class="px-4 py-3 text-left">
+                <Label>Scope</Label>
               </th>
               <For each={PERMISSIONS}>
                 {([_, label]) => (
-                  <th class="tool-label" style={{ padding: "0.75rem 1rem", "text-align": "left" }}>
-                    {label}
+                  <th class="px-4 py-3 text-left">
+                    <Label>{label}</Label>
                   </th>
                 )}
               </For>
@@ -67,10 +62,10 @@ export default function ChmodCalculatorTool() {
             <For each={SUBJECTS}>
               {([subject, label]) => (
                 <tr>
-                  <td style={{ padding: "0.75rem 1rem", color: "var(--text-primary)" }}>{label}</td>
+                  <td class="px-4 py-3 text-[var(--text-primary)]">{label}</td>
                   <For each={PERMISSIONS}>
                     {([permission]) => (
-                      <td style={{ padding: "0.75rem 1rem" }}>
+                      <td class="px-4 py-3">
                         <input
                           type="checkbox"
                           checked={permissions()[subject][permission]}
@@ -84,65 +79,32 @@ export default function ChmodCalculatorTool() {
             </For>
           </tbody>
         </table>
-      </section>
+      </Card>
 
-      <div
-        style={{
-          display: "grid",
-          gap: "0.75rem",
-          "grid-template-columns": "repeat(auto-fit, minmax(220px, 1fr))",
-        }}
-      >
-        <section
-          style={{
-            padding: "1rem",
-            background: "var(--bg-secondary)",
-            border: "1px solid var(--border)",
-            "border-radius": "0.75rem",
-          }}
-        >
-          <div style={{ display: "flex", "justify-content": "space-between", gap: "0.75rem" }}>
-            <span class="tool-label">Octal mode</span>
+      <div class="grid gap-3 grid-cols-[repeat(auto-fit,minmax(220px,1fr))]">
+        <Card>
+          <div class="flex justify-between gap-3">
+            <Label>Octal mode</Label>
             <CopyButton text={result().octal} label="Copy octal" />
           </div>
-          <strong style={{ color: "var(--text-primary)", "font-size": "1.5rem" }}>
-            {result().octal}
-          </strong>
-        </section>
+          <strong class="text-[var(--text-primary)] text-2xl">{result().octal}</strong>
+        </Card>
 
-        <section
-          style={{
-            padding: "1rem",
-            background: "var(--bg-secondary)",
-            border: "1px solid var(--border)",
-            "border-radius": "0.75rem",
-          }}
-        >
-          <div style={{ display: "flex", "justify-content": "space-between", gap: "0.75rem" }}>
-            <span class="tool-label">Symbolic mode</span>
+        <Card>
+          <div class="flex justify-between gap-3">
+            <Label>Symbolic mode</Label>
             <CopyButton text={result().symbolic} label="Copy symbolic" />
           </div>
-          <strong style={{ color: "var(--text-primary)", "font-size": "1.5rem" }}>
-            {result().symbolic}
-          </strong>
-        </section>
+          <strong class="text-[var(--text-primary)] text-2xl">{result().symbolic}</strong>
+        </Card>
 
-        <section
-          style={{
-            padding: "1rem",
-            background: "var(--bg-secondary)",
-            border: "1px solid var(--border)",
-            "border-radius": "0.75rem",
-          }}
-        >
-          <div style={{ display: "flex", "justify-content": "space-between", gap: "0.75rem" }}>
-            <span class="tool-label">Command</span>
+        <Card>
+          <div class="flex justify-between gap-3">
+            <Label>Command</Label>
             <CopyButton text={result().command} label="Copy command" />
           </div>
-          <code style={{ color: "var(--text-primary)", "font-size": "0.95rem" }}>
-            {result().command}
-          </code>
-        </section>
+          <code class="text-[var(--text-primary)] text-[0.95rem]">{result().command}</code>
+        </Card>
       </div>
     </div>
   );

@@ -4,6 +4,8 @@ import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import { buildCronScheduleSummary, type CronTimeZoneMode } from "@/lib/cronSchedule";
 import { SUPPORTED_CRON_SYNTAX } from "@/lib/cron";
+import Label from "@/components/primitives/solid/Label";
+import Card from "@/components/primitives/solid/Card";
 
 function formatPreview(date: Date, mode: CronTimeZoneMode): string {
   return mode === "utc"
@@ -36,25 +38,24 @@ export default function CronTool() {
   });
 
   return (
-    <div class="tool-container">
-      <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-        <label class="tool-label">Cron expression</label>
+    <div class="flex flex-col gap-5 p-6 mx-auto w-full" style="max-width: 900px">
+      <div class="flex flex-col gap-1.5">
+        <Label>Cron expression</Label>
         <input
           type="text"
           value={input()}
           onInput={(event) => setInput(event.currentTarget.value)}
           spellcheck={false}
-          class="tool-input"
-          style={{
-            border: `1px solid ${error() ? "var(--accent-error)" : "var(--border)"}`,
-            "font-family": "var(--font-mono)",
-            "font-size": "0.9375rem",
+          class="w-full rounded-lg border bg-[var(--bg-secondary)] px-4 py-2.5 text-[var(--text-primary)] outline-none font-mono text-[0.9375rem] focus:border-[var(--accent-primary)]"
+          classList={{
+            "border-[var(--border)]": !error(),
+            "border-[var(--accent-error)]": !!error(),
           }}
         />
       </div>
 
-      <div style={{ display: "flex", gap: "0.5rem", "flex-wrap": "wrap", "align-items": "center" }}>
-        <span class="tool-label">Timezone</span>
+      <div class="flex gap-2 flex-wrap items-center">
+        <Label>Timezone</Label>
         <ToolActionButton
           active={timeZone() === "local"}
           variant={timeZone() === "local" ? "primary" : "secondary"}
@@ -75,54 +76,23 @@ export default function CronTool() {
         when={!error()}
         fallback={<ToolStatusMessage tone="error">{error()}</ToolStatusMessage>}
       >
-        <section
-          style={{
-            display: "flex",
-            "flex-direction": "column",
-            gap: "0.75rem",
-            padding: "1rem",
-            background: "var(--bg-secondary)",
-            border: "1px solid var(--border)",
-            "border-radius": "0.75rem",
-          }}
-        >
-          <span class="tool-label">Humanized schedule</span>
-          <strong style={{ color: "var(--text-primary)", "font-size": "1.1rem" }}>
-            {description()}
-          </strong>
-        </section>
+        <Card class="flex flex-col gap-3">
+          <Label>Humanized schedule</Label>
+          <strong class="text-[var(--text-primary)] text-[1.1rem]">{description()}</strong>
+        </Card>
 
-        <section
-          style={{
-            display: "flex",
-            "flex-direction": "column",
-            gap: "0.75rem",
-            padding: "1rem",
-            background: "var(--bg-secondary)",
-            border: "1px solid var(--border)",
-            "border-radius": "0.75rem",
-          }}
-        >
-          <span class="tool-label">Next runs</span>
-          <div style={{ display: "flex", "flex-direction": "column", gap: "0.5rem" }}>
+        <Card class="flex flex-col gap-3">
+          <Label>Next runs</Label>
+          <div class="flex flex-col gap-2">
             <For each={nextRuns()}>
               {(run, index) => (
-                <code
-                  style={{
-                    padding: "0.625rem 0.75rem",
-                    background: "var(--bg-primary)",
-                    border: "1px solid var(--border)",
-                    "border-radius": "0.5rem",
-                    color: "var(--text-primary)",
-                    display: "block",
-                  }}
-                >
+                <code class="px-3 py-2.5 bg-[var(--bg-primary)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] block">
                   {index() + 1}. {formatPreview(run, timeZone())}
                 </code>
               )}
             </For>
           </div>
-        </section>
+        </Card>
       </Show>
 
       <ToolStatusMessage tone="muted">

@@ -4,6 +4,7 @@ import CopyButton from "@/components/CopyButton";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import { copyToClipboard } from "@/lib/clipboard";
+import Label from "@/components/primitives/solid/Label";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -46,51 +47,21 @@ export default function UuidGenerator() {
   }
 
   return (
-    <div class="tool-container" style={{ "--tool-max-width": "860px" }}>
+    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[860px]">
       {/* ------------------------------------------------------------------ */}
       {/* Controls                                                            */}
       {/* ------------------------------------------------------------------ */}
-      <div
-        style={{
-          display: "flex",
-          "align-items": "center",
-          "flex-wrap": "wrap",
-          gap: "0.75rem",
-        }}
-      >
+      <div class="flex items-center flex-wrap gap-3">
         {/* Count input */}
-        <div
-          style={{
-            display: "flex",
-            "align-items": "center",
-            gap: "0.5rem",
-          }}
-        >
-          <label
-            style={{
-              "font-size": "0.8125rem",
-              color: "var(--text-secondary)",
-              "font-weight": "600",
-            }}
-          >
-            Count
-          </label>
+        <div class="flex items-center gap-2">
+          <Label>Count</Label>
           <input
             type="number"
             min={1}
             max={100}
             value={count()}
             onInput={(e) => setCount(parseInt(e.currentTarget.value, 10) || 1)}
-            style={{
-              width: "5rem",
-              padding: "0.25rem 0.5rem",
-              "border-radius": "0.375rem",
-              border: "1px solid var(--border)",
-              background: "var(--bg-secondary)",
-              color: "var(--text-primary)",
-              "font-size": "0.8125rem",
-              outline: "none",
-            }}
+            class="w-20 rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-2 py-1 text-sm text-[var(--text-primary)] outline-none"
           />
         </div>
 
@@ -124,37 +95,11 @@ export default function UuidGenerator() {
       {/* ------------------------------------------------------------------ */}
       {/* UUID list                                                           */}
       {/* ------------------------------------------------------------------ */}
-      <div
-        style={{
-          display: "flex",
-          "flex-direction": "column",
-          gap: "0.375rem",
-        }}
-      >
+      <div class="flex flex-col gap-1.5">
         <For each={uuids()}>
           {(uuid) => (
-            <div
-              style={{
-                display: "flex",
-                "align-items": "center",
-                "justify-content": "space-between",
-                padding: "0.625rem 1rem",
-                background: "var(--bg-secondary)",
-                border: "1px solid var(--border)",
-                "border-radius": "0.375rem",
-                gap: "1rem",
-              }}
-            >
-              <code
-                style={{
-                  "font-size": "0.875rem",
-                  color: "var(--text-primary)",
-                  "font-family": "var(--font-mono)",
-                  "letter-spacing": "0.02em",
-                  flex: "1",
-                  "word-break": "break-all",
-                }}
-              >
+            <div class="flex items-center justify-between px-4 py-2.5 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-md gap-4">
+              <code class="text-sm text-[var(--text-primary)] font-mono tracking-wide flex-1 break-all">
                 {display(uuid)}
               </code>
               <CopyButton text={display(uuid)} />
