@@ -31,7 +31,6 @@ export default function ToolHost(props: ToolHostProps) {
     } catch (error) {
       setToolComponent(null);
       setLoadError(error);
-      console.error(error);
     }
   }
 

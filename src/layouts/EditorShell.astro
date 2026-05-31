@@ -125,7 +125,6 @@ const grouped: GroupedTool[] = categoryOrder
                         {tool.slug === activeSlug ? "▸" : " "}
                       </span>
                       <span class="sidebar-item-name">{tool.slug}.ts</span>
-                      {tool.isNew && <span class="sidebar-item-badge">new</span>}
                     </a>
                   </li>
                 ))}
@@ -465,20 +464,6 @@ const grouped: GroupedTool[] = categoryOrder
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-
-  .sidebar-item-badge {
-    font-size: 0.6rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--accent-primary);
-    border: 1px solid var(--accent-primary);
-    border-radius: 3px;
-    padding: 0 3px;
-    line-height: 1.4;
-    opacity: 0.8;
-    flex-shrink: 0;
   }
 
   /* ── SIDEBAR BACKDROP (mobile) ── */
