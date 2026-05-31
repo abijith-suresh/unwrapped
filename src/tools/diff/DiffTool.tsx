@@ -23,6 +23,9 @@ import {
   isDiffSessionState,
   shouldPersistDiffSession,
 } from "@/tools/diff/diffSession";
+import Label from "@/components/primitives/solid/Label";
+import Card from "@/components/primitives/solid/Card";
+import Select from "@/components/primitives/solid/Select";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -110,103 +113,35 @@ function InputPanel(props: InputPanelProps) {
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      style={{
-        flex: "1 1 0",
-        "min-width": "0",
-        display: "flex",
-        "flex-direction": "column",
-        position: "relative",
-        border: dragging() ? "2px dashed var(--accent-primary)" : "2px solid transparent",
-        "border-radius": "0.5rem",
-        transition: "border-color 0.15s",
+      class="flex-1 min-w-0 flex flex-col relative rounded-lg transition-[border-color] duration-150"
+      classList={{
+        "border-2 border-dashed border-[var(--accent-primary)]": dragging(),
+        "border-2 border-transparent": !dragging(),
       }}
     >
       {/* Drop overlay */}
       <Show when={dragging()}>
-        <div
-          style={{
-            position: "absolute",
-            inset: "0",
-            display: "flex",
-            "align-items": "center",
-            "justify-content": "center",
-            background: "color-mix(in srgb, var(--accent-primary) 10%, transparent)",
-            "border-radius": "0.4rem",
-            "z-index": "10",
-            "pointer-events": "none",
-            "font-size": "1rem",
-            "font-weight": "600",
-            color: "var(--accent-primary)",
-          }}
-        >
+        <div class="absolute inset-0 flex items-center justify-center bg-[color-mix(in_srgb,var(--accent-primary)_10%,transparent)] rounded z-10 pointer-events-none text-base font-semibold text-[var(--accent-primary)]">
           Drop file here
         </div>
       </Show>
 
       {/* Panel container */}
-      <div
-        style={{
-          display: "flex",
-          "flex-direction": "column",
-          height: "100%",
-          background: "var(--bg-secondary)",
-          border: "1px solid var(--border)",
-          "border-radius": "0.5rem",
-          overflow: "hidden",
-        }}
-      >
+      <Card class="flex flex-col h-full overflow-hidden p-0 rounded-lg">
         {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            "align-items": "center",
-            gap: "0.5rem",
-            padding: "0.5rem 0.75rem",
-            "border-bottom": "1px solid var(--border)",
-            "flex-shrink": "0",
-          }}
-        >
-          <span
-            class="tool-label"
-            style={{
-              "flex-shrink": "0",
-            }}
-          >
-            {props.label}
-          </span>
+        <div class="flex items-center gap-2 px-3 py-2 border-b border-[var(--border)] shrink-0">
+          <Label>{props.label}</Label>
 
-          <select
+          <Select
             value={props.lang}
-            onChange={(e) => props.onLangChange(e.currentTarget.value as Language)}
-            style={{
-              background: "var(--bg-tertiary)",
-              color: "var(--text-primary)",
-              border: "1px solid var(--border)",
-              "border-radius": "0.25rem",
-              padding: "0.2rem 0.4rem",
-              "font-size": "0.75rem",
-              cursor: "pointer",
-              "margin-left": "auto",
-            }}
-          >
-            <For each={SUPPORTED_LANGUAGES}>
-              {(l) => <option value={l}>{LANGUAGE_LABELS[l]}</option>}
-            </For>
-          </select>
+            onChange={(v) => props.onLangChange(v as Language)}
+            options={SUPPORTED_LANGUAGES.map((l) => ({ value: l, label: LANGUAGE_LABELS[l] }))}
+            class="w-auto ml-auto"
+          />
 
           <button
             onClick={() => hiddenInput.click()}
-            style={{
-              background: "var(--bg-tertiary)",
-              color: "var(--text-secondary)",
-              border: "1px solid var(--border)",
-              "border-radius": "0.25rem",
-              padding: "0.2rem 0.5rem",
-              "font-size": "0.75rem",
-              cursor: "pointer",
-              "flex-shrink": "0",
-              "white-space": "nowrap",
-            }}
+            class="bg-[var(--bg-tertiary)] text-[var(--text-secondary)] border border-[var(--border)] rounded px-2 py-0.5 text-xs cursor-pointer shrink-0 whitespace-nowrap"
           >
             Open file
           </button>
@@ -217,25 +152,14 @@ function InputPanel(props: InputPanelProps) {
               props.fileInputRef(el);
             }}
             type="file"
-            style={{ display: "none" }}
+            class="hidden"
             onChange={handleFileChange}
           />
         </div>
 
         <Show when={props.fileMeta}>
           {(fileMeta) => (
-            <div
-              style={{
-                display: "flex",
-                gap: "0.5rem",
-                padding: "0.35rem 0.75rem",
-                "border-bottom": "1px solid var(--border)",
-                background: "color-mix(in srgb, var(--bg-tertiary) 70%, transparent)",
-                color: "var(--text-muted)",
-                "font-size": "0.75rem",
-                "font-family": "var(--font-mono)",
-              }}
-            >
+            <div class="flex gap-2 px-3 py-1.5 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--bg-tertiary)_70%,transparent)] text-[var(--text-muted)] text-xs font-mono">
               <span>{fileMeta().name}</span>
               <span>{formatBytes(fileMeta().size)}</span>
             </div>
@@ -249,24 +173,9 @@ function InputPanel(props: InputPanelProps) {
           placeholder={`Paste ${props.label.toLowerCase()} text here, or drop a file...`}
           spellcheck={false}
           autocomplete="off"
-          style={{
-            flex: "1 1 0",
-            width: "100%",
-            padding: "0.75rem",
-            background: "transparent",
-            color: "var(--text-primary)",
-            border: "none",
-            outline: "none",
-            "font-family": "var(--font-mono)",
-            "font-size": "0.8125rem",
-            "line-height": "1.6",
-            resize: "vertical",
-            "min-height": "280px",
-            "box-sizing": "border-box",
-            "tab-size": "2",
-          }}
+          class="flex-1 w-full p-3 bg-transparent text-[var(--text-primary)] font-mono text-sm leading-[1.6] resize-y min-h-[280px] outline-none tab-size-2"
         />
-      </div>
+      </Card>
     </div>
   );
 }
@@ -534,41 +443,6 @@ export default function DiffTool() {
     });
   }
 
-  // --- Diff row styling helpers ---------------------------------------------
-  function leftCellStyle(type: string): string {
-    if (type === "removed") {
-      return "background: color-mix(in srgb, var(--accent-error) 18%, transparent);";
-    }
-    if (type === "changed") {
-      return "background: color-mix(in srgb, var(--accent-error) 12%, transparent);";
-    }
-    return "";
-  }
-
-  function rightCellStyle(type: string): string {
-    if (type === "added") {
-      return "background: color-mix(in srgb, var(--accent-success) 18%, transparent);";
-    }
-    if (type === "changed") {
-      return "background: color-mix(in srgb, var(--accent-success) 12%, transparent);";
-    }
-    return "";
-  }
-
-  function lineNumStyle(type: string, side: "left" | "right"): string {
-    const base =
-      "user-select: none; text-align: right; padding: 0 0.5rem; min-width: 2.5rem; color: var(--text-muted); font-variant-numeric: tabular-nums; border-right: 1px solid var(--border); font-size: 0.75rem;";
-    if (side === "left") return base + leftCellStyle(type);
-    return base + rightCellStyle(type);
-  }
-
-  function contentCellStyle(type: string, side: "left" | "right"): string {
-    const base =
-      "padding: 0 0.75rem; white-space: pre; font-family: var(--font-mono); font-size: 0.8125rem; overflow: visible; width: 50%;";
-    if (side === "left") return base + leftCellStyle(type);
-    return base + rightCellStyle(type);
-  }
-
   // Separator rows between context groups
   function isSeparator(sourceIndex: number, prevSourceIndex: number | undefined): boolean {
     if (!changesOnly()) return false;
@@ -578,25 +452,11 @@ export default function DiffTool() {
 
   // ---------------------------------------------------------------------------
   return (
-    <div
-      class="tool-container"
-      style={{
-        "--tool-max-width": "none",
-        "--tool-gap": "1rem",
-        padding: "1.25rem 1.5rem",
-        "font-family": "var(--font-sans)",
-      }}
-    >
+    <div class="flex flex-col gap-4 p-5 mx-auto w-full max-w-none">
       {/* -------------------------------------------------------------------- */}
       {/* Input panels (two columns)                                           */}
       {/* -------------------------------------------------------------------- */}
-      <div
-        style={{
-          display: "flex",
-          gap: "0.75rem",
-          "align-items": "stretch",
-        }}
-      >
+      <div class="flex gap-3 items-stretch">
         <InputPanel
           label="Original"
           content={leftContent()}
@@ -623,14 +483,7 @@ export default function DiffTool() {
       {/* Empty state                                                          */}
       {/* -------------------------------------------------------------------- */}
       <Show when={isEmpty()}>
-        <div
-          style={{
-            "text-align": "center",
-            color: "var(--text-muted)",
-            "font-size": "0.9rem",
-            padding: "2rem 1rem",
-          }}
-        >
+        <div class="text-center text-[var(--text-muted)] text-sm py-8 px-4">
           Paste two texts to compare, or open files with the buttons above.
         </div>
       </Show>
@@ -638,30 +491,14 @@ export default function DiffTool() {
       <Show when={fileError()}>
         <div
           role="alert"
-          style={{
-            padding: "0.6rem 0.875rem",
-            "border-radius": "0.375rem",
-            border: "1px solid var(--accent-error)",
-            background: "color-mix(in srgb, var(--accent-error) 10%, transparent)",
-            color: "var(--accent-error)",
-            "font-size": "0.8125rem",
-          }}
+          class="px-3.5 py-2.5 rounded-md border border-[var(--accent-error)] bg-[color-mix(in_srgb,var(--accent-error)_10%,transparent)] text-[var(--accent-error)] text-sm"
         >
           {fileError()}
         </div>
       </Show>
 
       <Show when={fileNotice()}>
-        <div
-          style={{
-            padding: "0.6rem 0.875rem",
-            "border-radius": "0.375rem",
-            border: "1px solid color-mix(in srgb, var(--accent-warning) 60%, transparent)",
-            background: "color-mix(in srgb, var(--accent-warning) 10%, transparent)",
-            color: "var(--accent-warning)",
-            "font-size": "0.8125rem",
-          }}
-        >
+        <div class="px-3.5 py-2.5 rounded-md border border-[color-mix(in_srgb,var(--accent-warning)_60%,transparent)] bg-[color-mix(in_srgb,var(--accent-warning)_10%,transparent)] text-[var(--accent-warning)] text-sm">
           {fileNotice()}
         </div>
       </Show>
@@ -670,103 +507,38 @@ export default function DiffTool() {
       {/* Toolbar (only when there's data or pending)                          */}
       {/* -------------------------------------------------------------------- */}
       <Show when={!isEmpty()}>
-        <div
-          style={{
-            display: "flex",
-            "flex-wrap": "wrap",
-            "align-items": "center",
-            gap: "0.5rem",
-            padding: "0.625rem 0.875rem",
-            background: "var(--bg-secondary)",
-            border: "1px solid var(--border)",
-            "border-radius": "0.5rem",
-          }}
-        >
+        <div class="flex flex-wrap items-center gap-2 px-3.5 py-2.5 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg">
           {/* Strategy badge */}
-          <span
-            style={{
-              "font-size": "0.7rem",
-              "font-weight": "600",
-              "letter-spacing": "0.07em",
-              "text-transform": "uppercase",
-              color: "var(--accent-primary)",
-              background: "color-mix(in srgb, var(--accent-primary) 12%, transparent)",
-              border: "1px solid color-mix(in srgb, var(--accent-primary) 30%, transparent)",
-              "border-radius": "0.25rem",
-              padding: "0.2rem 0.5rem",
-            }}
-          >
+          <span class="text-xs font-semibold tracking-widest uppercase text-[var(--accent-primary)] bg-[color-mix(in_srgb,var(--accent-primary)_12%,transparent)] border border-[color-mix(in_srgb,var(--accent-primary)_30%,transparent)] rounded px-2 py-0.5">
             {STRATEGY_LABELS[strategy()] ?? "Text"}
           </span>
 
           {/* Pending spinner */}
           <Show when={pending()}>
-            <span
-              style={{
-                "font-size": "0.8rem",
-                color: "var(--text-muted)",
-                "font-style": "italic",
-              }}
-            >
-              Comparing...
-            </span>
+            <span class="text-sm text-[var(--text-muted)] italic">Comparing...</span>
           </Show>
 
           {/* Identical label */}
           <Show when={isIdentical()}>
-            <span
-              style={{
-                "font-size": "0.8rem",
-                "font-weight": "500",
-                color: "var(--accent-success)",
-              }}
-            >
-              Identical
-            </span>
+            <span class="text-sm font-medium text-[var(--accent-success)]">Identical</span>
           </Show>
 
           {/* Stats: +N / -N */}
           <Show when={!pending() && !isIdentical() && diffData() !== null}>
-            <span
-              style={{
-                "font-size": "0.8rem",
-                "font-weight": "600",
-                color: "var(--accent-success)",
-              }}
-            >
-              +{stats().added}
-            </span>
-            <span
-              style={{
-                "font-size": "0.8rem",
-                "font-weight": "600",
-                color: "var(--accent-error)",
-              }}
-            >
-              -{stats().removed}
-            </span>
+            <span class="text-sm font-semibold text-[var(--accent-success)]">+{stats().added}</span>
+            <span class="text-sm font-semibold text-[var(--accent-error)]">-{stats().removed}</span>
           </Show>
 
           {/* Spacer */}
-          <div style={{ flex: "1 1 0" }} />
+          <div class="flex-1" />
 
           {/* Changes only toggle */}
-          <label
-            style={{
-              display: "flex",
-              "align-items": "center",
-              gap: "0.35rem",
-              cursor: "pointer",
-              "font-size": "0.8rem",
-              color: "var(--text-secondary)",
-              "user-select": "none",
-            }}
-          >
+          <label class="flex items-center gap-1.5 cursor-pointer text-sm text-[var(--text-secondary)] select-none">
             <input
               type="checkbox"
               checked={changesOnly()}
               onChange={(e) => setChangesOnly(e.currentTarget.checked)}
-              style={{ cursor: "pointer", "accent-color": "var(--accent-primary)" }}
+              class="cursor-pointer accent-[var(--accent-primary)]"
             />
             Changes only
           </label>
@@ -775,16 +547,7 @@ export default function DiffTool() {
           <Show when={changeIndices().length > 0}>
             <button
               onClick={handleNextChange}
-              style={{
-                background: "var(--bg-tertiary)",
-                color: "var(--text-secondary)",
-                border: "1px solid var(--border)",
-                "border-radius": "0.25rem",
-                padding: "0.25rem 0.6rem",
-                "font-size": "0.78rem",
-                cursor: "pointer",
-                "white-space": "nowrap",
-              }}
+              class="bg-[var(--bg-tertiary)] text-[var(--text-secondary)] border border-[var(--border)] rounded px-2.5 py-1 text-xs cursor-pointer whitespace-nowrap"
               title="Jump to next change"
             >
               ↓ Next change
@@ -794,27 +557,13 @@ export default function DiffTool() {
           {/* Swap button */}
           <button
             onClick={handleSwap}
-            style={{
-              background: "var(--bg-tertiary)",
-              color: "var(--text-secondary)",
-              border: "1px solid var(--border)",
-              "border-radius": "0.25rem",
-              padding: "0.25rem 0.6rem",
-              "font-size": "0.78rem",
-              cursor: "pointer",
-              "white-space": "nowrap",
-            }}
+            class="bg-[var(--bg-tertiary)] text-[var(--text-secondary)] border border-[var(--border)] rounded px-2.5 py-1 text-xs cursor-pointer whitespace-nowrap"
             title="Swap left and right"
           >
             ⇅ Swap
           </button>
 
-          <span
-            style={{
-              "font-size": "0.75rem",
-              color: "var(--text-muted)",
-            }}
-          >
+          <span class="text-xs text-[var(--text-muted)]">
             File limit {formatBytes(DEFAULT_IMPORT_MAX_BYTES)}
           </span>
         </div>
@@ -823,28 +572,15 @@ export default function DiffTool() {
         {/* Error banners from structured normalization                        */}
         {/* ------------------------------------------------------------------ */}
         <Show when={structuredErrors().length > 0}>
-          <div
-            style={{
-              display: "flex",
-              "flex-direction": "column",
-              gap: "0.375rem",
-            }}
-          >
+          <div class="flex flex-col gap-1.5">
             <For each={structuredErrors()}>
               {(err) => (
                 <div
                   role="alert"
-                  style={{
-                    padding: "0.6rem 0.875rem",
-                    "border-radius": "0.375rem",
-                    border: "1px solid var(--accent-error)",
-                    background: "color-mix(in srgb, var(--accent-error) 10%, transparent)",
-                    color: "var(--accent-error)",
-                    "font-size": "0.8125rem",
-                  }}
+                  class="px-3.5 py-2.5 rounded-md border border-[var(--accent-error)] bg-[color-mix(in_srgb,var(--accent-error)_10%,transparent)] text-[var(--accent-error)] text-sm"
                 >
-                  <strong style={{ "text-transform": "capitalize" }}>{err.side}</strong>:{" "}
-                  {err.message} — falling back to text diff.
+                  <strong class="capitalize">{err.side}</strong>: {err.message} — falling back to
+                  text diff.
                 </div>
               )}
             </For>
@@ -855,28 +591,13 @@ export default function DiffTool() {
         {/* Diff output table                                                  */}
         {/* ------------------------------------------------------------------ */}
         <Show when={!pending() && diffData() !== null && filteredRows().length > 0}>
-          <div
-            style={{
-              "overflow-x": "auto",
-              border: "1px solid var(--border)",
-              "border-radius": "0.5rem",
-              background: "var(--bg-secondary)",
-            }}
-          >
-            <table
-              style={{
-                width: "100%",
-                "border-collapse": "collapse",
-                "table-layout": "fixed",
-                "font-size": "0.8125rem",
-                "line-height": "1.5",
-              }}
-            >
+          <div class="overflow-x-auto border border-[var(--border)] rounded-lg bg-[var(--bg-secondary)]">
+            <table class="w-full border-collapse table-fixed text-sm leading-[1.5]">
               <colgroup>
-                <col style={{ width: "2.75rem" }} />
-                <col style={{ width: "50%" }} />
-                <col style={{ width: "2.75rem" }} />
-                <col style={{ width: "50%" }} />
+                <col style="width: 2.75rem" />
+                <col style="width: 50%" />
+                <col style="width: 2.75rem" />
+                <col style="width: 50%" />
               </colgroup>
               <tbody>
                 <For each={filteredRows()}>
@@ -892,16 +613,7 @@ export default function DiffTool() {
                           <tr>
                             <td
                               colspan={4}
-                              style={{
-                                padding: "0.15rem 0.75rem",
-                                background: "var(--bg-primary)",
-                                color: "var(--text-muted)",
-                                "font-size": "0.7rem",
-                                "font-family": "var(--font-mono)",
-                                "letter-spacing": "0.05em",
-                                "border-top": "1px solid var(--border)",
-                                "border-bottom": "1px solid var(--border)",
-                              }}
+                              class="px-3 py-0.5 bg-[var(--bg-primary)] text-[var(--text-muted)] text-xs font-mono tracking-wider border-t border-b border-[var(--border)]"
                             >
                               · · ·
                             </td>
@@ -909,32 +621,57 @@ export default function DiffTool() {
                         </Show>
                         <tr
                           data-source-row={sourceIndex}
-                          style={{
-                            "border-top":
-                              showSeparator || i() === 0
-                                ? "none"
-                                : "1px solid color-mix(in srgb, var(--border) 50%, transparent)",
+                          classList={{
+                            "border-t border-[color-mix(in_srgb,var(--border)_50%,transparent)]":
+                              !showSeparator && i() !== 0,
                           }}
                         >
                           {/* Left line number */}
-                          <td style={lineNumStyle(row.type, "left")}>
+                          <td
+                            class="select-none text-right px-2 min-w-[2.5rem] text-[var(--text-muted)] tabular-nums border-r border-[var(--border)] text-xs"
+                            classList={{
+                              "bg-[color-mix(in_srgb,var(--accent-error)_18%,transparent)]":
+                                row.type === "removed",
+                              "bg-[color-mix(in_srgb,var(--accent-error)_12%,transparent)]":
+                                row.type === "changed",
+                            }}
+                          >
                             <Show when={row.leftLineNum !== null}>{row.leftLineNum}</Show>
                           </td>
                           {/* Left content */}
-                          <td style={contentCellStyle(row.type, "left")}>
+                          <td
+                            class="px-3 whitespace-pre font-mono text-xs overflow-visible w-1/2"
+                            classList={{
+                              "bg-[color-mix(in_srgb,var(--accent-error)_18%,transparent)]":
+                                row.type === "removed",
+                              "bg-[color-mix(in_srgb,var(--accent-error)_12%,transparent)]":
+                                row.type === "changed",
+                            }}
+                          >
                             <Show when={row.left !== null}>{row.left}</Show>
                           </td>
                           {/* Right line number */}
                           <td
-                            style={
-                              lineNumStyle(row.type, "right") +
-                              " border-left: 1px solid var(--border);"
-                            }
+                            class="select-none text-right px-2 min-w-[2.5rem] text-[var(--text-muted)] tabular-nums border-r border-[var(--border)] border-l border-[var(--border)] text-xs"
+                            classList={{
+                              "bg-[color-mix(in_srgb,var(--accent-success)_18%,transparent)]":
+                                row.type === "added",
+                              "bg-[color-mix(in_srgb,var(--accent-success)_12%,transparent)]":
+                                row.type === "changed",
+                            }}
                           >
                             <Show when={row.rightLineNum !== null}>{row.rightLineNum}</Show>
                           </td>
                           {/* Right content */}
-                          <td style={contentCellStyle(row.type, "right")}>
+                          <td
+                            class="px-3 whitespace-pre font-mono text-xs overflow-visible w-1/2"
+                            classList={{
+                              "bg-[color-mix(in_srgb,var(--accent-success)_18%,transparent)]":
+                                row.type === "added",
+                              "bg-[color-mix(in_srgb,var(--accent-success)_12%,transparent)]":
+                                row.type === "changed",
+                            }}
+                          >
                             <Show when={row.right !== null}>{row.right}</Show>
                           </td>
                         </tr>
@@ -957,14 +694,7 @@ export default function DiffTool() {
             !isIdentical()
           }
         >
-          <div
-            style={{
-              "text-align": "center",
-              color: "var(--text-muted)",
-              "font-size": "0.875rem",
-              padding: "1.5rem",
-            }}
-          >
+          <div class="text-center text-[var(--text-muted)] text-sm py-6">
             No changes to display with current context settings.
           </div>
         </Show>
