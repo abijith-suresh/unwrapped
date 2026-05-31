@@ -232,13 +232,15 @@ const grouped: GroupedTool[] = categoryOrder
         // Restore persisted collapsed state
         if (collapsed.includes(id)) {
           cat.setAttribute("aria-expanded", "false");
-          list.classList.add("sidebar-list--collapsed");
+          list.style.display = "none";
+          cat.style.transform = "rotate(-90deg)";
         }
 
         function toggle() {
           const isExpanded = cat.getAttribute("aria-expanded") !== "false";
           cat.setAttribute("aria-expanded", isExpanded ? "false" : "true");
-          list!.classList.toggle("sidebar-list--collapsed", isExpanded);
+          list!.style.display = isExpanded ? "none" : "";
+          cat!.style.transform = isExpanded ? "rotate(-90deg)" : "";
 
           // Persist
           const nowCollapsed = Array.from(
@@ -419,13 +421,6 @@ const grouped: GroupedTool[] = categoryOrder
     display: inline-block;
     transition: transform 0.15s ease;
   }
-  .sidebar-category[aria-expanded="false"]::before {
-    transform: rotate(-90deg);
-  }
-  .sidebar-list--collapsed {
-    display: none;
-  }
-
   .sidebar-list {
     list-style: none;
     margin: 0;
