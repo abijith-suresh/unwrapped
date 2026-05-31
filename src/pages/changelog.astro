@@ -1,6 +1,6 @@
 ---
 import changelogSource from "../../CHANGELOG.md?raw";
-import EditorShell from "@/layouts/EditorShell.astro";
+import LandingShell from "@/layouts/LandingShell.astro";
 
 type ReleaseSection = { title: string; items: string[] };
 type Release = { version: string; date: string; sections: ReleaseSection[] };
@@ -103,15 +103,11 @@ const cursorHtml = `\n\n<span class="tok-cursor">▌</span>`;
 const codeHtml = headerHtml + releasesHtml + cursorHtml;
 ---
 
-<EditorShell
-  title="Changelog"
-  description="Release history for unwrapped.tools."
-  activeSlug="changelog"
->
+<LandingShell title="Changelog" description="Release history for unwrapped.tools.">
   <div class="readme-pane">
     <pre class="code-block"><code set:html={codeHtml} /></pre>
   </div>
-</EditorShell>
+</LandingShell>
 
 <style>
   .code-block {
