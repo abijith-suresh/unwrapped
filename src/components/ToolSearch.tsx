@@ -1,37 +1,8 @@
-import {
-  Binary,
-  Braces,
-  Clock,
-  Fingerprint,
-  GitCompare,
-  KeyRound,
-  Regex,
-  Shuffle,
-} from "lucide-solid";
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  For,
-  type JSX,
-  onCleanup,
-  onMount,
-  Show,
-} from "solid-js";
+import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
 
+import { ICON_MAP } from "@/lib/iconMap";
 import { getToolRoute, tools } from "@/tools/registry";
 import type { Tool } from "@/tools/registry";
-
-const ICON_MAP: Record<string, (props: { size?: number; class?: string }) => JSX.Element> = {
-  KeyRound: (p) => <KeyRound {...p} />,
-  GitCompare: (p) => <GitCompare {...p} />,
-  Binary: (p) => <Binary {...p} />,
-  Braces: (p) => <Braces {...p} />,
-  Fingerprint: (p) => <Fingerprint {...p} />,
-  Shuffle: (p) => <Shuffle {...p} />,
-  Clock: (p) => <Clock {...p} />,
-  Regex: (p) => <Regex {...p} />,
-};
 
 /*
  * Relevance ordering for a developer audience.

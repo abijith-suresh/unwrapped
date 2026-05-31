@@ -1,32 +1,9 @@
-import {
-  Binary,
-  Braces,
-  Clock,
-  Fingerprint,
-  GitCompare,
-  KeyRound,
-  Regex,
-  Search,
-  Settings,
-  Shuffle,
-} from "lucide-solid";
+import { Search, Settings } from "lucide-solid";
 import { createEffect, createSignal, For, onCleanup, onMount, Show } from "solid-js";
-import type { JSX } from "solid-js";
 
+import { ICON_MAP } from "@/lib/iconMap";
 import { searchTools } from "@/lib/search";
 import { getToolRoute, type Tool, tools } from "@/tools/registry";
-
-// Map of lucide icon name → component
-const ICON_MAP: Record<string, (props: { size?: number; class?: string }) => JSX.Element> = {
-  KeyRound: (p) => <KeyRound {...p} />,
-  GitCompare: (p) => <GitCompare {...p} />,
-  Binary: (p) => <Binary {...p} />,
-  Braces: (p) => <Braces {...p} />,
-  Fingerprint: (p) => <Fingerprint {...p} />,
-  Shuffle: (p) => <Shuffle {...p} />,
-  Clock: (p) => <Clock {...p} />,
-  Regex: (p) => <Regex {...p} />,
-};
 
 function ToolIcon(props: { name: string; size?: number; class?: string }) {
   const Icon = ICON_MAP[props.name];
