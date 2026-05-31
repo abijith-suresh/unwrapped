@@ -2,8 +2,6 @@
 import Base from "@/layouts/Base.astro";
 import { ClientRouter } from "astro:transitions";
 
-import SettingsModal from "@/components/SettingsModal";
-
 interface Props {
   title: string;
   description?: string;
@@ -16,7 +14,6 @@ const FOOTER_LINKS = [
   { href: "/about", label: "About" },
   { href: "/features", label: "Features" },
   { href: "/privacy", label: "Privacy" },
-  { href: "/changelog", label: "Changelog" },
   {
     href: "https://github.com/abijith-suresh/unwrapped",
     label: "GitHub",
@@ -52,20 +49,9 @@ const FOOTER_LINKS = [
             </a>
           ))
         }
-        <span class="ls-footer-sep" aria-hidden="true">&middot;</span>
-        <button
-          class="ls-footer-link ls-footer-settings"
-          aria-label="Open settings"
-          onclick="document.dispatchEvent(new Event('open-settings'))"
-        >
-          Settings
-        </button>
       </nav>
     </footer>
   </div>
-
-  <!-- Modal lives outside ls-page so it isn't clipped by any overflow -->
-  <SettingsModal client:load hideButton />
 </Base>
 
 <style>
@@ -100,12 +86,6 @@ const FOOTER_LINKS = [
   }
 
   /* Separator before Settings — visually separates action from nav links */
-  .ls-footer-sep {
-    color: var(--text-muted);
-    opacity: 0.45;
-    margin-inline: -0.5rem;
-  }
-
   .ls-footer-link {
     font-family: var(--font-sans);
     font-size: 0.875rem;
@@ -117,13 +97,6 @@ const FOOTER_LINKS = [
 
   .ls-footer-link:hover {
     color: var(--text-primary);
-  }
-
-  .ls-footer-settings {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
   }
 
   @media (prefers-reduced-motion: reduce) {
