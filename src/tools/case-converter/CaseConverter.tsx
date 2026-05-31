@@ -1,6 +1,9 @@
 import { createMemo, createSignal, For, Show } from "solid-js";
 
+import Card from "@/components/primitives/solid/Card";
 import CopyButton from "@/components/CopyButton";
+import Label from "@/components/primitives/solid/Label";
+import Textarea from "@/components/primitives/solid/Textarea";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import { convertCaseVariants } from "@/lib/caseConverter";
 
@@ -24,18 +27,14 @@ export default function CaseConverter() {
   const hasInput = createMemo(() => input().trim().length > 0);
 
   return (
-    <div class="tool-container">
-      <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-        <label class="tool-label">Source text</label>
-        <textarea
-          value={input()}
-          onInput={(event) => setInput(event.currentTarget.value)}
-          placeholder="Paste text, identifiers, or titles to fan out into multiple case styles…"
-          rows={6}
-          spellcheck={false}
-          class="tool-textarea"
-        />
-      </div>
+    <div class="flex flex-col gap-5 p-6 mx-auto w-full" style="max-width: 900px">
+      <Textarea
+        label="Source text"
+        value={input()}
+        onInput={setInput}
+        placeholder="Paste text, identifiers, or titles to fan out into multiple case styles…"
+        rows={6}
+      />
 
       <Show
         when={hasInput()}
@@ -45,51 +44,18 @@ export default function CaseConverter() {
           </ToolStatusMessage>
         }
       >
-        <div
-          style={{
-            display: "grid",
-            gap: "0.75rem",
-            "grid-template-columns": "repeat(auto-fit, minmax(240px, 1fr))",
-          }}
-        >
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-3">
           <For each={VARIANT_LABELS}>
             {([key, label]) => (
-              <section
-                style={{
-                  display: "flex",
-                  "flex-direction": "column",
-                  gap: "0.5rem",
-                  padding: "0.875rem",
-                  background: "var(--bg-secondary)",
-                  border: "1px solid var(--border)",
-                  "border-radius": "0.5rem",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    "align-items": "center",
-                    "justify-content": "space-between",
-                    gap: "0.75rem",
-                  }}
-                >
-                  <span class="tool-label">{label}</span>
+              <Card class="flex flex-col gap-2">
+                <div class="flex items-center justify-between gap-3">
+                  <Label>{label}</Label>
                   <CopyButton text={variants()[key]} label={`Copy ${label}`} />
                 </div>
-                <code
-                  style={{
-                    margin: "0",
-                    color: "var(--text-primary)",
-                    "font-size": "0.875rem",
-                    "line-height": "1.7",
-                    "font-family": "var(--font-mono)",
-                    "white-space": "pre-wrap",
-                    "word-break": "break-word",
-                  }}
-                >
+                <code class="m-0 text-[var(--text-primary)] text-sm leading-[1.7] font-mono whitespace-pre-wrap break-words">
                   {variants()[key] || "—"}
                 </code>
-              </section>
+              </Card>
             )}
           </For>
         </div>

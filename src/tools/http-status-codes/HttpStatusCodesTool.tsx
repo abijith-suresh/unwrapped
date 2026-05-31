@@ -1,6 +1,9 @@
 import { createMemo, createSignal, For } from "solid-js";
 
+import Card from "@/components/primitives/solid/Card";
 import CopyButton from "@/components/CopyButton";
+import Input from "@/components/primitives/solid/Input";
+import Label from "@/components/primitives/solid/Label";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import { searchHttpStatusCodes } from "@/lib/httpStatusCodes";
 
@@ -9,57 +12,36 @@ export default function HttpStatusCodesTool() {
   const results = createMemo(() => searchHttpStatusCodes(query()));
 
   return (
-    <div class="tool-container" style={{ "--tool-max-width": "960px", "--tool-gap": "1rem" }}>
-      <div style={{ display: "flex", "flex-direction": "column", gap: "0.375rem" }}>
-        <label class="tool-label">Search by code or name</label>
-        <input
-          type="search"
-          value={query()}
-          onInput={(event) => setQuery(event.currentTarget.value)}
-          placeholder="Try 404, unprocessable, or redirect…"
-          spellcheck={false}
-          class="tool-input"
-          style={{ "font-size": "0.9375rem" }}
-        />
-      </div>
+    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[960px]">
+      <Input
+        label="Search by code or name"
+        value={query()}
+        onInput={setQuery}
+        placeholder="Try 404, unprocessable, or redirect…"
+        type="search"
+      />
 
       <ToolStatusMessage tone="muted">
         {results().length.toLocaleString()} status code{results().length === 1 ? "" : "s"} shown
         from a bundled local reference.
       </ToolStatusMessage>
 
-      <div style={{ display: "flex", "flex-direction": "column", gap: "0.75rem" }}>
+      <div class="flex flex-col gap-3">
         <For each={results()}>
           {(entry) => (
-            <section
-              style={{
-                display: "flex",
-                "flex-direction": "column",
-                gap: "0.5rem",
-                padding: "1rem",
-                background: "var(--bg-secondary)",
-                border: "1px solid var(--border)",
-                "border-radius": "0.75rem",
-              }}
-            >
-              <div style={{ display: "flex", "justify-content": "space-between", gap: "1rem" }}>
-                <div style={{ display: "flex", "flex-direction": "column", gap: "0.25rem" }}>
-                  <div style={{ display: "flex", gap: "0.625rem", "align-items": "baseline" }}>
-                    <strong style={{ color: "var(--text-primary)", "font-size": "1.375rem" }}>
-                      {entry.code}
-                    </strong>
-                    <span style={{ color: "var(--text-primary)", "font-size": "1rem" }}>
-                      {entry.name}
-                    </span>
+            <Card class="flex flex-col gap-2 p-4">
+              <div class="flex justify-between gap-4">
+                <div class="flex flex-col gap-1">
+                  <div class="flex gap-2.5 items-baseline">
+                    <strong class="text-[var(--text-primary)] text-[1.375rem]">{entry.code}</strong>
+                    <span class="text-[var(--text-primary)] text-base">{entry.name}</span>
                   </div>
-                  <span class="tool-label">{entry.category}</span>
+                  <Label>{entry.category}</Label>
                 </div>
                 <CopyButton text={`${entry.code} ${entry.name}`} label="Copy entry" />
               </div>
-              <p style={{ margin: 0, color: "var(--text-secondary)", "line-height": 1.6 }}>
-                {entry.description}
-              </p>
-            </section>
+              <p class="m-0 text-[var(--text-secondary)] leading-[1.6]">{entry.description}</p>
+            </Card>
           )}
         </For>
       </div>
