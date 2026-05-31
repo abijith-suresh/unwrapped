@@ -11,7 +11,7 @@ export interface SessionOptions<T> {
   storage?: Pick<Storage, "getItem" | "setItem" | "removeItem"> | null;
 }
 
-export function getBrowserStorage(): Storage | null {
+function getBrowserStorage(): Storage | null {
   return typeof localStorage === "undefined" ? null : localStorage;
 }
 

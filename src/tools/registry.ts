@@ -278,7 +278,3 @@ export function validateToolRegistry(availableComponentPaths: readonly string[] 
 export function getToolBySlug(slug: string): Tool | undefined {
   return tools.find((t) => t.slug === slug);
 }
-
-export function getToolsByCategory(category: ToolCategory): Tool[] {
-  return tools.filter((t) => t.category === category);
-}

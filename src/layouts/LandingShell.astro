@@ -3,7 +3,6 @@ import Base from "@/layouts/Base.astro";
 import { ClientRouter } from "astro:transitions";
 
 import SettingsModal from "@/components/SettingsModal";
-import { getPwaRouteBootstrapScript } from "@/lib/pwaRoute";
 
 interface Props {
   title: string;
@@ -28,7 +27,6 @@ const FOOTER_LINKS = [
 
 <Base title={title} description={description} ogImage={ogImage}>
   <Fragment slot="head">
-    <script is:inline set:html={getPwaRouteBootstrapScript()} />
     <ClientRouter />
   </Fragment>
 

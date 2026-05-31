@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 
 import {
   formatJson,
-  parseJsonErrorPosition,
   parseJsonErrorSourceContext,
   sortJsonKeys,
   syntaxHighlightJson,
@@ -72,11 +71,6 @@ describe("json formatter utilities", () => {
     expect(result.errorContext).toContain('2 | "b":');
     expect(result.errorContext).toContain("3 | }");
     expect(result.errorContext).toContain("^");
-  });
-
-  it("extracts line or position details from parser messages", () => {
-    expect(parseJsonErrorPosition("Unexpected token at line 4")).toBe(4);
-    expect(parseJsonErrorPosition("Unexpected token at position 12")).toBe(12);
   });
 
   it("builds source context from parser positions", () => {

@@ -5,7 +5,7 @@ import { tools } from "@/tools/registry";
 
 <EditorShell
   title="Features"
-  description="What unwrapped.tools offers — tools, themes, shortcuts, and PWA support."
+  description="What unwrapped.tools offers — tools, shortcuts, and local-first guarantees."
   activeSlug="features"
 >
   <div class="readme-pane">
@@ -20,22 +20,9 @@ import { tools } from "@/tools/registry";
 </a>
 ))}<span class="tok-punct">]</span><span class="tok-punct">;</span>
 
-<span class="tok-kw">const</span> <span class="tok-id">themes</span> <span class="tok-punct">=</span> <span class="tok-punct">[</span>
-  <span class="tok-str">"catppuccin"</span><span class="tok-punct">,</span>  <span class="tok-comment">// default</span>
-  <span class="tok-str">"dracula"</span><span class="tok-punct">,</span>
-  <span class="tok-str">"nord"</span><span class="tok-punct">,</span>
-  <span class="tok-str">"gruvbox"</span><span class="tok-punct">,</span>
-<span class="tok-punct">]</span><span class="tok-punct">;</span>
-
 <span class="tok-kw">const</span> <span class="tok-id">shortcuts</span> <span class="tok-punct">=</span> <span class="tok-punct">{"{"}</span>
   <span class="tok-str">"Cmd+K"</span><span class="tok-punct">:</span> <span class="tok-str">"open command palette"</span><span class="tok-punct">,</span>
   <span class="tok-str">"Escape"</span><span class="tok-punct">:</span> <span class="tok-str">"close modal or palette"</span><span class="tok-punct">,</span>
-<span class="tok-punct">{"}"}</span><span class="tok-punct">;</span>
-
-<span class="tok-kw">const</span> <span class="tok-id">pwa</span> <span class="tok-punct">=</span> <span class="tok-punct">{"{"}</span>
-  <span class="tok-id">installable</span><span class="tok-punct">:</span> <span class="tok-bool">true</span><span class="tok-punct">,</span>
-  <span class="tok-id">offlineReady</span><span class="tok-punct">:</span> <span class="tok-bool">true</span><span class="tok-punct">,</span>
-  <span class="tok-id">routeRecovery</span><span class="tok-punct">:</span> <span class="tok-str">"reopens last visited tool on launch"</span><span class="tok-punct">,</span>
 <span class="tok-punct">{"}"}</span><span class="tok-punct">;</span>
 
 <span class="tok-cursor">▌</span></code></pre>
@@ -43,10 +30,6 @@ import { tools } from "@/tools/registry";
 </EditorShell>
 
 <style>
-  .tok-bool {
-    color: var(--accent-secondary);
-  }
-
   .code-line-link {
     display: block;
     text-decoration: none;

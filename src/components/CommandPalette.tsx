@@ -290,7 +290,7 @@ export default function CommandPalette() {
                       </span>
                     </div>
                     <p class="mt-0.5 truncate text-[12px]" style={{ color: "var(--text-muted)" }}>
-                      Color theme, keyboard shortcuts &amp; more
+                      Settings, keyboard shortcuts &amp; more
                     </p>
                   </div>
 
