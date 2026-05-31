@@ -2,7 +2,7 @@ import solid from "@astrojs/solid-js";
 import { defineConfig } from "astro/config";
 
 export default defineConfig({
-  site: "https://unwrapped-tools.vercel.app",
+  site: "https://unwrapped.vercel.app",
   integrations: [solid()],
   vite: {
     resolve: {
