@@ -7,6 +7,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.3](https://github.com/abijith-suresh/unwrapped/compare/v0.6.2...v0.6.3) (2026-05-31)
+
+
+### Features
+
+* **core:** harden the current tool suite before tool-page redesign ([#138](https://github.com/abijith-suresh/unwrapped/issues/138)) ([3e52cf3](https://github.com/abijith-suresh/unwrapped/commit/3e52cf39705e952fa9f9982944f80fc871cc8cec))
+* **cron:** add humanized schedule output and next-run previews ([#152](https://github.com/abijith-suresh/unwrapped/issues/152)) ([943b258](https://github.com/abijith-suresh/unwrapped/commit/943b258e9dcb872604db288a3e90f45e24496edc))
+* **data:** add a JSON to CSV converter ([#148](https://github.com/abijith-suresh/unwrapped/issues/148)) ([0eb3bcc](https://github.com/abijith-suresh/unwrapped/commit/0eb3bcc98b3c51f31c85981089ad1ba9ad1c33f9))
+* **data:** add a JSON to YAML converter ([#144](https://github.com/abijith-suresh/unwrapped/issues/144)) ([24e576d](https://github.com/abijith-suresh/unwrapped/commit/24e576d1a7328f7b4139ad17a746be40b08de093))
+* **data:** add a YAML formatter ([#146](https://github.com/abijith-suresh/unwrapped/issues/146)) ([c4ea5cd](https://github.com/abijith-suresh/unwrapped/commit/c4ea5cd2e78578822e8a97c53b4f5ec77bd81705))
+* **data:** add a YAML to JSON converter ([#145](https://github.com/abijith-suresh/unwrapped/issues/145)) ([282f2d4](https://github.com/abijith-suresh/unwrapped/commit/282f2d46462c2053d2f6e3ee995f86ef85f96f55))
+* **data:** add an XML formatter ([#147](https://github.com/abijith-suresh/unwrapped/issues/147)) ([6101f0c](https://github.com/abijith-suresh/unwrapped/commit/6101f0c477cd57164288c101638d1ced517a9c94))
+* **encoding:** add a URL encoder and decoder ([#142](https://github.com/abijith-suresh/unwrapped/issues/142)) ([b15f814](https://github.com/abijith-suresh/unwrapped/commit/b15f814d76a1d39357efcf3483a7f6a768b29cfa))
+* **generators:** add a configurable random token generator ([#141](https://github.com/abijith-suresh/unwrapped/issues/141)) ([2550f67](https://github.com/abijith-suresh/unwrapped/commit/2550f671dbbaeb9eae9d73284c5ed3d90863ed68))
+* **network:** add an HTTP status code reference ([#143](https://github.com/abijith-suresh/unwrapped/issues/143)) ([56d3c95](https://github.com/abijith-suresh/unwrapped/commit/56d3c95a23a232b0fcc518593f542e4f3eea2d1d))
+* redesign landing page around tool search ([#136](https://github.com/abijith-suresh/unwrapped/issues/136)) ([f7bde61](https://github.com/abijith-suresh/unwrapped/commit/f7bde6128f98c0c4b574152638f71f6389e110fd))
+* **security:** add a chmod permission calculator ([#149](https://github.com/abijith-suresh/unwrapped/issues/149)) ([c14c299](https://github.com/abijith-suresh/unwrapped/commit/c14c2996f9dbd906a2439c1ab3e47635f7c740df))
+* **security:** add an HMAC generator ([#150](https://github.com/abijith-suresh/unwrapped/issues/150)) ([ec8dc83](https://github.com/abijith-suresh/unwrapped/commit/ec8dc837ef995962a283a7593749de919794f59f))
+* **text:** add a case converter ([#139](https://github.com/abijith-suresh/unwrapped/issues/139)) ([2df147a](https://github.com/abijith-suresh/unwrapped/commit/2df147aa8bb6b036034b4f241c4664165bf16e6c))
+* **text:** add a text statistics tool ([#140](https://github.com/abijith-suresh/unwrapped/issues/140)) ([84bb55b](https://github.com/abijith-suresh/unwrapped/commit/84bb55b8a2e48df77c98e1545173137b5293056f))
+* **url:** add a local-only URL and query string inspector ([#151](https://github.com/abijith-suresh/unwrapped/issues/151)) ([8e876d4](https://github.com/abijith-suresh/unwrapped/commit/8e876d41bd52566399994038034424637d4b652e))
+
 ## [0.6.2](https://github.com/abijith-suresh/unwrapped-tools/compare/v0.6.1...v0.6.2) (2026-05-03)
 
 
