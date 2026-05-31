@@ -1,0 +1,132 @@
+---
+import Base from "@/layouts/Base.astro";
+import { ClientRouter } from "astro:transitions";
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  toolName?: string;
+  toolDescription?: string;
+}
+
+const { title, description, ogImage, toolName } = Astro.props;
+
+const FOOTER_LINKS = [
+  { href: "/about", label: "About" },
+  { href: "/features", label: "Features" },
+  { href: "/privacy", label: "Privacy" },
+  {
+    href: "https://github.com/abijith-suresh/unwrapped",
+    label: "GitHub",
+    external: true,
+  },
+];
+---
+
+<Base title={title} description={description} ogImage={ogImage}>
+  <Fragment slot="head">
+    <ClientRouter />
+  </Fragment>
+
+  <div class="ts-page">
+    <header class="ts-header">
+      <a href="/" class="ts-brand">unwrapped.tools</a>
+      <span class="ts-sep">/</span>
+      <span class="ts-tool-name">{toolName}</span>
+    </header>
+    <main class="ts-main">
+      <slot />
+    </main>
+    <footer class="ts-footer">
+      <nav aria-label="Site navigation" class="ts-footer-nav">
+        {
+          FOOTER_LINKS.map((link) => (
+            <a
+              href={link.href}
+              class="ts-footer-link"
+              {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            >
+              {link.label}
+            </a>
+          ))
+        }
+      </nav>
+    </footer>
+  </div>
+</Base>
+
+<style>
+  .ts-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    padding-inline: clamp(2rem, 6vw, 7rem);
+  }
+
+  .ts-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+  }
+
+  .ts-brand {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .ts-brand:hover {
+    color: var(--accent-primary);
+  }
+
+  .ts-sep {
+    color: var(--text-muted);
+  }
+
+  .ts-tool-name {
+    color: var(--text-secondary);
+  }
+
+  .ts-main {
+    flex: 1;
+    padding-top: clamp(2.5rem, 8vh, 5rem);
+  }
+
+  .ts-footer {
+    padding: 2rem 0 2.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .ts-footer-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .ts-footer-link {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.1s;
+  }
+
+  .ts-footer-link:hover {
+    color: var(--text-primary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ts-footer-link {
+      transition: none;
+    }
+  }
+</style>

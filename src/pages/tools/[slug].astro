@@ -1,6 +1,6 @@
 ---
 import ToolHost from "@/components/ToolHost";
-import EditorShell from "@/layouts/EditorShell.astro";
+import ToolShell from "@/layouts/ToolShell.astro";
 import { getToolBySlug, tools, validateToolRegistry } from "@/tools/registry";
 
 const toolModules = import.meta.glob("../../tools/*/*.tsx");
@@ -29,23 +29,22 @@ if (!tool) {
 }
 ---
 
-<EditorShell title={tool.name} description={tool.description} activeSlug={tool.slug}>
+<ToolShell
+  title={tool.name}
+  description={tool.description}
+  toolName={tool.name}
+  toolDescription={tool.description}
+>
   <div class="tool-pane">
-    <!-- Minimal comment header — stays in editor metaphor -->
     <div class="tool-header">
-      <span class="tool-comment">// </span><span class="tool-title">{tool.name}</span><span
-        class="tool-comment"
-      >
-        — {tool.description}</span
-      >
+      <span class="tool-title">{tool.name}</span>
+      <span class="tool-description">— {tool.description}</span>
     </div>
-
-    <!-- Tool component -->
     <div class="tool-body">
       <ToolHost componentPath={tool.componentPath} toolName={tool.name} client:load />
     </div>
   </div>
-</EditorShell>
+</ToolShell>
 
 <style>
   .tool-pane {
@@ -65,15 +64,15 @@ if (!tool) {
     text-overflow: ellipsis;
   }
 
-  .tool-comment {
-    color: var(--text-muted);
-    font-style: italic;
-  }
-
   .tool-title {
     color: var(--text-primary);
     font-size: 1rem;
     font-weight: 600;
+  }
+
+  .tool-description {
+    color: var(--text-muted);
+    font-style: italic;
   }
 
   .tool-body {
