@@ -38,7 +38,7 @@ export default function CronTool() {
   });
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full" style="max-width: 900px">
+    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[900px]">
       <div class="flex flex-col gap-1.5">
         <Label>Cron expression</Label>
         <input
