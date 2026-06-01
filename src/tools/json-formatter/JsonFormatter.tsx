@@ -1,6 +1,7 @@
 import { createMemo, createSignal, Show } from "solid-js";
 
 import CopyButton from "@/components/CopyButton";
+import ToolActionButton from "@/components/ToolActionButton";
 import Textarea from "@/components/primitives/solid/Textarea";
 import Label from "@/components/primitives/solid/Label";
 import { formatJson, type IndentSize, type JsonFormatResult } from "@/lib/jsonFormatter";
@@ -18,67 +19,48 @@ export default function JsonFormatter() {
     <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[900px]">
       <div class="flex items-center flex-wrap gap-3">
         <div class="flex items-center gap-1 p-1 rounded-md border border-[var(--border)] bg-[var(--bg-secondary)]">
-          <button
-            classList={{
-              "px-2.5 py-1 text-xs font-semibold rounded cursor-pointer border-none transition-[background,color] duration-150": true,
-              "bg-[var(--accent-primary)] text-[var(--bg-primary)]": indent() === 2 && !minify(),
-              "bg-transparent text-[var(--text-secondary)]": !(indent() === 2 && !minify()),
-            }}
+          <ToolActionButton
+            active={indent() === 2 && !minify()}
+            variant={indent() === 2 && !minify() ? "primary" : "ghost"}
             onClick={() => {
               setIndent(2);
               setMinify(false);
             }}
           >
             2 spaces
-          </button>
-          <button
-            classList={{
-              "px-2.5 py-1 text-xs font-semibold rounded cursor-pointer border-none transition-[background,color] duration-150": true,
-              "bg-[var(--accent-primary)] text-[var(--bg-primary)]": indent() === 4 && !minify(),
-              "bg-transparent text-[var(--text-secondary)]": !(indent() === 4 && !minify()),
-            }}
+          </ToolActionButton>
+          <ToolActionButton
+            active={indent() === 4 && !minify()}
+            variant={indent() === 4 && !minify() ? "primary" : "ghost"}
             onClick={() => {
               setIndent(4);
               setMinify(false);
             }}
           >
             4 spaces
-          </button>
+          </ToolActionButton>
         </div>
 
-        <button
-          classList={{
-            "px-3 py-1 text-xs font-semibold rounded-md cursor-pointer border transition-[background,color] duration-150": true,
-            "bg-[color-mix(in_srgb,var(--accent-primary)_15%,transparent)] text-[var(--accent-primary)] border-[var(--accent-primary)]":
-              minify(),
-            "bg-[var(--bg-secondary)] text-[var(--text-secondary)] border-[var(--border)]":
-              !minify(),
-          }}
+        <ToolActionButton
+          active={minify()}
+          variant="secondary"
           onClick={() => setMinify((value) => !value)}
         >
           Minify
-        </button>
+        </ToolActionButton>
 
-        <button
-          classList={{
-            "px-3 py-1 text-xs font-semibold rounded-md cursor-pointer border transition-[background,color] duration-150": true,
-            "bg-[color-mix(in_srgb,var(--accent-primary)_15%,transparent)] text-[var(--accent-primary)] border-[var(--accent-primary)]":
-              sortKeys(),
-            "bg-[var(--bg-secondary)] text-[var(--text-secondary)] border-[var(--border)]":
-              !sortKeys(),
-          }}
+        <ToolActionButton
+          active={sortKeys()}
+          variant="secondary"
           onClick={() => setSortKeys((value) => !value)}
         >
           Sort keys
-        </button>
+        </ToolActionButton>
 
         <Show when={input().trim()}>
-          <button
-            class="ml-auto px-3 py-1 text-xs font-semibold rounded-md cursor-pointer border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--text-muted)]"
-            onClick={() => setInput("")}
-          >
+          <ToolActionButton variant="ghost" onClick={() => setInput("")}>
             Clear
-          </button>
+          </ToolActionButton>
         </Show>
       </div>
 
