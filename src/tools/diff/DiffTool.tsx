@@ -11,7 +11,12 @@ import {
 
 import { type DiffAnalysisResult } from "@/lib/diffAnalysis";
 import { createDiffAnalysisExecutor } from "@/lib/diffExecution";
-import { DEFAULT_IMPORT_MAX_BYTES, formatBytes, readImportedFile } from "@/lib/fileImport";
+import {
+  DEFAULT_IMPORT_MAX_BYTES,
+  formatBytes,
+  type ImportedFileMeta,
+  readImportedFile,
+} from "@/lib/fileImport";
 import { type Language, SUPPORTED_LANGUAGES } from "@/lib/language";
 import { detectLanguage } from "@/lib/languageDetection";
 import { DIFF_SESSION_STORAGE_KEY } from "@/lib/localPersistence";
@@ -19,7 +24,6 @@ import { clearSessionState, loadSessionState, saveSessionState } from "@/lib/ses
 import {
   DEFAULT_DIFF_SESSION_STATE,
   DIFF_SESSION_VERSION,
-  type DiffFileMeta,
   isDiffSessionState,
   shouldPersistDiffSession,
 } from "@/tools/diff/diffSession";
@@ -68,7 +72,7 @@ interface InputPanelProps {
   label: string;
   content: string;
   lang: Language;
-  fileMeta: DiffFileMeta | null;
+  fileMeta: ImportedFileMeta | null;
   onContentChange: (v: string) => void;
   onLangChange: (v: Language) => void;
   fileInputRef: (el: HTMLInputElement) => void;
@@ -197,8 +201,8 @@ export default function DiffTool() {
   const [currentChangeIdx, setCurrentChangeIdx] = createSignal(0);
   const [fileError, setFileError] = createSignal<string | null>(null);
   const [fileNotice, setFileNotice] = createSignal<string | null>(null);
-  const [leftFile, setLeftFile] = createSignal<DiffFileMeta | null>(null);
-  const [rightFile, setRightFile] = createSignal<DiffFileMeta | null>(null);
+  const [leftFile, setLeftFile] = createSignal<ImportedFileMeta | null>(null);
+  const [rightFile, setRightFile] = createSignal<ImportedFileMeta | null>(null);
   const [analysis, setAnalysis] = createSignal<DiffAnalysisResult | null>(null);
 
   // diffData holds the committed snapshot used for computing the diff

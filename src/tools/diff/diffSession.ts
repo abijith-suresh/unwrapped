@@ -1,12 +1,6 @@
-import { type Language, SUPPORTED_LANGUAGES } from "../../lib/language";
+import { type Language, SUPPORTED_LANGUAGES } from "@/lib/language";
 
 export const DIFF_SESSION_VERSION = 2;
-
-export interface DiffFileMeta {
-  name: string;
-  size: number;
-  type: string;
-}
 
 export interface DiffSessionState {
   leftLang: Language;
