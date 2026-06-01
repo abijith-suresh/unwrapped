@@ -1,5 +1,5 @@
 import { Check, Clipboard } from "lucide-solid";
-import { createSignal } from "solid-js";
+import { createSignal, onCleanup } from "solid-js";
 
 import { copyToClipboard } from "@/lib/clipboard";
 
@@ -12,12 +12,15 @@ interface CopyButtonProps {
 
 export default function CopyButton(props: CopyButtonProps) {
   const [copied, setCopied] = createSignal(false);
+  let copyTimer: ReturnType<typeof setTimeout> | undefined;
+  onCleanup(() => clearTimeout(copyTimer));
 
   async function handleCopy() {
     const success = await copyToClipboard(props.text);
     if (success) {
+      clearTimeout(copyTimer);
       setCopied(true);
-      setTimeout(() => setCopied(false), COPY_FEEDBACK_DURATION_MS);
+      copyTimer = setTimeout(() => setCopied(false), COPY_FEEDBACK_DURATION_MS);
     }
   }
 
