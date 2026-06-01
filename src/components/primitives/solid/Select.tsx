@@ -12,13 +12,15 @@ export interface SelectProps {
   onChange?: (value: string) => void;
   options?: SelectOption[];
   class?: string;
+  id?: string;
 }
 
 export default function Select(props: SelectProps) {
   return (
     <div class={cn("flex flex-col gap-1.5", props.class)}>
-      {props.label ? <Label>{props.label}</Label> : null}
+      {props.label ? <Label for={props.id}>{props.label}</Label> : null}
       <select
+        id={props.id}
         value={props.value ?? ""}
         onChange={(e) => props.onChange?.((e.target as HTMLSelectElement).value)}
         class="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] px-4 py-2.5 text-sm text-[var(--text-primary)] outline-none font-mono focus:border-[var(--accent-primary)]"

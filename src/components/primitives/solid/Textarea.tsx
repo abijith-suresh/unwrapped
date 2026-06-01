@@ -12,13 +12,15 @@ export interface TextareaProps {
   autofocus?: boolean;
   spellcheck?: boolean;
   readonly?: boolean;
+  id?: string;
 }
 
 export default function Textarea(props: TextareaProps) {
   return (
     <div class={cn("flex flex-col gap-1.5", props.class)}>
-      {props.label ? <Label>{props.label}</Label> : null}
+      {props.label ? <Label for={props.id}>{props.label}</Label> : null}
       <textarea
+        id={props.id}
         value={props.value ?? ""}
         onInput={(e) => props.onInput?.((e.target as HTMLTextAreaElement).value)}
         placeholder={props.placeholder}
