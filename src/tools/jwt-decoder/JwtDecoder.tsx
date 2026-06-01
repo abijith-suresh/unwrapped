@@ -4,6 +4,7 @@ import CopyButton from "@/components/CopyButton";
 import Card from "@/components/primitives/solid/Card";
 import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
+import ToolStatusMessage from "@/components/ToolStatusMessage";
 import { getJwtClaimsSummary, getJwtExpiryStatus, parseJwt, prettyJson } from "@/lib/jwt";
 
 // ---------------------------------------------------------------------------
@@ -90,12 +91,7 @@ export default function JwtDecoder() {
       {/* Error banner                                                        */}
       {/* ------------------------------------------------------------------ */}
       <Show when={error()}>
-        <div
-          role="alert"
-          class="px-4 py-3 rounded-lg border border-[var(--accent-error)] bg-[color-mix(in_srgb,var(--accent-error)_12%,transparent)] text-[var(--accent-error)] text-sm"
-        >
-          {error()}
-        </div>
+        <ToolStatusMessage tone="error">{error()}</ToolStatusMessage>
       </Show>
 
       {/* ------------------------------------------------------------------ */}
