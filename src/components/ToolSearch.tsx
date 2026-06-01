@@ -191,7 +191,14 @@ export default function ToolSearch() {
                   id={`lp-tool-${tool.slug}`}
                   role="option"
                   aria-selected={activeIndex() === idx()}
-                  onMouseEnter={() => setActiveIndex(idx())}
+                  onMouseEnter={() => {
+                    setActiveIndex(idx());
+                    const link = document.createElement("link");
+                    link.rel = "prefetch";
+                    link.href = getToolRoute(tool.slug);
+                    document.head.appendChild(link);
+                    setTimeout(() => link.remove(), 5000);
+                  }}
                   onMouseLeave={() => setActiveIndex(-1)}
                 >
                   <span class="lp-row-icon">{Icon ? <Icon size={15} /> : null}</span>
