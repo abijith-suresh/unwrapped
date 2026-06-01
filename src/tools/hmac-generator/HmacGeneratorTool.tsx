@@ -37,7 +37,7 @@ export default function HmacGeneratorTool() {
   }
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full" style="max-width: 900px">
+    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[900px]">
       <div class="grid gap-4 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
         <Textarea label="Message" value={message()} onInput={(v) => setMessage(v)} rows={6} />
         <Textarea label="Secret" value={secret()} onInput={(v) => setSecret(v)} rows={6} />

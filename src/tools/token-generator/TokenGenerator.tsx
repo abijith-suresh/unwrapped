@@ -59,7 +59,7 @@ export default function TokenGenerator() {
   }
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full" style="max-width: 900px">
+    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[900px]">
       <div class="grid grid-cols-[2fr_1fr] gap-4">
         <Card class="flex flex-col gap-1.5">
           <div class="flex justify-between gap-3">
