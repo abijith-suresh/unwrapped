@@ -164,15 +164,7 @@ export default function RegexTester() {
       <Show when={mode() === "replace"}>
         <div class="flex flex-col gap-1.5">
           <Label>Replacement</Label>
-          <Input
-            value={replacement()}
-            onInput={(v) => {
-              setReplacement(v);
-              clearTimeout(debounceTimer);
-              debounceTimer = setTimeout(() => setDebouncedInput(v), 250);
-            }}
-            placeholder="Replacement text"
-          />
+          <Input value={replacement()} onInput={setReplacement} placeholder="Replacement text" />
         </div>
       </Show>
 
