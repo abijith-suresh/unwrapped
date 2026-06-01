@@ -53,11 +53,9 @@ export default function TokenGenerator() {
     key: K,
     value: TokenGeneratorOptions[K]
   ) {
-    setOptions((current) => {
-      const next = { ...current, [key]: value };
-      regenerate(next);
-      return next;
-    });
+    const next = { ...options(), [key]: value };
+    setOptions(next);
+    regenerate(next);
   }
 
   return (

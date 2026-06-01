@@ -8,13 +8,15 @@ export interface InputProps {
   placeholder?: string;
   type?: string;
   class?: string;
+  id?: string;
 }
 
 export default function Input(props: InputProps) {
   return (
     <div class={cn("flex flex-col gap-1.5", props.class)}>
-      {props.label ? <Label>{props.label}</Label> : null}
+      {props.label ? <Label for={props.id}>{props.label}</Label> : null}
       <input
+        id={props.id}
         type={props.type ?? "text"}
         value={props.value ?? ""}
         onInput={(e) => props.onInput?.((e.target as HTMLInputElement).value)}
