@@ -135,18 +135,10 @@ export default function Base64Tool() {
       return;
     }
 
-    const result = await readImportedFile(
-      file,
-      workflow() === "file"
-        ? {
-            as: "text",
-            policy: { maxBytes: DEFAULT_IMPORT_MAX_BYTES },
-          }
-        : {
-            as: "text",
-            policy: { maxBytes: DEFAULT_IMPORT_MAX_BYTES },
-          }
-    );
+    const result = await readImportedFile(file, {
+      as: "text",
+      policy: { maxBytes: DEFAULT_IMPORT_MAX_BYTES },
+    });
 
     if (!result.ok) {
       setFileError(result.error);
