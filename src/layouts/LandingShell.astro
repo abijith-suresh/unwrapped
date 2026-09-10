@@ -104,6 +104,8 @@ const FOOTER_LINKS = [
   }
 
   .ls-brand {
+    position: relative;
+    padding-left: 0.8rem;
     color: var(--text-primary);
     font-family: var(--font-mono);
     font-size: 1.05rem;
@@ -111,6 +113,16 @@ const FOOTER_LINKS = [
     letter-spacing: -0.05em;
     line-height: 1;
     text-decoration: none;
+  }
+
+  .ls-brand::before {
+    position: absolute;
+    top: 0.05rem;
+    bottom: 0.05rem;
+    left: 0;
+    width: 2px;
+    background: var(--accent-primary);
+    content: "";
   }
 
   .ls-brand-tld {
@@ -130,7 +142,7 @@ const FOOTER_LINKS = [
   .ls-footer-nav {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     flex-wrap: wrap;
     gap: 1.5rem;
   }

@@ -199,12 +199,18 @@ export default function ToolSearch() {
                   }}
                   onMouseLeave={() => setActiveIndex(-1)}
                 >
+                  <span class="lp-row-index" aria-hidden="true">
+                    {String(idx() + 1).padStart(2, "0")}
+                  </span>
                   <span class="lp-row-icon" aria-hidden="true">
                     {Icon ? <Icon size={15} /> : null}
                   </span>
                   <span class="lp-row-name">{tool.name}</span>
                   <span class="lp-row-cat">{tool.category}</span>
                   <span class="lp-row-desc">{tool.description}</span>
+                  <span class="lp-row-arrow" aria-hidden="true">
+                    ↗
+                  </span>
                 </a>
               );
             }}
