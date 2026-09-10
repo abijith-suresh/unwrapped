@@ -1,29 +1,32 @@
 ---
 import LandingShell from "@/layouts/LandingShell.astro";
+import { PERSISTED_PREFERENCES } from "@/lib/localPersistence";
 ---
 
 <LandingShell
   title="Local Persistence Contract"
-  description="How unwrapped.tools stores local preferences and what it does not persist by default."
+  description="What unwrapped.tools stores locally and what it does not save."
 >
   <div class="pp-page">
     <h1 class="pp-title">Privacy</h1>
 
     <p class="pp-intro">
-      unwrapped.tools runs entirely in your browser. Nothing is sent to a server. Tool inputs are
-      never persisted.
+      unwrapped.tools processes tool input in your browser. It does not upload or server-process
+      that input, and it does not save tool inputs or outputs.
     </p>
 
     <section class="pp-section">
       <h2 class="pp-heading">Persists</h2>
-      <p class="pp-subhead">Preferences that survive a reload, stored in localStorage</p>
+      <p class="pp-subhead">Preferences that survive a reload. Stored in localStorage.</p>
       <div class="pp-items">
-        <div class="pp-item">
-          <span class="pp-item-key">unwrapped-tool-session:diff</span>
-          <span class="pp-item-desc"
-            >diff view preferences, left and right language, changes-only mode</span
-          >
-        </div>
+        {
+          PERSISTED_PREFERENCES.map((preference) => (
+            <div class="pp-item">
+              <span class="pp-item-key">{preference.key}</span>
+              <span class="pp-item-desc">{preference.description}</span>
+            </div>
+          ))
+        }
       </div>
     </section>
 
@@ -39,9 +42,8 @@ import LandingShell from "@/layouts/LandingShell.astro";
     <section class="pp-section">
       <h2 class="pp-heading">Manage</h2>
       <p class="pp-desc">
-        Stored preferences live under the localStorage key above. To erase it, clear site
-        data for this site in your browser settings. There is no account and nothing is stored
-        anywhere else.
+        Stored preferences live under the localStorage key above. To erase them, clear site data for
+        this site in your browser settings. There is no account or server-side copy of tool input.
       </p>
     </section>
   </div>
