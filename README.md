@@ -11,7 +11,7 @@ Developers paste secrets — tokens, JWTs, config files — into online tools ev
 ## Privacy contract
 
 - Tool inputs stay in the browser and are never persisted.
-- The single registered localStorage key is `unwrapped-tool-session:diff`, which stores diff display preferences (language and changes-only mode) only.
+- The registered localStorage keys are `unwrapped-tool-session:diff`, which stores diff display preferences (language and changes-only mode), and `unwrapped-last-tool-route`, which stores the last registered tool route so installed launches can reopen it. Neither key stores tool inputs or outputs.
 - Clearing site data in your browser removes everything the app has stored.
 
 See `/privacy` in the app for the current local persistence contract.
@@ -33,7 +33,7 @@ The shipped set covers secrets and security (JWT inspection, hashes, HMAC, token
 
 ## Installable and offline
 
-The app is an installable PWA. After the first successful load, a service worker precaches the shell and every tool page, so all tools keep working offline. Regenerate the PWA icons with `bun run icons` after changing `public/favicon.svg`.
+The app is an installable PWA. After the first successful load, a service worker precaches the shell and every tool page, so all tools keep working offline. Installed launches reopen the last registered tool route. Regenerate the PWA icons with `bun run icons` after changing `public/favicon.svg`.
 
 ## Development
 

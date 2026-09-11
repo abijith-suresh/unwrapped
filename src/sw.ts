@@ -13,6 +13,7 @@ cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST, {
   cleanURLs: true,
   directoryIndex: "index.html",
+  ignoreURLParametersMatching: [/.*/],
 });
 
 self.addEventListener("message", (event) => {

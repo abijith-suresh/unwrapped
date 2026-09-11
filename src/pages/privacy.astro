@@ -16,12 +16,18 @@ import LandingShell from "@/layouts/LandingShell.astro";
 
     <section class="pp-section">
       <h2 class="pp-heading">Persists</h2>
-      <p class="pp-subhead">Preferences that survive a reload — stored in localStorage</p>
+      <p class="pp-subhead">Preferences that survive a reload, stored in localStorage</p>
       <div class="pp-items">
         <div class="pp-item">
           <span class="pp-item-key">unwrapped-tool-session:diff</span>
           <span class="pp-item-desc"
-            >diff view preferences — left and right language, changes-only mode</span
+            >diff view preferences, left and right language, changes-only mode</span
+          >
+        </div>
+        <div class="pp-item">
+          <span class="pp-item-key">unwrapped-last-tool-route</span>
+          <span class="pp-item-desc"
+            >last registered tool route, lets installed launches reopen the last tool</span
           >
         </div>
       </div>
@@ -39,8 +45,8 @@ import LandingShell from "@/layouts/LandingShell.astro";
     <section class="pp-section">
       <h2 class="pp-heading">Manage</h2>
       <p class="pp-desc">
-        Stored preferences live under the single localStorage key above. To erase them, clear site
-        data for this site in your browser settings — there is no account and nothing is stored
+        Stored preferences live under the two localStorage keys above. To erase them, clear site
+        data for this site in your browser settings. There is no account and nothing is stored
         anywhere else.
       </p>
     </section>

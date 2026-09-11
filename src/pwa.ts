@@ -47,7 +47,11 @@ if (typeof window !== "undefined" && !window.__unwrappedPwaRegistered) {
   } else {
     const options: RegisterSWOptions = {
       immediate: true,
-      onRegisterError(_error) {},
+      onRegisterError(error) {
+        // This stays local and does not report anything to a server.
+        // biome-ignore lint/suspicious/noConsole: registration failures need a local diagnostic.
+        console.warn("[unwrapped] Service worker registration failed", error);
+      },
     };
 
     registerSW(options);

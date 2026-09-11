@@ -16,6 +16,9 @@ export default defineConfig({
       injectManifest: {
         globPatterns: ["**/*.{css,html,js,png,svg,webmanifest,woff2}"],
       },
+      experimental: {
+        directoryAndTrailingSlashHandler: true,
+      },
       includeAssets: ["favicon.svg", "og-image.png"],
       manifest: {
         id: "/",
