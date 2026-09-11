@@ -18,7 +18,6 @@
     "test:watch": "vitest",
     "verify": "bun run type-check && bun run type-check:scripts && bun run lint && bun run format:check && bun run build && bun run test",
     "og": "bun scripts/generate-og.ts",
-    "icons": "bun scripts/generate-icons.ts",
     "prepare": "husky"
   },
   "dependencies": {
@@ -43,7 +42,6 @@
     "@resvg/resvg-js": "^2.6.2",
     "@solidjs/testing-library": "^0.8.10",
     "@testing-library/jest-dom": "^7.0.1",
-    "esbuild": "^0.28.2",
     "husky": "^9.1.7",
     "jsdom": "^30.0.1",
     "lint-staged": "^17.5.0",
@@ -51,9 +49,6 @@
     "sharp": "^0.35.4",
     "typescript": "6",
     "vite-plugin-solid": "^2.11.14",
-    "vitest": "^5.0.0",
-    "workbox-core": "^7.4.1",
-    "workbox-build": "^7.4.1",
-    "workbox-precaching": "^7.4.1"
+    "vitest": "^5.0.0"
   }
 }

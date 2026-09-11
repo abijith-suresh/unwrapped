@@ -3,11 +3,9 @@ import solid from "@astrojs/solid-js";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 
-import pwaIntegration from "./scripts/pwaIntegration";
-
 export default defineConfig({
   site: "https://unwrapped-tools.vercel.app",
-  integrations: [solid(), sitemap(), pwaIntegration()],
+  integrations: [solid(), sitemap()],
   vite: {
     plugins: [...tailwindcss()],
     resolve: {
