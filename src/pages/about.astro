@@ -4,7 +4,7 @@ import LandingShell from "@/layouts/LandingShell.astro";
 
 <LandingShell
   title="About"
-  description="About unwrapped.tools — a local-first suite of fast developer utilities."
+  description="About unwrapped.tools, a browser-only suite of developer utilities."
 >
   <div class="ap-page">
     <h1 class="ap-title">About</h1>
@@ -14,11 +14,11 @@ import LandingShell from "@/layouts/LandingShell.astro";
       <div class="ap-grid">
         <div class="ap-card">
           <span class="ap-card-label">local</span>
-          <p class="ap-card-desc">Everything runs in your browser. Nothing leaves it.</p>
+          <p class="ap-card-desc">Tool inputs stay in your browser.</p>
         </div>
         <div class="ap-card">
           <span class="ap-card-label">fast</span>
-          <p class="ap-card-desc">No round trips. No spinners. Instant feedback.</p>
+          <p class="ap-card-desc">Tool work does not need server round trips.</p>
         </div>
         <div class="ap-card">
           <span class="ap-card-label">focused</span>
@@ -32,47 +32,6 @@ import LandingShell from "@/layouts/LandingShell.astro";
     </section>
 
     <section class="ap-section">
-      <h2 class="ap-heading">Stack</h2>
-      <div class="ap-grid">
-        <div class="ap-card">
-          <span class="ap-card-label">framework</span>
-          <p class="ap-card-desc">Astro 7</p>
-        </div>
-        <div class="ap-card">
-          <span class="ap-card-label">ui</span>
-          <p class="ap-card-desc">SolidJS</p>
-        </div>
-        <div class="ap-card">
-          <span class="ap-card-label">styles</span>
-          <p class="ap-card-desc">Tailwind CSS v4</p>
-        </div>
-        <div class="ap-card">
-          <span class="ap-card-label">language</span>
-          <p class="ap-card-desc">TypeScript (strict)</p>
-        </div>
-        <div class="ap-card">
-          <span class="ap-card-label">runtime</span>
-          <p class="ap-card-desc">Bun</p>
-        </div>
-        <div class="ap-card">
-          <span class="ap-card-label">deploy</span>
-          <p class="ap-card-desc">Vercel</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="ap-section">
-      <h2 class="ap-heading">Never tracked</h2>
-      <ul class="ap-list">
-        <li class="ap-list-item">analytics</li>
-        <li class="ap-list-item">telemetry</li>
-        <li class="ap-list-item">third-party scripts</li>
-        <li class="ap-list-item">server-side tool processing</li>
-        <li class="ap-list-item">uploads of any kind</li>
-      </ul>
-    </section>
-
-    <section class="ap-section">
       <h2 class="ap-heading">Links</h2>
       <div class="ap-links">
         <a
@@ -82,12 +41,12 @@ import LandingShell from "@/layouts/LandingShell.astro";
           class="ap-link"
         >
           <span class="ap-link-label">source</span>
-          <span class="ap-link-sep">—</span>
+          <span class="ap-link-sep">·</span>
           <span class="ap-link-value">github.com/abijith-suresh/unwrapped</span>
         </a>
         <a href="/privacy" class="ap-link">
           <span class="ap-link-label">privacy</span>
-          <span class="ap-link-sep">—</span>
+          <span class="ap-link-sep">·</span>
           <span class="ap-link-value">local persistence contract</span>
         </a>
       </div>
@@ -151,31 +110,6 @@ import LandingShell from "@/layouts/LandingShell.astro";
     color: var(--text-secondary);
     margin: 0.25rem 0 0;
     line-height: 1.5;
-  }
-
-  .ap-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .ap-list-item {
-    font-family: var(--font-mono);
-    font-size: 0.8125rem;
-    color: var(--text-secondary);
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: 0.5rem;
-    background: var(--bg-secondary);
-  }
-
-  .ap-list-item::before {
-    content: "✗ ";
-    color: var(--accent-error);
-    font-weight: 700;
   }
 
   .ap-links {
