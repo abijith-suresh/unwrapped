@@ -49,11 +49,13 @@ describe("PWA route smoke", () => {
   }
 
   it("emits the manifest with the declared install icons", () => {
-    const manifest = readBuiltFile("manifest.webmanifest");
+    const manifest = JSON.parse(readBuiltFile("manifest.webmanifest")) as {
+      icons: Array<{ src: string }>;
+      start_url: string;
+    };
 
-    expect(manifest).toContain('"start_url":"/"');
-    expect(manifest).toContain('"src":"/icon-192.png"');
-    expect(manifest).toContain('"src":"/icon-512.png"');
+    expect(manifest.start_url).toBe("/");
+    expect(manifest.icons.map((icon) => icon.src)).toEqual(["/icon-192.png", "/icon-512.png"]);
     expect(existsSync(resolve(distDir, "icon-192.png"))).toBe(true);
     expect(existsSync(resolve(distDir, "icon-512.png"))).toBe(true);
   });
@@ -61,13 +63,13 @@ describe("PWA route smoke", () => {
   it("precaches the home route and every registered tool route", () => {
     const serviceWorker = readBuiltFile("sw.js");
 
-    expect(serviceWorker).toMatch(/"url":\s*"\/"/);
+    expect(serviceWorker).toMatch(/"url":\s*"index\.html"/);
     expect(serviceWorker).toContain("ignoreURLParametersMatching");
+    expect(serviceWorker).toContain("urlManipulation");
 
     for (const tool of tools) {
       const route = getToolRoute(tool.slug).slice(1);
       expect(serviceWorker).toMatch(new RegExp(`"url":\\s*"${route}/index\\.html"`));
-      expect(serviceWorker).toMatch(new RegExp(`"url":\\s*"${route}"`));
     }
   });
 });

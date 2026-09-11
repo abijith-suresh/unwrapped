@@ -14,6 +14,15 @@ precacheAndRoute(self.__WB_MANIFEST, {
   cleanURLs: true,
   directoryIndex: "index.html",
   ignoreURLParametersMatching: [/.*/],
+  urlManipulation: ({ url }) => {
+    if (url.pathname === "/" || url.pathname.endsWith("/")) return [];
+
+    const directoryURL = new URL(url);
+    directoryURL.pathname = `${directoryURL.pathname}/index.html`;
+    directoryURL.search = "";
+    directoryURL.hash = "";
+    return [directoryURL];
+  },
 });
 
 self.addEventListener("message", (event) => {
