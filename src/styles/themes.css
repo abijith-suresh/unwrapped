@@ -11,4 +11,8 @@
   --accent-warning: #e2b467;
   --accent-error: #e27e84;
   --border: #2b3038;
+  --border-strong: #414854;
+  --focus-ring: var(--accent-primary);
+  --radius-control: 0.5rem;
+  --radius-panel: 0.75rem;
 }

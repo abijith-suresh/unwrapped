@@ -10,7 +10,7 @@ interface Props {
   toolDescription?: string;
 }
 
-const { title, description, ogImage, toolName } = Astro.props;
+const { title, description, ogImage, toolName, toolDescription } = Astro.props;
 
 const FOOTER_LINKS = [
   { href: "/about", label: "About" },
@@ -29,13 +29,23 @@ const FOOTER_LINKS = [
     <ClientRouter />
   </Fragment>
 
+  <a class="ts-skip-link" href="#main-content">Skip to content</a>
+
   <div class="ts-page">
     <header class="ts-header">
-      <a href="/" class="ts-brand">unwrapped.tools</a>
-      <span class="ts-sep">/</span>
-      <span class="ts-tool-name">{toolName}</span>
+      <a href="/" class="ts-brand" translate="no">
+        unwrapped<span class="ts-brand-tld">.tools</span>
+      </a>
+      <span class="ts-sep" aria-hidden="true">/</span>
+      <span class="ts-tool-name" translate="no">{toolName}</span>
     </header>
-    <main class="ts-main">
+
+    <main id="main-content" class="ts-main" tabindex="-1">
+      <section class="ts-tool-heading" aria-labelledby="tool-title">
+        <p class="ts-tool-kicker">browser utility</p>
+        <h1 id="tool-title">{toolName}</h1>
+        {toolDescription ? <p class="ts-tool-description">{toolDescription}</p> : null}
+      </section>
       <slot />
     </main>
     <footer class="ts-footer">
@@ -61,27 +71,66 @@ const FOOTER_LINKS = [
     display: flex;
     flex-direction: column;
     min-height: 100dvh;
-    padding-inline: clamp(2rem, 6vw, 7rem);
+    padding-inline: clamp(1.25rem, 6vw, 7rem);
+  }
+
+  .ts-skip-link {
+    position: fixed;
+    z-index: 20;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--accent-primary);
+    border-radius: 0.4rem;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    text-decoration: none;
+    transform: translateY(-200%);
+    transition: transform 120ms ease;
+  }
+
+  .ts-skip-link:focus-visible {
+    transform: translateY(0);
   }
 
   .ts-header {
     display: flex;
     align-items: center;
+    width: min(100%, 1120px);
+    min-height: 4.25rem;
+    margin-inline: auto;
     gap: 0.5rem;
     padding: 1rem 0;
     border-bottom: 1px solid var(--border);
-    margin-bottom: 0;
     font-family: var(--font-mono);
     font-size: 0.875rem;
   }
 
   .ts-brand {
+    position: relative;
+    padding-left: 0.8rem;
     color: var(--text-primary);
     text-decoration: none;
     font-weight: 700;
   }
 
-  .ts-brand:hover {
+  .ts-brand::before {
+    position: absolute;
+    top: 0.05rem;
+    bottom: 0.05rem;
+    left: 0;
+    width: 2px;
+    background: var(--accent-primary);
+    content: "";
+  }
+
+  .ts-brand:hover,
+  .ts-brand:focus-visible {
+    color: var(--accent-secondary);
+  }
+
+  .ts-brand-tld {
     color: var(--accent-primary);
   }
 
@@ -95,7 +144,41 @@ const FOOTER_LINKS = [
 
   .ts-main {
     flex: 1;
-    padding-top: clamp(2.5rem, 8vh, 5rem);
+    min-width: 0;
+    padding-top: clamp(2rem, 5vh, 3.5rem);
+  }
+
+  .ts-tool-heading {
+    width: min(100%, 1120px);
+    margin: 0 auto;
+    padding: 0 0 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .ts-tool-kicker {
+    margin: 0 0 0.55rem;
+    color: var(--accent-primary);
+    font: 0.68rem var(--font-mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .ts-tool-heading h1 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 700;
+    letter-spacing: -0.06em;
+    line-height: 1;
+    text-wrap: balance;
+  }
+
+  .ts-tool-description {
+    max-width: 58rem;
+    margin: 0.8rem 0 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
   }
 
   .ts-footer {
@@ -125,8 +208,20 @@ const FOOTER_LINKS = [
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .ts-skip-link,
     .ts-footer-link {
       transition: none;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .ts-header {
+      min-height: 3.75rem;
+      padding-block: 0.8rem;
+    }
+
+    .ts-tool-heading {
+      padding-bottom: 1.25rem;
     }
   }
 </style>

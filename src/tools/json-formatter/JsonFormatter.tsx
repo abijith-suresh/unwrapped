@@ -1,9 +1,13 @@
 import { createMemo, createSignal, Show } from "solid-js";
 
 import CopyButton from "@/components/CopyButton";
-import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolActionButton from "@/components/ToolActionButton";
+import ToolCodeBlock from "@/components/tool/ToolCodeBlock";
+import ToolContainer from "@/components/tool/ToolContainer";
+import ToolPanel from "@/components/tool/ToolPanel";
+import ToolSplitPane from "@/components/tool/ToolSplitPane";
+import ToolToolbar from "@/components/tool/ToolToolbar";
 import { formatJson, type IndentSize, type JsonFormatResult } from "@/lib/jsonFormatter";
 
 export default function JsonFormatter() {
@@ -16,9 +20,12 @@ export default function JsonFormatter() {
   );
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[900px]">
-      <div class="flex items-center flex-wrap gap-3">
-        <div class="flex items-center gap-1 p-1 rounded-md border border-[var(--border)] bg-[var(--bg-secondary)]">
+    <ToolContainer width="wide">
+      <ToolToolbar label="Formatting options">
+        <div class="flex flex-wrap items-center gap-1">
+          <span class="px-2 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+            Indent
+          </span>
           <ToolActionButton
             active={indent() === 2 && !minify()}
             variant={indent() === 2 && !minify() ? "primary" : "ghost"}
@@ -58,65 +65,92 @@ export default function JsonFormatter() {
         </ToolActionButton>
 
         <Show when={input().trim()}>
-          <ToolActionButton variant="ghost" onClick={() => setInput("")}>
-            Clear
-          </ToolActionButton>
+          <div class="ml-auto">
+            <ToolActionButton variant="ghost" onClick={() => setInput("")}>
+              Clear
+            </ToolActionButton>
+          </div>
         </Show>
-      </div>
-
-      <Textarea
-        label="Input JSON"
-        value={input()}
-        onInput={(value) => setInput(value)}
-        placeholder="Paste JSON here…"
-        rows={10}
-        autofocus
-        spellcheck={false}
-        error={!!result().error}
-      />
+      </ToolToolbar>
 
       <Show when={result().error}>
         {(msg) => (
-          <div
+          <ToolPanel
+            id="json-input-error"
+            title="Input error"
+            tone="error"
             role="alert"
-            class="flex flex-col gap-3 p-3 rounded-lg border border-[var(--accent-error)] bg-[color-mix(in_srgb,var(--accent-error)_12%,transparent)] text-[var(--accent-error)] text-sm"
+            aria-live="polite"
+            bodyClass="space-y-3"
           >
-            <div class="font-mono">{msg()}</div>
+            <p class="m-0 font-mono text-sm leading-relaxed text-[var(--accent-error)]">{msg()}</p>
+
             <Show when={result().errorLine && result().errorColumn}>
-              <div class="text-[var(--text-secondary)] text-[0.8125rem] font-mono">
+              <p class="m-0 text-xs text-[var(--text-secondary)]">
                 Line {result().errorLine}, column {result().errorColumn}
-              </div>
+              </p>
             </Show>
+
             <Show when={result().errorContext}>
               {(context) => (
-                <pre class="m-0 p-3 bg-[color-mix(in_srgb,var(--bg-secondary)_88%,transparent)] text-[var(--text-primary)] border border-[var(--border)] rounded-md text-[0.8125rem] leading-normal font-mono whitespace-pre-wrap break-words">
+                <pre class="m-0 max-h-48 overflow-auto rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-primary)] p-3 font-mono text-xs leading-relaxed whitespace-pre-wrap break-words text-[var(--text-primary)]">
                   {context()}
                 </pre>
               )}
             </Show>
-          </div>
+          </ToolPanel>
         )}
       </Show>
 
-      <Show when={result().html}>
-        {(html) => (
-          <div class="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg overflow-hidden">
-            <div class="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border)]">
-              <Label>
-                {minify()
-                  ? `Minified${sortKeys() ? " · sorted" : ""}`
-                  : `Formatted · ${indent()} spaces${sortKeys() ? " · sorted" : ""}`}
-              </Label>
-              <CopyButton text={result().raw} />
-            </div>
+      <ToolSplitPane>
+        <ToolPanel title="Input" description="Paste a JSON document to format or validate.">
+          <Textarea
+            id="json-input"
+            name="json-input"
+            label="JSON document"
+            value={input()}
+            onInput={(value) => setInput(value)}
+            placeholder="Paste JSON here…"
+            rows={16}
+            spellcheck={false}
+            autocomplete="off"
+            describedBy={result().error ? "json-input-error" : undefined}
+            error={!!result().error}
+          />
+        </ToolPanel>
 
-            <pre
-              class="m-0 p-4 overflow-x-auto text-[0.8125rem] leading-[1.6] text-[var(--text-primary)] font-mono whitespace-pre-wrap break-all"
-              innerHTML={html()}
-            />
-          </div>
-        )}
-      </Show>
-    </div>
+        <ToolPanel
+          title={
+            minify()
+              ? `Minified${sortKeys() ? " · sorted" : ""}`
+              : `Formatted${sortKeys() ? " · sorted" : ` · ${indent()} spaces`}`
+          }
+          description="The result stays in your browser."
+          bodyClass="p-3 sm:p-4"
+          actions={
+            <Show when={result().raw}>
+              <CopyButton text={result().raw} label="Copy JSON" />
+            </Show>
+          }
+        >
+          <Show
+            when={result().html}
+            fallback={
+              <div class="flex min-h-[22rem] items-center justify-center rounded-[var(--radius-control)] border border-dashed border-[var(--border)] bg-[var(--bg-primary)] p-6 text-center text-sm leading-relaxed text-[var(--text-muted)]">
+                Formatted JSON will appear here.
+              </div>
+            }
+          >
+            {(html) => (
+              <ToolCodeBlock
+                html={html()}
+                aria-label="Formatted JSON output"
+                class="text-[0.8125rem]"
+              />
+            )}
+          </Show>
+        </ToolPanel>
+      </ToolSplitPane>
+    </ToolContainer>
   );
 }
