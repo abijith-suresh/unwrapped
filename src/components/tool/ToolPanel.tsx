@@ -41,7 +41,7 @@ export default function ToolPanel(props: ToolPanelProps) {
         local.class
       )}
     >
-      <header class="flex min-w-0 flex-wrap items-start justify-between gap-4 border-b border-[var(--border)] px-4 py-3">
+      <header class="flex min-w-0 shrink-0 flex-wrap items-start justify-between gap-4 border-b border-[var(--border)] px-4 py-3">
         <div class="min-w-0">
           <h2
             class={cn(
@@ -65,7 +65,7 @@ export default function ToolPanel(props: ToolPanelProps) {
         </Show>
       </header>
 
-      <div class={cn("min-w-0 p-3 sm:p-4", local.bodyClass)}>{local.children}</div>
+      <div class={cn("min-h-0 min-w-0 p-3 sm:p-4", local.bodyClass)}>{local.children}</div>
     </section>
   );
 }

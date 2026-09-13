@@ -21,20 +21,40 @@ describe("JsonFormatter", () => {
   it("keeps indentation and formatting modes visibly selected", () => {
     const { getByRole } = render(() => <JsonFormatter />);
 
-    const twoSpaces = getByRole("button", { name: "2 spaces" });
-    const fourSpaces = getByRole("button", { name: "4 spaces" });
-    const minify = getByRole("button", { name: "Minify" });
+    const twoSpaces = getByRole("radio", { name: "2 spaces" });
+    const fourSpaces = getByRole("radio", { name: "4 spaces" });
+    const minified = getByRole("radio", { name: "Minified" });
 
-    expect(twoSpaces).toHaveAttribute("aria-pressed", "true");
-    expect(fourSpaces).toHaveAttribute("aria-pressed", "false");
+    expect(twoSpaces).toHaveAttribute("aria-checked", "true");
+    expect(fourSpaces).toHaveAttribute("aria-checked", "false");
+    expect(minified).toHaveAttribute("aria-checked", "false");
 
     fireEvent.click(fourSpaces);
-    expect(twoSpaces).toHaveAttribute("aria-pressed", "false");
-    expect(fourSpaces).toHaveAttribute("aria-pressed", "true");
+    expect(twoSpaces).toHaveAttribute("aria-checked", "false");
+    expect(fourSpaces).toHaveAttribute("aria-checked", "true");
 
-    fireEvent.click(minify);
-    expect(minify).toHaveAttribute("aria-pressed", "true");
-    expect(fourSpaces).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(minified);
+    expect(minified).toHaveAttribute("aria-checked", "true");
+    expect(fourSpaces).toHaveAttribute("aria-checked", "false");
+  });
+
+  it("keeps sort keys independent from the output format", () => {
+    const { getByRole } = render(() => <JsonFormatter />);
+
+    const minified = getByRole("radio", { name: "Minified" });
+    const fourSpaces = getByRole("radio", { name: "4 spaces" });
+    const sortKeys = getByRole("button", { name: "Sort keys A-Z" });
+
+    fireEvent.click(minified);
+    fireEvent.click(sortKeys);
+
+    expect(minified).toHaveAttribute("aria-checked", "true");
+    expect(sortKeys).toHaveAttribute("aria-pressed", "true");
+
+    fireEvent.click(fourSpaces);
+
+    expect(fourSpaces).toHaveAttribute("aria-checked", "true");
+    expect(sortKeys).toHaveAttribute("aria-pressed", "true");
   });
 
   it("switches between input and output views for compact mobile use", () => {

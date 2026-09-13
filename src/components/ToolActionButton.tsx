@@ -52,6 +52,7 @@ export default function ToolActionButton(props: ToolActionButtonProps) {
     "active",
     "aria-pressed",
     "class",
+    "role",
     "style",
     "type",
     "variant",
@@ -60,8 +61,9 @@ export default function ToolActionButton(props: ToolActionButtonProps) {
   return (
     <button
       {...rest}
+      role={local.role}
       type={local.type ?? "button"}
-      aria-pressed={local.active ?? local["aria-pressed"]}
+      aria-pressed={local.role === "radio" ? undefined : (local.active ?? local["aria-pressed"])}
       class={cn(
         BASE_CLASSES,
         getButtonClasses(local.variant ?? "secondary", local.active ?? local["aria-pressed"]),
