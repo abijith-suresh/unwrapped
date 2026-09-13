@@ -27,7 +27,7 @@ export default function ToolCodeBlock(props: ToolCodeBlockProps) {
       }}
       tabindex={local.tabIndex ?? 0}
       class={cn(
-        "m-0 min-h-[22rem] overflow-auto rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-primary)] p-4 text-sm leading-relaxed text-[var(--text-primary)] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]",
+        "m-0 min-h-[16rem] overflow-auto rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-primary)] p-4 text-sm leading-relaxed text-[var(--text-primary)] outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)] md:min-h-[22rem]",
         local.class
       )}
     >

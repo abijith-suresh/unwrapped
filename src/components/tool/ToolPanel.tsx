@@ -65,7 +65,7 @@ export default function ToolPanel(props: ToolPanelProps) {
         </Show>
       </header>
 
-      <div class={cn("min-w-0 p-4", local.bodyClass)}>{local.children}</div>
+      <div class={cn("min-w-0 p-3 sm:p-4", local.bodyClass)}>{local.children}</div>
     </section>
   );
 }
