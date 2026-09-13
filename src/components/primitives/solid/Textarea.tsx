@@ -1,3 +1,5 @@
+import { createUniqueId } from "solid-js";
+
 import Label from "@/components/primitives/solid/Label";
 import { cn } from "@/lib/cn";
 
@@ -8,19 +10,34 @@ export interface TextareaProps {
   placeholder?: string;
   rows?: number;
   class?: string;
+  labelClass?: string;
+  controlClass?: string;
+  resize?: "none" | "y";
   error?: boolean;
   autofocus?: boolean;
   spellcheck?: boolean;
   readonly?: boolean;
   id?: string;
+  name?: string;
+  autocomplete?: string;
+  describedBy?: string;
+  disabled?: boolean;
 }
 
 export default function Textarea(props: TextareaProps) {
+  const controlId = props.id ?? createUniqueId();
+
   return (
     <div class={cn("flex flex-col gap-1.5", props.class)}>
-      {props.label ? <Label for={props.id}>{props.label}</Label> : null}
+      {props.label ? (
+        <Label for={controlId} class={props.labelClass}>
+          {props.label}
+        </Label>
+      ) : null}
       <textarea
-        id={props.id}
+        id={controlId}
+        name={props.name}
+        autocomplete={props.autocomplete}
         value={props.value ?? ""}
         onInput={(e) => props.onInput?.((e.target as HTMLTextAreaElement).value)}
         placeholder={props.placeholder}
@@ -28,9 +45,14 @@ export default function Textarea(props: TextareaProps) {
         autofocus={props.autofocus}
         spellcheck={props.spellcheck ?? true}
         readonly={props.readonly}
+        disabled={props.disabled}
+        aria-describedby={props.describedBy}
+        aria-invalid={props.error || undefined}
         class={cn(
-          "w-full rounded-lg border bg-[var(--bg-secondary)] px-4 py-2.5 text-sm text-[var(--text-primary)] outline-none font-mono resize-y transition-[border-color] duration-150 focus:border-[var(--accent-primary)]",
-          props.error ? "border-[var(--accent-error)]" : "border-[var(--border)]"
+          "w-full rounded-[var(--radius-control)] border bg-[var(--bg-secondary)] px-4 py-2.5 font-mono text-sm text-[var(--text-primary)] outline-none transition-[background-color,border-color,box-shadow] duration-150 motion-reduce:transition-none focus:border-[var(--accent-primary)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)] disabled:cursor-not-allowed disabled:opacity-60",
+          props.resize === "none" ? "resize-none" : "resize-y",
+          props.error ? "border-[var(--accent-error)]" : "border-[var(--border)]",
+          props.controlClass
         )}
       />
     </div>
