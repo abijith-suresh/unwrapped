@@ -72,18 +72,18 @@ describe("JsonFormatter", () => {
     expect(outputView).toHaveAttribute("aria-pressed", "true");
   });
 
-  it("shows a compact accessible error with optional details", async () => {
-    const { container, getByRole, getByText } = render(() => <JsonFormatter />);
+  it("shows an accessible toast and persistent inline diagnostic", async () => {
+    const { container, getByRole } = render(() => <JsonFormatter />);
 
     fireEvent.input(getByRole("textbox", { name: "JSON document" }), {
       target: { value: '{"name":' },
     });
 
     await waitFor(() => {
-      expect(getByRole("alert")).toHaveTextContent("JSON could not be parsed");
+      expect(getByRole("status")).toHaveTextContent("JSON could not be parsed.");
     });
-    expect(getByText("Show error details")).toBeInTheDocument();
-    expect(container.querySelector("details")).not.toHaveAttribute("open");
+    expect(container.querySelector("[data-json-error-marker]")).toBeInTheDocument();
+    expect(container.querySelector("details")).not.toBeInTheDocument();
     expect(getByRole("textbox", { name: "JSON document" })).toHaveAttribute(
       "aria-describedby",
       "json-input-error"

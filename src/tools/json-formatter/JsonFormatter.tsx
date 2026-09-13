@@ -1,13 +1,13 @@
-import { createMemo, createSignal, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, onCleanup, Show } from "solid-js";
 
 import CopyButton from "@/components/CopyButton";
-import Textarea from "@/components/primitives/solid/Textarea";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolCodeBlock from "@/components/tool/ToolCodeBlock";
+import ToolCodeEditor from "@/components/tool/ToolCodeEditor";
 import ToolContainer from "@/components/tool/ToolContainer";
-import ToolInlineError from "@/components/tool/ToolInlineError";
 import ToolPanel from "@/components/tool/ToolPanel";
 import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
+import ToolToast from "@/components/tool/ToolToast";
 import ToolToolbar from "@/components/tool/ToolToolbar";
 import ToolWorkspace from "@/components/tool/ToolWorkspace";
 import { formatJson, type IndentSize, type JsonFormatResult } from "@/lib/jsonFormatter";
@@ -26,12 +26,55 @@ export default function JsonFormatter() {
   const result = createMemo(
     (): JsonFormatResult => formatJson(input(), indent(), minify(), sortKeys())
   );
+  const errorHint = createMemo(() => {
+    const current = result();
+    return current.errorLine && current.errorColumn
+      ? `Check the value near line ${current.errorLine}, column ${current.errorColumn}.`
+      : "Check commas, quotes, and brackets, then try again.";
+  });
+  const diagnostic = createMemo(() => {
+    const current = result();
+    return current.errorPosition === null
+      ? null
+      : { start: current.errorPosition, length: current.errorLength };
+  });
+  const [toastOpen, setToastOpen] = createSignal(false);
+  let toastTimer: ReturnType<typeof setTimeout> | undefined;
+  let hadError = false;
+
+  createEffect(() => {
+    const hasError = Boolean(result().error);
+
+    if (hasError && !hadError) {
+      setToastOpen(true);
+      if (toastTimer) {
+        clearTimeout(toastTimer);
+      }
+      toastTimer = setTimeout(() => setToastOpen(false), 3500);
+    } else if (!hasError) {
+      setToastOpen(false);
+      if (toastTimer) {
+        clearTimeout(toastTimer);
+        toastTimer = undefined;
+      }
+    }
+
+    hadError = hasError;
+  });
+
+  onCleanup(() => {
+    if (toastTimer) {
+      clearTimeout(toastTimer);
+    }
+  });
 
   return (
     <ToolContainer width="wide">
+      <ToolToast open={toastOpen()} message="JSON could not be parsed." tone="error" />
+
       <ToolToolbar label="Formatting controls">
-        <div class="flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-          <ToolSegmentedControl label="Output format" class="w-full sm:w-auto">
+        <div class="grid w-full min-w-0 grid-cols-2 gap-2 sm:grid-cols-[auto_auto_minmax(0,1fr)] sm:items-end sm:gap-3">
+          <ToolSegmentedControl label="Output format" class="col-span-2 min-w-0 sm:col-span-1">
             <ToolActionButton
               active={outputFormat() === "two-spaces"}
               variant="segment"
@@ -64,54 +107,30 @@ export default function JsonFormatter() {
             </ToolActionButton>
           </ToolSegmentedControl>
 
-          <div class="flex w-full flex-wrap items-center gap-2 sm:ml-auto sm:w-auto">
-            <ToolActionButton
-              active={sortKeys()}
-              variant="toggle"
-              onClick={() => setSortKeys((value) => !value)}
-              class="flex-1 sm:flex-none"
-            >
-              Sort keys A-Z
-            </ToolActionButton>
+          <ToolActionButton
+            active={sortKeys()}
+            variant="toggle"
+            onClick={() => setSortKeys((value) => !value)}
+            class="w-full sm:w-auto"
+          >
+            Sort keys A-Z
+          </ToolActionButton>
 
-            <Show when={input().trim()}>
-              <ToolActionButton variant="ghost" onClick={() => setInput("")} class="ml-auto">
-                Clear
-              </ToolActionButton>
-            </Show>
-          </div>
+          <ToolActionButton
+            variant="ghost"
+            onClick={() => setInput("")}
+            disabled={!input().trim()}
+            class="w-full sm:w-auto sm:justify-self-end"
+          >
+            Clear
+          </ToolActionButton>
         </div>
       </ToolToolbar>
 
       <Show when={result().error}>
-        {(msg) => (
-          <ToolInlineError
-            id="json-input-error"
-            message="JSON could not be parsed."
-            hint={
-              result().errorLine && result().errorColumn
-                ? `Check the value near line ${result().errorLine}, column ${result().errorColumn}.`
-                : "Check commas, quotes, and brackets, then try again."
-            }
-          >
-            <details class="text-xs text-[var(--text-secondary)]">
-              <summary class="cursor-pointer font-semibold text-[var(--text-primary)] underline decoration-[var(--border-strong)] underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)]">
-                Show error details
-              </summary>
-              <div class="mt-2 space-y-2">
-                <p class="m-0 font-mono leading-relaxed text-[var(--text-secondary)]">{msg()}</p>
-
-                <Show when={result().errorContext}>
-                  {(context) => (
-                    <pre class="m-0 max-h-40 overflow-auto rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-primary)] p-3 font-mono leading-relaxed whitespace-pre-wrap break-words text-[var(--text-primary)]">
-                      {context()}
-                    </pre>
-                  )}
-                </Show>
-              </div>
-            </details>
-          </ToolInlineError>
-        )}
+        <p id="json-input-error" class="sr-only">
+          JSON could not be parsed. {errorHint()}
+        </p>
       </Show>
 
       <ToolWorkspace
@@ -121,24 +140,17 @@ export default function JsonFormatter() {
             id: "input",
             label: "Input",
             content: (
-              <ToolPanel
-                title="Input"
-                description="Paste a JSON document to format or validate."
-                class={EDITOR_PANEL_CLASSES}
-                bodyClass={EDITOR_BODY_CLASSES}
-              >
-                <Textarea
+              <ToolPanel title="Input" class={EDITOR_PANEL_CLASSES} bodyClass={EDITOR_BODY_CLASSES}>
+                <ToolCodeEditor
                   id="json-input"
                   name="json-input"
                   label="JSON document"
                   labelClass="sr-only"
-                  controlClass="min-h-0 flex-1"
-                  resize="none"
+                  diagnostic={diagnostic()}
                   value={input()}
                   onInput={(value) => setInput(value)}
                   placeholder="Paste JSON here…"
                   rows={12}
-                  class="min-h-0 flex-1"
                   spellcheck={false}
                   autocomplete="off"
                   describedBy={result().error ? "json-input-error" : undefined}
@@ -153,7 +165,6 @@ export default function JsonFormatter() {
             content: (
               <ToolPanel
                 title="Output"
-                description="The result stays in your browser."
                 class={EDITOR_PANEL_CLASSES}
                 bodyClass={EDITOR_BODY_CLASSES}
                 actions={
@@ -174,7 +185,7 @@ export default function JsonFormatter() {
                     <ToolCodeBlock
                       fill
                       html={html()}
-                      aria-label="Formatted JSON output"
+                      aria-label="JSON output"
                       class="text-[0.8125rem]"
                     />
                   )}

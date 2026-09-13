@@ -13,10 +13,7 @@ export default function ToolSegmentedControl(props: ToolSegmentedControlProps) {
   return (
     <fieldset
       {...rest}
-      class={cn(
-        "m-0 flex min-w-0 flex-col items-stretch gap-1.5 border-0 p-0 sm:flex-row sm:items-center sm:gap-2",
-        local.class
-      )}
+      class={cn("m-0 flex min-w-0 flex-col items-stretch gap-1.5 border-0 p-0", local.class)}
     >
       <legend class="shrink-0 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
         {local.label}
@@ -24,7 +21,7 @@ export default function ToolSegmentedControl(props: ToolSegmentedControlProps) {
       <div
         role="radiogroup"
         aria-label={local.label}
-        class="flex min-w-0 w-full flex-1 items-stretch gap-0.5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-primary)] p-0.5 sm:w-auto sm:flex-none"
+        class="flex min-w-0 w-full items-stretch gap-0.5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-primary)] p-0.5 sm:w-auto"
       >
         {local.children}
       </div>

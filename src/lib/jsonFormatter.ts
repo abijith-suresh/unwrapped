@@ -7,12 +7,16 @@ export interface JsonFormatResult {
   html: string;
   raw: string;
   error: string | null;
+  errorPosition: number | null;
+  errorLength: number;
   errorLine: number | null;
   errorColumn: number | null;
   errorContext: string | null;
 }
 
 interface JsonErrorSourceContext {
+  position: number;
+  length: number;
   line: number;
   column: number;
   context: string;
@@ -60,7 +64,8 @@ export function sortJsonKeys<T>(value: T): T {
 
 export function parseJsonErrorSourceContext(
   source: string,
-  position: number
+  position: number,
+  length = 1
 ): JsonErrorSourceContext | null {
   if (!Number.isInteger(position) || position < 0 || position > source.length) {
     return null;
@@ -86,6 +91,8 @@ export function parseJsonErrorSourceContext(
   ].filter((entry): entry is string => entry !== null);
 
   return {
+    position: safePosition,
+    length: Math.min(Math.max(length, 0), normalized.length - safePosition),
     line,
     column,
     context: renderedLines.join("\n"),
@@ -103,8 +110,12 @@ function parseJsonErrorContext(input: string, message: string): JsonErrorSourceC
     const token = unexpectedTokenMatch[1];
     const fallbackPosition = input.lastIndexOf(token);
     if (fallbackPosition !== -1) {
-      return parseJsonErrorSourceContext(input, fallbackPosition);
+      return parseJsonErrorSourceContext(input, fallbackPosition, token.length);
     }
+  }
+
+  if (/Unexpected end/.test(message)) {
+    return parseJsonErrorSourceContext(input, input.length, 0);
   }
 
   return null;
@@ -122,6 +133,8 @@ export function formatJson(
       html: "",
       raw: "",
       error: null,
+      errorPosition: null,
+      errorLength: 0,
       errorLine: null,
       errorColumn: null,
       errorContext: null,
@@ -130,15 +143,20 @@ export function formatJson(
 
   let parsed: JsonValue;
   try {
-    parsed = JSON.parse(trimmed) as JsonValue;
+    parsed = JSON.parse(input) as JsonValue;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    const errorContext = parseJsonErrorContext(trimmed, message);
+    const errorContext = parseJsonErrorContext(input, message);
+    const fallbackPosition = Math.max(input.length - 1, 0);
+    const errorPosition = errorContext?.position ?? fallbackPosition;
+    const errorLength = errorContext?.length ?? (input.length > 0 ? 1 : 0);
 
     return {
       html: "",
       raw: "",
       error: `JSON parse error: ${message}`,
+      errorPosition,
+      errorLength,
       errorLine: errorContext?.line ?? null,
       errorColumn: errorContext?.column ?? null,
       errorContext: errorContext?.context ?? null,
@@ -151,6 +169,8 @@ export function formatJson(
     html: syntaxHighlightJson(raw),
     raw,
     error: null,
+    errorPosition: null,
+    errorLength: 0,
     errorLine: null,
     errorColumn: null,
     errorContext: null,
