@@ -6,11 +6,9 @@ interface Props {
   title: string;
   description?: string;
   ogImage?: string;
-  toolName?: string;
-  toolDescription?: string;
 }
 
-const { title, description, ogImage, toolName, toolDescription } = Astro.props;
+const { title, description, ogImage } = Astro.props;
 
 const FOOTER_LINKS = [
   { href: "/about", label: "About" },
@@ -36,15 +34,12 @@ const FOOTER_LINKS = [
       <a href="/" class="ts-brand" translate="no">
         unwrapped<span class="ts-brand-tld">.tools</span>
       </a>
-      <span class="ts-sep" aria-hidden="true">/</span>
-      <span class="ts-tool-name" translate="no">{toolName}</span>
     </header>
 
     <main id="main-content" class="ts-main" tabindex="-1">
       <section class="ts-tool-heading" aria-labelledby="tool-title">
-        <p class="ts-tool-kicker">browser utility</p>
-        <h1 id="tool-title">{toolName}</h1>
-        {toolDescription ? <p class="ts-tool-description">{toolDescription}</p> : null}
+        <h1 id="tool-title">{title}</h1>
+        {description ? <p class="ts-tool-description">{description}</p> : null}
       </section>
       <slot />
     </main>
@@ -134,14 +129,6 @@ const FOOTER_LINKS = [
     color: var(--accent-primary);
   }
 
-  .ts-sep {
-    color: var(--text-muted);
-  }
-
-  .ts-tool-name {
-    color: var(--text-secondary);
-  }
-
   .ts-main {
     flex: 1;
     min-width: 0;
@@ -153,14 +140,6 @@ const FOOTER_LINKS = [
     margin: 0 auto;
     padding: 0 0 1.5rem;
     border-bottom: 1px solid var(--border);
-  }
-
-  .ts-tool-kicker {
-    margin: 0 0 0.55rem;
-    color: var(--accent-primary);
-    font: 0.68rem var(--font-mono);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
   }
 
   .ts-tool-heading h1 {

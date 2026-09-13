@@ -29,7 +29,7 @@ const SEGMENT_ACTIVE_CLASSES =
   "border-transparent bg-[var(--accent-primary)] text-[var(--bg-primary)] shadow-sm hover:bg-[var(--accent-secondary)]";
 
 const BASE_CLASSES =
-  "inline-flex min-h-9 items-center justify-center rounded-[var(--radius-control)] border px-3.5 py-2 text-[0.8125rem] font-semibold leading-none whitespace-nowrap cursor-pointer touch-manipulation transition-[background-color,border-color,color,box-shadow] duration-150 motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex min-h-9 items-center justify-center rounded-[var(--radius-control)] border px-3.5 py-2 text-[0.8125rem] font-semibold leading-none whitespace-nowrap cursor-pointer touch-manipulation transition-[background-color,border-color,color,box-shadow] duration-200 ease-out motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50";
 
 type PressedState = boolean | "true" | "false" | "mixed" | undefined;
 
