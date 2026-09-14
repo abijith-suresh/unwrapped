@@ -23,18 +23,15 @@ function loadToolModule(componentPath: string): Promise<Component> {
 
 function ToolSkeleton() {
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[860px] animate-pulse">
-      <div class="flex gap-3 items-center">
-        <div class="h-8 w-32 bg-[var(--bg-tertiary)] rounded" />
-        <div class="h-8 w-24 bg-[var(--bg-tertiary)] rounded" />
-      </div>
-      <div class="h-40 w-full bg-[var(--bg-tertiary)] rounded-lg" />
-      <div class="h-8 w-48 bg-[var(--bg-tertiary)] rounded" />
-      <div class="h-32 w-full bg-[var(--bg-tertiary)] rounded-lg" />
-      <div class="flex gap-3 items-center">
-        <div class="h-8 w-20 bg-[var(--bg-tertiary)] rounded" />
-        <div class="h-8 w-20 bg-[var(--bg-tertiary)] rounded" />
-        <div class="h-8 w-28 bg-[var(--bg-tertiary)] rounded" />
+    <div
+      class="mx-auto flex w-full max-w-[70rem] flex-col gap-5 p-4 sm:p-6"
+      role="status"
+      aria-label="Loading tool"
+    >
+      <div class="h-12 w-full rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--bg-secondary)] animate-pulse" />
+      <div class="grid min-w-0 gap-4 lg:grid-cols-2">
+        <div class="h-[26rem] rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--bg-secondary)] animate-pulse" />
+        <div class="h-[26rem] rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--bg-secondary)] animate-pulse" />
       </div>
     </div>
   );

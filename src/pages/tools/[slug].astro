@@ -32,62 +32,6 @@ if (!tool) {
 <ToolShell
   title={tool.name}
   description={tool.description}
-  toolName={tool.name}
-  toolDescription={tool.description}
 >
-  <div class="tool-pane">
-    <div class="tool-header">
-      <span class="tool-title">{tool.name}</span>
-      <span class="tool-description">— {tool.description}</span>
-    </div>
-    <div class="tool-body">
-      <ToolHost componentPath={tool.componentPath} toolName={tool.name} client:load />
-    </div>
-  </div>
+  <ToolHost componentPath={tool.componentPath} toolName={tool.name} client:load />
 </ToolShell>
-
-<style>
-  .tool-pane {
-    display: flex;
-    flex-direction: column;
-    min-height: 100%;
-    font-family: var(--font-mono);
-  }
-
-  .tool-header {
-    padding: 0.75rem 1.5rem 0.5rem;
-    font-size: 0.8rem;
-    line-height: 1.5;
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .tool-title {
-    color: var(--text-primary);
-    font-size: 1rem;
-    font-weight: 600;
-  }
-
-  .tool-description {
-    color: var(--text-muted);
-    font-style: italic;
-  }
-
-  .tool-body {
-    flex: 1;
-    padding: 1.5rem;
-  }
-
-  @media (max-width: 600px) {
-    .tool-body {
-      padding: 1rem;
-    }
-
-    .tool-header {
-      padding: 0.6rem 1rem 0.4rem;
-      font-size: 0.75rem;
-    }
-  }
-</style>

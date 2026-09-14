@@ -19,10 +19,11 @@ describe("CopyButton", () => {
     fireEvent.click(button);
 
     await waitFor(() => expect(copyToClipboardMock).toHaveBeenCalledWith("secret value"));
-    await waitFor(() => expect(getByRole("button", { name: "Copied!" })).toBeInTheDocument());
+    expect(getByRole("button", { name: "Copy" })).toHaveTextContent("Copied");
+    expect(getByRole("status")).toHaveTextContent("Copied content to the clipboard.");
   });
 
-  it("shows no copied feedback when the clipboard write fails", async () => {
+  it("explains when the clipboard write fails and keeps the action available", async () => {
     copyToClipboardMock.mockResolvedValue(false);
     const { getByRole } = render(() => <CopyButton text="value" label="Copy hash" />);
 
@@ -30,16 +31,18 @@ describe("CopyButton", () => {
 
     await waitFor(() => expect(copyToClipboardMock).toHaveBeenCalled());
     expect(getByRole("button", { name: "Copy hash" })).toBeInTheDocument();
+    expect(getByRole("button", { name: "Copy hash" })).toHaveTextContent("Copy failed");
+    expect(getByRole("status")).toHaveTextContent("Could not copy hash. Try again.");
   });
 
   it("resets the copied state after the feedback window", async () => {
     vi.useFakeTimers();
     copyToClipboardMock.mockResolvedValue(true);
-    const { getByRole, findByText } = render(() => <CopyButton text="value" />);
+    const { getByRole } = render(() => <CopyButton text="value" />);
     fireEvent.click(getByRole("button", { name: "Copy" }));
 
     await vi.advanceTimersByTimeAsync(0);
-    expect(await findByText("Copied!")).toBeInTheDocument();
+    expect(getByRole("button", { name: "Copy" })).toHaveTextContent("Copied");
 
     await vi.advanceTimersByTimeAsync(2000);
     expect(getByRole("button", { name: "Copy" })).toBeInTheDocument();

@@ -66,6 +66,8 @@ describe("json formatter utilities", () => {
     const result = formatJson('{"a":1,\n"b":\n}', 2, false, false);
 
     expect(result.error).toContain("JSON parse error:");
+    expect(result.errorPosition).toBe(13);
+    expect(result.errorLength).toBe(1);
     expect(result.errorLine).toBe(3);
     expect(result.errorColumn).toBe(1);
     expect(result.errorContext).toContain('2 | "b":');
@@ -75,6 +77,8 @@ describe("json formatter utilities", () => {
 
   it("builds source context from parser positions", () => {
     expect(parseJsonErrorSourceContext('{"a":1,\n"b":\n}', 13)).toEqual({
+      position: 13,
+      length: 1,
       line: 3,
       column: 1,
       context: `2 | "b":

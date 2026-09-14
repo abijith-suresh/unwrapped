@@ -52,9 +52,9 @@ export const tools: Tool[] = [
   {
     id: "json-formatter",
     name: "JSON Formatter",
-    description: "Format, validate, and minify JSON with syntax highlighting.",
+    description: "Format and minify JSON with syntax highlighting.",
     category: "data",
-    keywords: ["json", "format", "prettify", "minify", "validate", "lint"],
+    keywords: ["json", "format", "prettify", "minify", "syntax"],
     icon: "Braces",
     slug: "json-formatter",
     componentPath: "/src/tools/json-formatter/JsonFormatter.tsx",
