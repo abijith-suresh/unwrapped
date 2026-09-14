@@ -41,7 +41,7 @@ export default function ToolPanel(props: ToolPanelProps) {
         local.class
       )}
     >
-      <header class="flex min-w-0 shrink-0 flex-wrap items-start justify-between gap-4 border-b border-[var(--border)] px-4 py-3">
+      <header class="flex min-h-[3.75rem] min-w-0 shrink-0 flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] px-4 py-3">
         <div class="min-w-0">
           <h2
             class={cn(
