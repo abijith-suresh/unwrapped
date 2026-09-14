@@ -21,7 +21,7 @@ export default function ToolSegmentedControl(props: ToolSegmentedControlProps) {
       <div
         role="radiogroup"
         aria-label={local.label}
-        class="flex min-w-0 w-full items-stretch gap-0.5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-primary)] p-0.5 sm:w-auto"
+        class="flex h-[2.625rem] min-w-0 w-full items-stretch gap-0.5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-primary)] p-0.5 sm:w-auto"
       >
         {local.children}
       </div>

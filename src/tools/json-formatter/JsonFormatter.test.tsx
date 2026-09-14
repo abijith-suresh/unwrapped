@@ -39,7 +39,7 @@ describe("JsonFormatter", () => {
   });
 
   it("keeps sort keys independent from the output format", () => {
-    const { getByRole } = render(() => <JsonFormatter />);
+    const { getByRole, queryByRole } = render(() => <JsonFormatter />);
 
     const minified = getByRole("radio", { name: "Minified" });
     const fourSpaces = getByRole("radio", { name: "4 spaces" });
@@ -55,6 +55,7 @@ describe("JsonFormatter", () => {
 
     expect(fourSpaces).toHaveAttribute("aria-checked", "true");
     expect(sortKeys).toHaveAttribute("aria-pressed", "true");
+    expect(queryByRole("button", { name: "Clear" })).not.toBeInTheDocument();
   });
 
   it("switches between input and output views for compact mobile use", () => {

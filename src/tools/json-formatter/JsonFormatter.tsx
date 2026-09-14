@@ -73,7 +73,7 @@ export default function JsonFormatter() {
       <ToolToast open={toastOpen()} message="JSON could not be parsed." tone="error" />
 
       <ToolToolbar label="Formatting controls">
-        <div class="grid w-full min-w-0 grid-cols-2 gap-2 sm:grid-cols-[auto_auto_minmax(0,1fr)] sm:items-end sm:gap-3">
+        <div class="grid w-full min-w-0 grid-cols-2 gap-2 sm:grid-cols-[auto_auto] sm:items-end sm:gap-3">
           <ToolSegmentedControl label="Output format" class="col-span-2 min-w-0 sm:col-span-1">
             <ToolActionButton
               active={outputFormat() === "two-spaces"}
@@ -111,18 +111,9 @@ export default function JsonFormatter() {
             active={sortKeys()}
             variant="toggle"
             onClick={() => setSortKeys((value) => !value)}
-            class="w-full sm:w-auto"
+            class="col-span-2 h-[2.625rem] w-full sm:col-span-1 sm:w-auto"
           >
             Sort keys A-Z
-          </ToolActionButton>
-
-          <ToolActionButton
-            variant="ghost"
-            onClick={() => setInput("")}
-            disabled={!input().trim()}
-            class="w-full sm:w-auto sm:justify-self-end"
-          >
-            Clear
           </ToolActionButton>
         </div>
       </ToolToolbar>
