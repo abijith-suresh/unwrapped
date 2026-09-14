@@ -10,7 +10,11 @@ interface ToolHostProps {
   loadModule?: (componentPath: string) => Promise<Component>;
 }
 
-const toolModules = import.meta.glob<{ default: Component }>("../tools/*/*.tsx");
+const toolModules = import.meta.glob<{ default: Component }>([
+  "../tools/*/*.tsx",
+  "!../tools/**/*.test.tsx",
+  "!../tools/**/*.spec.tsx",
+]);
 
 function loadToolModule(componentPath: string): Promise<Component> {
   const modulePath = `../${componentPath.slice(5)}`;
