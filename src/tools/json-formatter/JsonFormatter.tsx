@@ -73,39 +73,18 @@ export default function JsonFormatter() {
       <ToolToast open={toastOpen()} message="JSON could not be parsed." tone="error" />
 
       <ToolToolbar label="Formatting controls">
-        <div class="grid w-full min-w-0 grid-cols-2 gap-2 sm:grid-cols-[auto_auto] sm:items-end sm:gap-3">
-          <ToolSegmentedControl label="Output format" class="col-span-2 min-w-0 sm:col-span-1">
-            <ToolActionButton
-              active={outputFormat() === "two-spaces"}
-              variant="segment"
-              role="radio"
-              aria-checked={outputFormat() === "two-spaces"}
-              onClick={() => setOutputFormat("two-spaces")}
-              class="min-w-0 flex-1 sm:min-w-[5.5rem]"
-            >
-              2 spaces
-            </ToolActionButton>
-            <ToolActionButton
-              active={outputFormat() === "four-spaces"}
-              variant="segment"
-              role="radio"
-              aria-checked={outputFormat() === "four-spaces"}
-              onClick={() => setOutputFormat("four-spaces")}
-              class="min-w-0 flex-1 sm:min-w-[5.5rem]"
-            >
-              4 spaces
-            </ToolActionButton>
-            <ToolActionButton
-              active={outputFormat() === "minified"}
-              variant="segment"
-              role="radio"
-              aria-checked={outputFormat() === "minified"}
-              onClick={() => setOutputFormat("minified")}
-              class="min-w-0 flex-1 sm:min-w-[5.5rem]"
-            >
-              Minified
-            </ToolActionButton>
-          </ToolSegmentedControl>
+        <div class="grid w-full min-w-0 grid-cols-2 gap-2 sm:grid-cols-[max-content_max-content] sm:items-end sm:gap-3">
+          <ToolSegmentedControl
+            label="Output format"
+            value={outputFormat()}
+            options={[
+              { value: "two-spaces", label: "2 spaces" },
+              { value: "four-spaces", label: "4 spaces" },
+              { value: "minified", label: "Minified" },
+            ]}
+            onChange={(value) => setOutputFormat(value)}
+            class="col-span-2 min-w-0 sm:col-span-1"
+          />
 
           <ToolActionButton
             active={sortKeys()}

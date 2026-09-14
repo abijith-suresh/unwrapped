@@ -50,25 +50,33 @@ function getButtonClasses(variant: ToolActionButtonVariant, pressed: PressedStat
 export default function ToolActionButton(props: ToolActionButtonProps) {
   const [local, rest] = splitProps(props, [
     "active",
+    "aria-checked",
     "aria-pressed",
+    "aria-selected",
     "class",
     "role",
     "style",
+    "tabIndex",
     "type",
     "variant",
   ]);
+  const isRadio = local.role === "radio";
+  const isTab = local.role === "tab";
+  const state = () =>
+    local.active ?? local["aria-pressed"] ?? local["aria-checked"] ?? local["aria-selected"];
+  const isSelected = () => state() === true || state() === "true";
 
   return (
+    // biome-ignore lint/a11y/useAriaPropsSupportedByRole: role="radio" is assigned by this component when needed.
     <button
       {...rest}
       role={local.role}
       type={local.type ?? "button"}
-      aria-pressed={local.role === "radio" ? undefined : (local.active ?? local["aria-pressed"])}
-      class={cn(
-        BASE_CLASSES,
-        getButtonClasses(local.variant ?? "secondary", local.active ?? local["aria-pressed"]),
-        local.class
-      )}
+      aria-pressed={isRadio || isTab ? undefined : (local.active ?? local["aria-pressed"])}
+      aria-checked={isRadio ? (local["aria-checked"] ?? local.active) : undefined}
+      aria-selected={isTab ? (local["aria-selected"] ?? local.active) : undefined}
+      tabIndex={local.tabIndex ?? (isRadio || isTab ? (isSelected() ? 0 : -1) : undefined)}
+      class={cn(BASE_CLASSES, getButtonClasses(local.variant ?? "secondary", state()), local.class)}
       style={local.style}
     />
   );

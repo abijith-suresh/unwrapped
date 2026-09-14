@@ -10,7 +10,7 @@ export default function ToolSplitPane(props: ToolSplitPaneProps) {
   const [local, rest] = splitProps(props, ["children", "class"]);
 
   return (
-    <div {...rest} class={cn("grid min-w-0 gap-4 lg:grid-cols-2", local.class)}>
+    <div {...rest} class={cn("grid min-w-0 gap-4 md:grid-cols-2", local.class)}>
       {local.children}
     </div>
   );

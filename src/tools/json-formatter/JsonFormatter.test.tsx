@@ -61,16 +61,33 @@ describe("JsonFormatter", () => {
   it("switches between input and output views for compact mobile use", () => {
     const { getByRole } = render(() => <JsonFormatter />);
 
-    const inputView = getByRole("button", { name: "Input" });
-    const outputView = getByRole("button", { name: "Output" });
+    const inputView = getByRole("tab", { name: "Input" });
+    const outputView = getByRole("tab", { name: "Output" });
 
-    expect(inputView).toHaveAttribute("aria-pressed", "true");
-    expect(outputView).toHaveAttribute("aria-pressed", "false");
+    expect(inputView).toHaveAttribute("aria-selected", "true");
+    expect(outputView).toHaveAttribute("aria-selected", "false");
 
     fireEvent.click(outputView);
 
-    expect(inputView).toHaveAttribute("aria-pressed", "false");
-    expect(outputView).toHaveAttribute("aria-pressed", "true");
+    expect(inputView).toHaveAttribute("aria-selected", "false");
+    expect(outputView).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("supports keyboard navigation for shared controls", () => {
+    const { getByRole } = render(() => <JsonFormatter />);
+
+    const twoSpaces = getByRole("radio", { name: "2 spaces" });
+    const fourSpaces = getByRole("radio", { name: "4 spaces" });
+    const inputView = getByRole("tab", { name: "Input" });
+    const outputView = getByRole("tab", { name: "Output" });
+
+    twoSpaces.focus();
+    fireEvent.keyDown(twoSpaces, { key: "ArrowRight" });
+    expect(fourSpaces).toHaveAttribute("aria-checked", "true");
+
+    inputView.focus();
+    fireEvent.keyDown(inputView, { key: "ArrowRight" });
+    expect(outputView).toHaveAttribute("aria-selected", "true");
   });
 
   it("shows an accessible toast and persistent inline diagnostic", async () => {
@@ -83,7 +100,7 @@ describe("JsonFormatter", () => {
     await waitFor(() => {
       expect(getByRole("status")).toHaveTextContent("JSON could not be parsed.");
     });
-    expect(container.querySelector("[data-json-error-marker]")).toBeInTheDocument();
+    expect(container.querySelector("[data-tool-error-marker]")).toBeInTheDocument();
     expect(container.querySelector("details")).not.toBeInTheDocument();
     expect(getByRole("textbox", { name: "JSON document" })).toHaveAttribute(
       "aria-describedby",

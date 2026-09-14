@@ -1,4 +1,4 @@
-import { createSignal, type JSX, splitProps } from "solid-js";
+import { createSignal, createUniqueId, type JSX, splitProps } from "solid-js";
 
 import Label from "@/components/primitives/solid/Label";
 import { cn } from "@/lib/cn";
@@ -8,7 +8,19 @@ export interface ToolCodeDiagnostic {
   length: number;
 }
 
-export interface ToolCodeEditorProps {
+type NativeTextareaProps = Omit<
+  JSX.TextareaHTMLAttributes<HTMLTextAreaElement>,
+  | "aria-describedby"
+  | "aria-invalid"
+  | "class"
+  | "id"
+  | "onInput"
+  | "placeholder"
+  | "rows"
+  | "value"
+>;
+
+export interface ToolCodeEditorProps extends NativeTextareaProps {
   label: string;
   value?: string;
   onInput?: (value: string) => void;
@@ -19,13 +31,8 @@ export interface ToolCodeEditorProps {
   labelClass?: string;
   diagnostic?: ToolCodeDiagnostic | null;
   error?: boolean;
-  spellcheck?: boolean;
-  readonly?: boolean;
   id?: string;
-  name?: string;
-  autocomplete?: string;
   describedBy?: string;
-  disabled?: boolean;
 }
 
 interface DiagnosticHighlightProps {
@@ -52,7 +59,7 @@ function DiagnosticHighlight(props: DiagnosticHighlightProps) {
     <>
       {props.value.slice(0, markerStart)}
       {markerStart < markerEnd ? (
-        <span data-json-error-marker="true" style={ERROR_MARKER_STYLE}>
+        <span data-tool-error-marker="true" style={ERROR_MARKER_STYLE}>
           {props.value.slice(markerStart, markerEnd)}
         </span>
       ) : null}
@@ -62,23 +69,37 @@ function DiagnosticHighlight(props: DiagnosticHighlightProps) {
 }
 
 export default function ToolCodeEditor(props: ToolCodeEditorProps) {
-  const [local] = splitProps(props, ["class"]);
+  const [local, textareaProps] = splitProps(props, [
+    "class",
+    "describedBy",
+    "diagnostic",
+    "error",
+    "id",
+    "label",
+    "labelClass",
+    "onInput",
+    "placeholder",
+    "rows",
+    "textareaClass",
+    "value",
+  ]);
   const [scrollTop, setScrollTop] = createSignal(0);
   const [scrollLeft, setScrollLeft] = createSignal(0);
+  const controlId = local.id ?? createUniqueId();
 
   return (
     <div class={cn("flex min-h-0 flex-1 flex-col gap-1.5", local.class)}>
-      <Label for={props.id} class={props.labelClass}>
-        {props.label}
+      <Label for={controlId} class={local.labelClass}>
+        {local.label}
       </Label>
 
       <div
         class={cn(
           "relative min-h-0 flex-1 overflow-hidden rounded-[var(--radius-control)] border bg-[var(--bg-secondary)]",
-          props.error ? "border-[var(--accent-error)]" : "border-[var(--border)]"
+          local.error ? "border-[var(--accent-error)]" : "border-[var(--border)]"
         )}
       >
-        {props.diagnostic ? (
+        {local.diagnostic ? (
           <div aria-hidden="true" class="pointer-events-none absolute inset-0 z-0 overflow-hidden">
             <pre
               class="m-0 w-full whitespace-pre-wrap break-words p-4 font-mono text-sm leading-relaxed text-[var(--text-primary)]"
@@ -86,35 +107,31 @@ export default function ToolCodeEditor(props: ToolCodeEditorProps) {
                 transform: `translate(${-scrollLeft()}px, ${-scrollTop()}px)`,
               }}
             >
-              <DiagnosticHighlight value={props.value ?? ""} diagnostic={props.diagnostic} />
+              <DiagnosticHighlight value={local.value ?? ""} diagnostic={local.diagnostic} />
             </pre>
           </div>
         ) : null}
 
         <textarea
-          id={props.id}
-          name={props.name}
-          autocomplete={props.autocomplete}
-          value={props.value ?? ""}
-          onInput={(event) => props.onInput?.((event.target as HTMLTextAreaElement).value)}
+          {...textareaProps}
+          id={controlId}
+          value={local.value ?? ""}
+          onInput={(event) => local.onInput?.((event.target as HTMLTextAreaElement).value)}
           onScroll={(event) => {
             const target = event.currentTarget;
             setScrollTop(target.scrollTop);
             setScrollLeft(target.scrollLeft);
           }}
-          placeholder={props.placeholder}
-          rows={props.rows ?? 4}
-          spellcheck={props.spellcheck ?? true}
-          readonly={props.readonly}
-          disabled={props.disabled}
-          aria-describedby={props.describedBy}
-          aria-invalid={props.error || undefined}
+          placeholder={local.placeholder}
+          rows={local.rows ?? 4}
+          aria-describedby={local.describedBy}
+          aria-invalid={local.error || undefined}
           class={cn(
             "relative z-10 block h-full min-h-0 w-full resize-none overflow-auto rounded-[var(--radius-control)] border-0 bg-transparent p-4 font-mono text-sm leading-relaxed outline-none placeholder:text-[var(--text-muted)] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--focus-ring)] disabled:cursor-not-allowed disabled:opacity-60",
-            props.diagnostic
+            local.diagnostic
               ? "text-transparent caret-[var(--text-primary)]"
               : "text-[var(--text-primary)]",
-            props.textareaClass
+            local.textareaClass
           )}
         />
       </div>
