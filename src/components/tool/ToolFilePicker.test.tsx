@@ -4,11 +4,13 @@ import { describe, expect, it, vi } from "vitest";
 import ToolFilePicker from "./ToolFilePicker";
 
 describe("ToolFilePicker", () => {
-  it("uses a keyboard-focusable action to open the native picker", () => {
+  it("renders a keyboard-focusable action that opens the native picker", () => {
     const { getByRole } = render(() => <ToolFilePicker />);
+    const button = getByRole("button", { name: "Open file" });
     const click = vi.spyOn(HTMLInputElement.prototype, "click");
 
-    fireEvent.click(getByRole("button", { name: "Open file" }));
+    expect(button).not.toHaveAttribute("tabindex", "-1");
+    fireEvent.click(button);
 
     expect(click).toHaveBeenCalledOnce();
     click.mockRestore();
