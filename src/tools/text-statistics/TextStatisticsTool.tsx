@@ -4,6 +4,7 @@ import Card from "@/components/primitives/solid/Card";
 import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
 import { analyzeText } from "@/lib/textStatistics";
 
 const METRIC_LABELS = [
@@ -18,7 +19,7 @@ export default function TextStatisticsTool() {
   const statistics = createMemo(() => analyzeText(input()));
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[900px]">
+    <ToolContainer width="standard">
       <Textarea
         label="Text input"
         value={input()}
@@ -43,6 +44,6 @@ export default function TextStatisticsTool() {
       <ToolStatusMessage tone="muted">
         Counts update locally as you type. Byte size is measured from the encoded UTF-8 text.
       </ToolStatusMessage>
-    </div>
+    </ToolContainer>
   );
 }
