@@ -144,7 +144,7 @@ function InputPanel(props: InputPanelProps) {
             onChange={(v) => props.onLangChange(v as Language)}
             options={SUPPORTED_LANGUAGES.map((l) => ({ value: l, label: LANGUAGE_LABELS[l] }))}
             class="w-auto ml-auto"
-            controlClass="w-auto"
+            controlClass="!w-auto"
           />
 
           <button
@@ -161,8 +161,6 @@ function InputPanel(props: InputPanelProps) {
               props.fileInputRef(el);
             }}
             type="file"
-            aria-label={`Open ${props.label} file`}
-            name={`diff-${props.label.toLowerCase()}-file`}
             class="hidden"
             onChange={handleFileChange}
           />

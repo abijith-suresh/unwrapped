@@ -35,7 +35,7 @@ export default function XmlFormatterTool() {
           value={String(indent())}
           onInput={(value) => setIndent(Number(value) || 2)}
           class="flex-row items-center gap-3"
-          controlClass="w-20 rounded-lg px-3 py-2"
+          controlClass="!w-20 rounded-lg px-3 py-2"
         />
 
         <Textarea
@@ -45,6 +45,9 @@ export default function XmlFormatterTool() {
           placeholder="Paste XML to format…"
           rows={14}
           spellcheck={false}
+          name="xml-input"
+          autocomplete="off"
+          describedBy={error() ? "xml-input-error" : undefined}
           error={!!error()}
         />
       </div>
@@ -57,7 +60,11 @@ export default function XmlFormatterTool() {
 
         <Show
           when={!error()}
-          fallback={<ToolStatusMessage tone="error">{error()}</ToolStatusMessage>}
+          fallback={
+            <ToolStatusMessage id="xml-input-error" tone="error">
+              {error()}
+            </ToolStatusMessage>
+          }
         >
           <pre class="m-0 p-4 rounded-lg border border-[var(--border)] bg-[var(--bg-primary)] text-[var(--text-primary)] font-mono text-sm leading-relaxed whitespace-pre-wrap break-words min-h-[20rem]">
             {output() || "—"}

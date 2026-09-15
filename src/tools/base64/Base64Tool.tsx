@@ -300,8 +300,6 @@ export default function Base64Tool() {
             Open file
             <input
               type="file"
-              aria-label="Open Base64 file"
-              name="base64-file"
               class="hidden"
               onChange={(e) => {
                 const file = e.currentTarget.files?.[0];

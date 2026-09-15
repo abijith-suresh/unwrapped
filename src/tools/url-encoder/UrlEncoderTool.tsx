@@ -54,13 +54,18 @@ export default function UrlEncoderTool() {
             rows={7}
             spellcheck={false}
             resize="y"
+            describedBy={decodeError() ? "percent-encoded-text-error" : undefined}
             error={!!decodeError()}
-            controlClass="bg-[var(--bg-primary)] text-sm"
+            controlClass="!bg-[var(--bg-primary)] text-sm"
           />
 
           <Show
             when={!decodeError()}
-            fallback={<ToolStatusMessage tone="error">{decodeError()}</ToolStatusMessage>}
+            fallback={
+              <ToolStatusMessage id="percent-encoded-text-error" tone="error">
+                {decodeError()}
+              </ToolStatusMessage>
+            }
           >
             <div class="flex items-center justify-between">
               <Label>Decoded output</Label>

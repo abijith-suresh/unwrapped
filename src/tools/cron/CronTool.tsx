@@ -49,6 +49,7 @@ export default function CronTool() {
           onInput={setInput}
           placeholder="30 9 * * 1"
           spellcheck={false}
+          describedBy={error() ? "cron-expression-error" : undefined}
           error={!!error()}
         />
       </div>
@@ -73,7 +74,11 @@ export default function CronTool() {
 
       <Show
         when={!error()}
-        fallback={<ToolStatusMessage tone="error">{error()}</ToolStatusMessage>}
+        fallback={
+          <ToolStatusMessage id="cron-expression-error" tone="error">
+            {error()}
+          </ToolStatusMessage>
+        }
       >
         <Card class="flex flex-col gap-3">
           <Label>Humanized schedule</Label>

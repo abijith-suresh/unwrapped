@@ -212,8 +212,6 @@ export default function HashGenerator() {
             Open file
             <input
               type="file"
-              aria-label="Open hash input file"
-              name="hash-file"
               class="hidden"
               onChange={(event) => {
                 const file = event.currentTarget.files?.[0];
