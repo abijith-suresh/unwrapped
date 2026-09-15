@@ -72,7 +72,12 @@ export default function TimestampTool() {
   }
 
   function changeZone(index: number, tz: string) {
-    setZones((prev) => prev.map((z, i) => (i === index ? { ...z, tz } : z)));
+    const selectedZone = PRESET_ZONES.find((zone) => zone.tz === tz);
+    setZones((prev) =>
+      prev.map((zone, i) =>
+        i === index ? { ...zone, tz, label: selectedZone?.label ?? tz } : zone
+      )
+    );
   }
 
   return (
