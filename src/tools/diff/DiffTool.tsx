@@ -11,6 +11,7 @@ import {
 import Card from "@/components/primitives/solid/Card";
 import Label from "@/components/primitives/solid/Label";
 import Select from "@/components/primitives/solid/Select";
+import ToolFilePicker from "@/components/tool/ToolFilePicker";
 import type { DiffAnalysisResult } from "@/lib/diffAnalysis";
 import { createDiffAnalysisExecutor } from "@/lib/diffExecution";
 import {
@@ -74,7 +75,6 @@ interface InputPanelProps {
   fileMeta: ImportedFileMeta | null;
   onContentChange: (v: string) => void;
   onLangChange: (v: Language) => void;
-  fileInputRef: (el: HTMLInputElement) => void;
   onFileLoad: (file: File) => void;
 }
 
@@ -100,15 +100,6 @@ function InputPanel(props: InputPanelProps) {
     setDragging(false);
     const file = e.dataTransfer?.files[0];
     if (file) props.onFileLoad(file);
-  }
-
-  let hiddenInput!: HTMLInputElement;
-
-  function handleFileChange(e: Event) {
-    const file = (e.currentTarget as HTMLInputElement).files?.[0];
-    if (file) props.onFileLoad(file);
-    // Reset so same file can be re-opened
-    (e.currentTarget as HTMLInputElement).value = "";
   }
 
   return (
@@ -143,23 +134,7 @@ function InputPanel(props: InputPanelProps) {
             class="w-auto ml-auto"
           />
 
-          <button
-            type="button"
-            onClick={() => hiddenInput.click()}
-            class="bg-[var(--bg-tertiary)] text-[var(--text-secondary)] border border-[var(--border)] rounded px-2 py-0.5 text-xs cursor-pointer shrink-0 whitespace-nowrap"
-          >
-            Open file
-          </button>
-
-          <input
-            ref={(el) => {
-              hiddenInput = el;
-              props.fileInputRef(el);
-            }}
-            type="file"
-            class="hidden"
-            onChange={handleFileChange}
-          />
+          <ToolFilePicker onFileChange={props.onFileLoad} buttonClass="shrink-0" />
         </div>
 
         <Show when={props.fileMeta}>
@@ -469,7 +444,6 @@ export default function DiffTool() {
           fileMeta={leftFile()}
           onContentChange={setLeftContent}
           onLangChange={setLeftLang}
-          fileInputRef={(_el) => {}}
           onFileLoad={(file) => void handleFileLoad("left", file)}
         />
         <InputPanel
@@ -479,7 +453,6 @@ export default function DiffTool() {
           fileMeta={rightFile()}
           onContentChange={setRightContent}
           onLangChange={setRightLang}
-          fileInputRef={(_el) => {}}
           onFileLoad={(file) => void handleFileLoad("right", file)}
         />
       </div>

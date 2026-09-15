@@ -6,6 +6,7 @@ import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolFilePicker from "@/components/tool/ToolFilePicker";
 import {
   type Base64Mode,
   type Base64Variant,
@@ -295,18 +296,7 @@ export default function Base64Tool() {
 
         {/* File open button */}
         <div class="flex items-center gap-2">
-          <label class="text-sm text-[var(--accent-primary)] cursor-pointer">
-            Open file
-            <input
-              type="file"
-              class="hidden"
-              onChange={(e) => {
-                const file = e.currentTarget.files?.[0];
-                if (file) handleFile(file);
-                e.currentTarget.value = "";
-              }}
-            />
-          </label>
+          <ToolFilePicker onFileChange={(file) => void handleFile(file)} />
           <span class="text-sm text-[var(--text-muted)]">
             Local-only input handling with explicit text and file workflows
           </span>
