@@ -9,15 +9,16 @@ describe("ToolCodeBlock", () => {
       <ToolCodeBlock
         segments={[
           { text: "<script>", kind: "plain" },
-          { text: "alert(1)", kind: "match" },
+          { text: "</mark>", kind: "match" },
+          { text: "\nline", kind: "plain" },
         ]}
       />
     ));
 
     const pre = container.querySelector("pre");
-    expect(pre).toHaveTextContent("<script>alert(1)");
+    expect(pre?.textContent).toBe("<script></mark>\nline");
     expect(pre?.querySelector("script")).toBeNull();
-    expect(pre?.querySelector("mark")).toHaveTextContent("alert(1)");
+    expect(pre?.querySelector("mark")?.textContent).toBe("</mark>");
   });
 
   it("renders fallback children when no segments are provided", () => {
