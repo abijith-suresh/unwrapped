@@ -39,7 +39,7 @@ export default function YamlFormatterTool() {
             value={String(indent())}
             onInput={(value) => setIndent(Number(value) || 2)}
             class="flex-row items-center gap-3"
-            controlClass="!w-20 rounded-lg px-3 py-2"
+            controlClass="!w-20 rounded-lg !px-3 !py-2"
           />
           <ToolActionButton active={sortKeys()} onClick={() => setSortKeys((current) => !current)}>
             Sort keys
