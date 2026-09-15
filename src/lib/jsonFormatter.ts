@@ -51,12 +51,11 @@ export function sortJsonKeys<T>(value: T): T {
   }
 
   if (typeof value === "object" && value !== null) {
-    return Object.keys(value)
-      .sort((left, right) => left.localeCompare(right))
-      .reduce<Record<string, unknown>>((acc, key) => {
-        acc[key] = sortJsonKeys((value as Record<string, unknown>)[key]);
-        return acc;
-      }, {}) as T;
+    return Object.fromEntries(
+      Object.keys(value)
+        .sort((left, right) => left.localeCompare(right))
+        .map((key) => [key, sortJsonKeys((value as Record<string, unknown>)[key])])
+    ) as T;
   }
 
   return value;
