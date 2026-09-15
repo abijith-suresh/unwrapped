@@ -2,7 +2,6 @@ import { createMemo, createSignal, For, onCleanup, Show } from "solid-js";
 
 import CopyButton from "@/components/CopyButton";
 import Card from "@/components/primitives/solid/Card";
-import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
@@ -190,9 +189,11 @@ export default function HashGenerator() {
       </div>
 
       <div class="flex flex-col gap-1.5">
-        <Label>{workflow() === "text" ? "Input text" : "Input file"}</Label>
         <div role="none" onDragOver={(event) => event.preventDefault()} onDrop={onDrop}>
           <Textarea
+            label={workflow() === "text" ? "Input text" : "Input file"}
+            name="hash-input"
+            autocomplete="off"
             value={workflow() === "file" ? fileSummary() : input()}
             onInput={(event) => handleInput(event)}
             placeholder={
@@ -211,6 +212,8 @@ export default function HashGenerator() {
             Open file
             <input
               type="file"
+              aria-label="Open hash input file"
+              name="hash-file"
               class="hidden"
               onChange={(event) => {
                 const file = event.currentTarget.files?.[0];

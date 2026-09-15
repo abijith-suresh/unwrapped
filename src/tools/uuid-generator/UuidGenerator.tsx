@@ -54,11 +54,15 @@ export default function UuidGenerator() {
       <div class="flex items-center flex-wrap gap-3">
         {/* Count input */}
         <div class="flex items-center gap-2">
-          <Label>Count</Label>
+          <Label for="uuid-count">Count</Label>
           <input
+            id="uuid-count"
+            name="uuid-count"
+            autocomplete="off"
             type="number"
             min={1}
             max={100}
+            inputmode="numeric"
             value={count()}
             onInput={(e) => setCount(parseInt(e.currentTarget.value, 10) || 1)}
             class="w-20 rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-2 py-1 text-sm text-[var(--text-primary)] outline-none"

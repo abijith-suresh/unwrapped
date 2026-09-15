@@ -2,6 +2,7 @@ import { createMemo, createSignal, Show } from "solid-js";
 
 import CopyButton from "@/components/CopyButton";
 import Card from "@/components/primitives/solid/Card";
+import Input from "@/components/primitives/solid/Input";
 import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolActionButton from "@/components/ToolActionButton";
@@ -27,14 +28,18 @@ export default function YamlFormatterTool() {
     <div class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-5 p-6 mx-auto w-full max-w-[1100px]">
       <div class="flex flex-col gap-3">
         <div class="flex items-center gap-3 flex-wrap">
-          <Label>Indent</Label>
-          <input
+          <Input
+            label="Indent"
+            name="yaml-indent"
+            autocomplete="off"
             type="number"
             min={2}
             max={8}
-            value={indent()}
-            onInput={(event) => setIndent(Number(event.currentTarget.value) || 2)}
-            class="w-20 rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none"
+            inputmode="numeric"
+            value={String(indent())}
+            onInput={(value) => setIndent(Number(value) || 2)}
+            class="flex-row items-center gap-3"
+            controlClass="w-20 rounded-lg px-3 py-2"
           />
           <ToolActionButton active={sortKeys()} onClick={() => setSortKeys((current) => !current)}>
             Sort keys

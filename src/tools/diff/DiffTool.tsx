@@ -137,10 +137,14 @@ function InputPanel(props: InputPanelProps) {
           <Label>{props.label}</Label>
 
           <Select
+            aria-label={`${props.label} language`}
+            name={`diff-${props.label.toLowerCase()}-language`}
+            autocomplete="off"
             value={props.lang}
             onChange={(v) => props.onLangChange(v as Language)}
             options={SUPPORTED_LANGUAGES.map((l) => ({ value: l, label: LANGUAGE_LABELS[l] }))}
             class="w-auto ml-auto"
+            controlClass="w-auto"
           />
 
           <button
@@ -157,6 +161,8 @@ function InputPanel(props: InputPanelProps) {
               props.fileInputRef(el);
             }}
             type="file"
+            aria-label={`Open ${props.label} file`}
+            name={`diff-${props.label.toLowerCase()}-file`}
             class="hidden"
             onChange={handleFileChange}
           />
@@ -173,6 +179,8 @@ function InputPanel(props: InputPanelProps) {
 
         {/* Textarea */}
         <textarea
+          aria-label={`${props.label} text`}
+          name={`diff-${props.label.toLowerCase()}-text`}
           value={props.content}
           onInput={(e) => props.onContentChange(e.currentTarget.value)}
           placeholder={`Paste ${props.label.toLowerCase()} text here, or drop a file...`}
@@ -540,6 +548,8 @@ export default function DiffTool() {
           {/* Changes only toggle */}
           <label class="flex items-center gap-1.5 cursor-pointer text-sm text-[var(--text-secondary)] select-none">
             <input
+              aria-label="Show changes only"
+              name="changes-only"
               type="checkbox"
               checked={changesOnly()}
               onChange={(e) => setChangesOnly(e.currentTarget.checked)}

@@ -67,6 +67,8 @@ export default function ChmodCalculatorTool() {
                     {([permission]) => (
                       <td class="px-4 py-3">
                         <input
+                          aria-label={`${label} ${permission}`}
+                          name={`chmod-${subject}-${permission}`}
                           type="checkbox"
                           checked={permissions()[subject][permission]}
                           onChange={() => togglePermission(subject, permission)}

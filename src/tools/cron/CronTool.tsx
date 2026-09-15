@@ -1,5 +1,6 @@
 import { createMemo, createSignal, For, Show } from "solid-js";
 import Card from "@/components/primitives/solid/Card";
+import Input from "@/components/primitives/solid/Input";
 import Label from "@/components/primitives/solid/Label";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
@@ -39,17 +40,16 @@ export default function CronTool() {
   return (
     <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[900px]">
       <div class="flex flex-col gap-1.5">
-        <Label>Cron expression</Label>
-        <input
+        <Input
+          label="Cron expression"
+          name="cron-expression"
+          autocomplete="off"
           type="text"
           value={input()}
-          onInput={(event) => setInput(event.currentTarget.value)}
+          onInput={setInput}
+          placeholder="30 9 * * 1"
           spellcheck={false}
-          class="w-full rounded-lg border bg-[var(--bg-secondary)] px-4 py-2.5 text-[var(--text-primary)] outline-none font-mono text-[0.9375rem] focus:border-[var(--accent-primary)]"
-          classList={{
-            "border-[var(--border)]": !error(),
-            "border-[var(--accent-error)]": !!error(),
-          }}
+          error={!!error()}
         />
       </div>
 

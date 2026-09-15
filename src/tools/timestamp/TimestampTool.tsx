@@ -83,8 +83,11 @@ export default function TimestampTool() {
       <div class="grid grid-cols-[1fr_auto_1fr] gap-4 items-end">
         {/* Epoch input */}
         <div class="flex flex-col gap-1.5">
-          <Label>Unix timestamp</Label>
           <Input
+            label="Unix timestamp"
+            name="unix-timestamp"
+            autocomplete="off"
+            inputmode="numeric"
             type="text"
             value={epochInput()}
             onInput={handleEpochInput}
@@ -110,8 +113,14 @@ export default function TimestampTool() {
 
         {/* Datetime-local input */}
         <div class="flex flex-col gap-1.5">
-          <Label>Date & time (local)</Label>
-          <Input type="datetime-local" value={datetimeInput()} onInput={handleDatetimeInput} />
+          <Input
+            label="Date & time (local)"
+            name="local-datetime"
+            autocomplete="off"
+            type="datetime-local"
+            value={datetimeInput()}
+            onInput={handleDatetimeInput}
+          />
         </div>
       </div>
 
@@ -201,6 +210,9 @@ export default function TimestampTool() {
                 {(zone, i) => (
                   <div class="grid grid-cols-[180px_1fr_auto] gap-3 items-center">
                     <Select
+                      aria-label={`Timezone ${i() + 1}`}
+                      name={`timezone-${i() + 1}`}
+                      autocomplete="off"
                       value={zone.tz}
                       onChange={(tz) => changeZone(i(), tz)}
                       options={PRESET_ZONES.map((z) => ({ value: z.tz, label: z.label }))}
