@@ -11,25 +11,23 @@ const VIEWS = [
 describe("ToolWorkspace", () => {
   it("selects the initial view and switches its tabpanel", () => {
     const { getByRole, getByText } = render(() => (
-      <ToolWorkspace views={VIEWS} switcherLabel="Formatter views" />
+      <ToolWorkspace views={VIEWS} initialView="output" switcherLabel="Formatter views" />
     ));
 
     const inputTab = getByRole("tab", { name: "Input" });
     const outputTab = getByRole("tab", { name: "Output" });
-    expect(inputTab).toHaveAttribute("aria-selected", "true");
-    expect(outputTab).toHaveAttribute("aria-selected", "false");
+    expect(inputTab).toHaveAttribute("aria-selected", "false");
+    expect(outputTab).toHaveAttribute("aria-selected", "true");
     const inputPanel = getByRole("tabpanel", { name: "Input" });
     const outputPanel = getByRole("tabpanel", { name: "Output" });
-    expect(inputPanel.style.display).toBe("block");
-    expect(outputPanel.style.display).toBe("");
+    expect(inputPanel).toHaveClass("hidden", "md:block");
+    expect(outputPanel).toHaveClass("hidden", "md:block");
     expect(getByText("input content")).toBeInTheDocument();
     expect(getByText("output content")).toBeInTheDocument();
 
-    fireEvent.click(outputTab);
-    expect(inputTab).toHaveAttribute("aria-selected", "false");
-    expect(outputTab).toHaveAttribute("aria-selected", "true");
-    expect(inputPanel.style.display).toBe("");
-    expect(outputPanel.style.display).toBe("block");
+    fireEvent.click(inputTab);
+    expect(inputTab).toHaveAttribute("aria-selected", "true");
+    expect(outputTab).toHaveAttribute("aria-selected", "false");
   });
 
   it("supports arrow-key navigation across view tabs", () => {

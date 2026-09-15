@@ -30,13 +30,16 @@ describe("ToolSegmentedControl", () => {
       <ToolSegmentedControl
         label="Format"
         value="json"
-        options={[...OPTIONS, { value: "toml", label: "TOML", disabled: true }]}
+        options={[OPTIONS[0], { value: "toml", label: "TOML", disabled: true }, OPTIONS[1]]}
         onChange={onChange}
       />
     ));
 
     const json = getByRole("radio", { name: "JSON" });
+    const toml = getByRole("radio", { name: "TOML" });
     const yaml = getByRole("radio", { name: "YAML" });
+    expect(toml).toBeDisabled();
+
     json.focus();
     fireEvent.keyDown(json, { key: "ArrowRight" });
 

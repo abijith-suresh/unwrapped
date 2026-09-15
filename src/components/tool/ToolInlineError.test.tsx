@@ -5,11 +5,12 @@ import ToolInlineError from "./ToolInlineError";
 
 describe("ToolInlineError", () => {
   it("renders its message and optional recovery hint as an alert", () => {
-    const { getByRole, getByText } = render(() => (
+    const { getByRole } = render(() => (
       <ToolInlineError message="Invalid input" hint="Check the value and try again." />
     ));
 
-    expect(getByRole("alert")).toHaveTextContent("Invalid input");
-    expect(getByText("Check the value and try again.")).toBeInTheDocument();
+    const alert = getByRole("alert");
+    expect(alert).toHaveTextContent("Invalid input");
+    expect(alert).toHaveTextContent("Check the value and try again.");
   });
 });

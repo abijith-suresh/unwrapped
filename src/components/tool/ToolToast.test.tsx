@@ -11,6 +11,8 @@ describe("ToolToast", () => {
 
     const toast = getByRole("status");
     expect(toast).toHaveTextContent("Could not parse input");
+    expect(toast).toHaveAttribute("aria-live", "polite");
+    expect(toast).toHaveAttribute("aria-atomic", "true");
     expect(toast).not.toHaveAttribute("aria-hidden", "true");
 
     setOpen(false);
