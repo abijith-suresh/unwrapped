@@ -37,7 +37,10 @@ export default function HttpStatusCodesTool() {
                   </div>
                   <Label>{entry.category}</Label>
                 </div>
-                <CopyButton text={`${entry.code} ${entry.name}`} label="Copy entry" />
+                <CopyButton
+                  text={`${entry.code} ${entry.name}`}
+                  label={`Copy ${entry.code} ${entry.name}`}
+                />
               </div>
               <p class="m-0 text-[var(--text-secondary)] leading-[1.6]">{entry.description}</p>
             </Card>

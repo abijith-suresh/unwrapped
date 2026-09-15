@@ -79,6 +79,8 @@ export default function TokenGenerator() {
           <input
             id="token-length"
             type="number"
+            name="token-length"
+            autocomplete="off"
             min={MIN_TOKEN_LENGTH}
             max={MAX_TOKEN_LENGTH}
             value={options().length}

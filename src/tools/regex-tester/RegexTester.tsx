@@ -235,7 +235,7 @@ export default function RegexTester() {
         <Card class="overflow-hidden p-0">
           <div class="flex items-center justify-between px-4 py-2 border-b border-[var(--border)]">
             <Label>Replaced output</Label>
-            <CopyButton text={replaceOutput()} />
+            <CopyButton text={replaceOutput()} label="Copy replaced output" />
           </div>
 
           <pre class="m-0 p-4 overflow-x-auto text-sm leading-relaxed text-[var(--text-primary)] font-mono whitespace-pre-wrap break-all">
@@ -292,7 +292,7 @@ export default function RegexTester() {
                           <span class="flex-1 overflow-hidden text-ellipsis">
                             {match.fullMatch}
                           </span>
-                          <CopyButton text={match.fullMatch} />
+                          <CopyButton text={match.fullMatch} label={`Copy match ${index() + 1}`} />
                         </div>
                       </td>
                       <Show when={namedGroupNames().length > 0}>

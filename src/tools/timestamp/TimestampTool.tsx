@@ -128,7 +128,10 @@ export default function TimestampTool() {
                 <code class="text-[0.9375rem] text-[var(--accent-primary)] font-mono flex-1 break-all">
                   {String(Math.floor(d().getTime() / 1000))}
                 </code>
-                <CopyButton text={String(Math.floor(d().getTime() / 1000))} />
+                <CopyButton
+                  text={String(Math.floor(d().getTime() / 1000))}
+                  label="Copy epoch seconds"
+                />
               </div>
             </Card>
 
@@ -139,7 +142,7 @@ export default function TimestampTool() {
                 <code class="text-[0.9375rem] text-[var(--accent-primary)] font-mono flex-1 break-all">
                   {String(d().getTime())}
                 </code>
-                <CopyButton text={String(d().getTime())} />
+                <CopyButton text={String(d().getTime())} label="Copy epoch milliseconds" />
               </div>
             </Card>
 
@@ -150,7 +153,7 @@ export default function TimestampTool() {
                 <code class="text-sm text-[var(--accent-success)] font-mono flex-1 break-all">
                   {d().toISOString()}
                 </code>
-                <CopyButton text={d().toISOString()} />
+                <CopyButton text={d().toISOString()} label="Copy ISO 8601" />
               </div>
             </Card>
           </div>
@@ -176,7 +179,7 @@ export default function TimestampTool() {
                       {item.value}
                     </code>
                     <div class="flex justify-end">
-                      <CopyButton text={item.value} />
+                      <CopyButton text={item.value} label={`Copy ${item.label}`} />
                     </div>
                   </div>
                 )}
@@ -210,7 +213,10 @@ export default function TimestampTool() {
                       {formatInZone(d(), zone.tz)}
                     </code>
 
-                    <CopyButton text={formatInZone(d(), zone.tz)} />
+                    <CopyButton
+                      text={formatInZone(d(), zone.tz)}
+                      label={`Copy ${zone.label} time`}
+                    />
                   </div>
                 )}
               </For>
