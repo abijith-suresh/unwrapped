@@ -64,7 +64,7 @@ export default function ToolWorkspace(props: ToolWorkspaceProps) {
         aria-label={local.switcherLabel ?? "Tool views"}
         aria-orientation="horizontal"
         onKeyDown={handleTabKeyDown}
-        class="grid grid-cols-2 gap-1 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--bg-secondary)] p-1 md:hidden"
+        class="grid grid-cols-2 gap-1 rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--bg-secondary)] p-1 lg:hidden"
       >
         {local.views.map((view) => (
           <ToolActionButton
@@ -88,7 +88,7 @@ export default function ToolWorkspace(props: ToolWorkspaceProps) {
             id={`tool-view-${view.id}`}
             role="tabpanel"
             aria-labelledby={`tool-tab-${view.id}`}
-            class="hidden min-w-0 md:block"
+            class="hidden min-w-0 lg:block"
             style={{ display: activeId() === view.id ? "block" : undefined }}
           >
             {view.content}
