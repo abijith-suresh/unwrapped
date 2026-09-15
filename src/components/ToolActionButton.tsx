@@ -36,7 +36,7 @@ type PressedState = boolean | "true" | "false" | "mixed" | undefined;
 function getButtonClasses(variant: ToolActionButtonVariant, pressed: PressedState): string {
   const isPressed = pressed === true || pressed === "true";
 
-  if (isPressed && variant === "toggle") {
+  if (isPressed && (variant === "secondary" || variant === "toggle")) {
     return TOGGLE_ACTIVE_CLASSES;
   }
 

@@ -3,7 +3,11 @@ import ToolHost from "@/components/ToolHost";
 import ToolShell from "@/layouts/ToolShell.astro";
 import { getToolBySlug, tools, validateToolRegistry } from "@/tools/registry";
 
-const toolModules = import.meta.glob("../../tools/*/*.tsx");
+const toolModules = import.meta.glob([
+  "../../tools/*/*.tsx",
+  "!../../tools/**/*.test.tsx",
+  "!../../tools/**/*.spec.tsx",
+]);
 
 const availableToolComponentPaths = Object.keys(toolModules).map((path) =>
   path.startsWith("../../") ? `/src/${path.slice(6)}` : path

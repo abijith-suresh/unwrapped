@@ -15,6 +15,7 @@ describe("ToolActionButton", () => {
     const button = getByRole("button", { name: "Sort keys" });
     expect(button).toHaveAttribute("type", "button");
     expect(button).toHaveAttribute("aria-pressed", "true");
+    expect(button).toHaveClass("border-[var(--accent-primary)]");
   });
 
   it("updates its visual and accessible state when the value changes", () => {

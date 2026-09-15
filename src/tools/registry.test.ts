@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 
 import { getToolBySlug, tools, validateToolRegistry } from "./registry";
 
-const toolComponentPaths = tools.map((tool) => tool.componentPath);
+const toolComponentPaths = Object.keys(
+  import.meta.glob(["./*/*.tsx", "!./**/*.test.tsx", "!./**/*.spec.tsx"])
+).map((path) => `/src/tools/${path.slice(2)}`);
 
 describe("tool registry", () => {
   it("has no duplicate ids, duplicate slugs, or missing component paths", () => {

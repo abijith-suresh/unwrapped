@@ -1,6 +1,6 @@
 ---
 import LandingShell from "@/layouts/LandingShell.astro";
-import { tools } from "@/tools/registry";
+import { getToolRoute, tools } from "@/tools/registry";
 ---
 
 <LandingShell
@@ -15,7 +15,7 @@ import { tools } from "@/tools/registry";
       <div class="fp-tools">
         {
           tools.map((tool) => (
-            <a href={`/tools/${tool.slug}`} class="fp-tool">
+            <a href={getToolRoute(tool.slug)} class="fp-tool">
               <span class="fp-tool-cat">{tool.category}</span>
               <span class="fp-tool-name">{tool.name}</span>
               <span class="fp-tool-desc">{tool.description}</span>
