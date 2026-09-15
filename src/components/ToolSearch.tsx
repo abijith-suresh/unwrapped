@@ -46,6 +46,15 @@ export default function ToolSearch() {
         t.keywords.some((k) => k.toLowerCase().includes(q))
     );
   });
+  const resultAnnouncement = createMemo(() => {
+    const results = filtered();
+    const q = query().trim();
+    const count = `${results.length} ${results.length === 1 ? "tool" : "tools"} available`;
+    const queryDescription = q ? ` for ${q}` : "";
+    const active = results[activeIndex()];
+    const activeDescription = active ? ` ${active.name} highlighted.` : "";
+    return `${count}${queryDescription}.${activeDescription}`;
+  });
 
   /* Reset selection when results change */
   createEffect(() => {
@@ -98,6 +107,18 @@ export default function ToolSearch() {
         setActiveIndex((i) => Math.max(i - 1, -1));
         break;
 
+      case "Home":
+        if (count === 0) return;
+        e.preventDefault();
+        setActiveIndex(0);
+        break;
+
+      case "End":
+        if (count === 0) return;
+        e.preventDefault();
+        setActiveIndex(count - 1);
+        break;
+
       case "Enter":
         if (activeIndex() >= 0) {
           e.preventDefault();
@@ -145,6 +166,7 @@ export default function ToolSearch() {
           onKeyDown={onKeyDown}
           autocomplete="off"
           spellcheck={false}
+          name="tool-search"
           aria-label="Search tools"
         />
 
@@ -172,51 +194,56 @@ export default function ToolSearch() {
       </div>
 
       {/* ── Filtered results ── */}
-      <div class="lp-results" id="lp-results">
-        <Show
-          when={filtered().length > 0}
-          fallback={<p class="lp-empty">no tools match &ldquo;{query()}&rdquo;</p>}
-        >
+      <p class="sr-only" id="lp-results-status" role="status" aria-live="polite" aria-atomic="true">
+        {resultAnnouncement()}
+      </p>
+      <Show when={filtered().length > 0}>
+        <ul class="lp-results" id="lp-results" aria-label="Tool results">
           <For each={filtered()}>
             {(tool, idx) => {
               const Icon = ICON_MAP[tool.icon];
               return (
-                <a
-                  href={getToolRoute(tool.slug)}
-                  classList={{
-                    "lp-row": true,
-                    "lp-row--active": activeIndex() === idx(),
-                  }}
-                  id={`lp-tool-${tool.slug}`}
-                  onFocus={() => setActiveIndex(idx())}
-                  onMouseEnter={() => {
-                    setActiveIndex(idx());
-                    const link = document.createElement("link");
-                    link.rel = "prefetch";
-                    link.href = getToolRoute(tool.slug);
-                    document.head.appendChild(link);
-                    setTimeout(() => link.remove(), 5000);
-                  }}
-                  onMouseLeave={() => setActiveIndex(-1)}
-                >
-                  <span class="lp-row-index" aria-hidden="true">
-                    {String(idx() + 1).padStart(2, "0")}
-                  </span>
-                  <span class="lp-row-icon" aria-hidden="true">
-                    {Icon ? <Icon size={15} /> : null}
-                  </span>
-                  <span class="lp-row-name">{tool.name}</span>
-                  <span class="lp-row-cat">{tool.category}</span>
-                  <span class="lp-row-desc">{tool.description}</span>
-                  <span class="lp-row-arrow" aria-hidden="true">
-                    ↗
-                  </span>
-                </a>
+                <li>
+                  <a
+                    href={getToolRoute(tool.slug)}
+                    classList={{
+                      "lp-row": true,
+                      "lp-row--active": activeIndex() === idx(),
+                    }}
+                    id={`lp-tool-${tool.slug}`}
+                    onFocus={() => setActiveIndex(idx())}
+                    onMouseEnter={() => {
+                      setActiveIndex(idx());
+                      const link = document.createElement("link");
+                      link.rel = "prefetch";
+                      link.href = getToolRoute(tool.slug);
+                      document.head.appendChild(link);
+                      setTimeout(() => link.remove(), 5000);
+                    }}
+                    onMouseLeave={() => setActiveIndex(-1)}
+                  >
+                    <span class="lp-row-index" aria-hidden="true">
+                      {String(idx() + 1).padStart(2, "0")}
+                    </span>
+                    <span class="lp-row-icon" aria-hidden="true">
+                      {Icon ? <Icon size={15} /> : null}
+                    </span>
+                    <span class="lp-row-name">{tool.name}</span>
+                    <span class="lp-row-cat">{tool.category}</span>
+                    <span class="lp-row-desc">{tool.description}</span>
+                    <span class="lp-row-arrow" aria-hidden="true">
+                      ↗
+                    </span>
+                  </a>
+                </li>
               );
             }}
           </For>
-        </Show>
-      </div>
+        </ul>
+      </Show>
+      <Show when={filtered().length === 0}>
+        <p class="lp-empty">no tools match &ldquo;{query()}&rdquo;</p>
+      </Show>
     </search>
   );
 }
