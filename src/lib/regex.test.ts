@@ -1,19 +1,24 @@
 import { describe, expect, it } from "vitest";
 
-import { buildRegexReplaceResult, buildRegexResult, escapeHtml } from "./regex";
+import { buildRegexReplaceResult, buildRegexResult } from "./regex";
 
 describe("regex utilities", () => {
-  it("escapes HTML before highlighting", () => {
-    expect(escapeHtml("<tag>&")).toBe("&lt;tag&gt;&amp;");
-  });
-
   it("builds regex results with matches and highlighting", () => {
     const result = buildRegexResult("foo", new Set(["g"]), "foo bar foo");
 
     expect(result.error).toBeNull();
     expect(result.matches).toHaveLength(2);
-    expect(result.highlighted).toContain("<mark");
+    expect(result.highlighted.map((segment) => segment.text).join("")).toBe("foo bar foo");
+    expect(result.highlighted.some((segment) => segment.kind === "match")).toBe(true);
     expect(result.summary.firstMatchIndex).toBe(0);
+  });
+
+  it("keeps hostile input as text while highlighting matches", () => {
+    const input = "</span><script>alert(1)</script><img src=x onerror=alert(1)>";
+    const result = buildRegexResult("script", new Set(["g"]), input);
+
+    expect(result.highlighted.map((segment) => segment.text).join("")).toBe(input);
+    expect(result.highlighted.some((segment) => segment.kind === "match")).toBe(true);
   });
 
   it("captures named and unnamed groups", () => {

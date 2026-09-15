@@ -1,3 +1,5 @@
+import type { CodeHighlightSegment } from "./codeHighlight";
+
 export type FlagKey = "g" | "i" | "m" | "s";
 
 export interface CaptureGroup {
@@ -24,20 +26,20 @@ export interface RegexReplaceResult {
 
 export interface RegexResult {
   matches: MatchResult[];
-  highlighted: string;
+  highlighted: CodeHighlightSegment[];
   error: string | null;
   summary: RegexSummary;
 }
 
-export function escapeHtml(str: string): string {
-  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+function plainHighlight(input: string): CodeHighlightSegment[] {
+  return input ? [{ text: input, kind: "plain" }] : [];
 }
 
 export function buildRegexResult(pattern: string, flags: Set<FlagKey>, input: string): RegexResult {
   if (!pattern) {
     return {
       matches: [],
-      highlighted: escapeHtml(input),
+      highlighted: plainHighlight(input),
       error: null,
       summary: createSummary([]),
     };
@@ -51,7 +53,7 @@ export function buildRegexResult(pattern: string, flags: Set<FlagKey>, input: st
   } catch (error) {
     return {
       matches: [],
-      highlighted: escapeHtml(input),
+      highlighted: plainHighlight(input),
       error: error instanceof Error ? error.message : "Invalid regular expression",
       summary: createSummary([]),
     };
@@ -88,14 +90,17 @@ export function buildRegexResult(pattern: string, flags: Set<FlagKey>, input: st
     }
   }
 
-  let highlighted = "";
+  const highlighted: CodeHighlightSegment[] = [];
   let position = 0;
   for (const [start, end] of ranges) {
-    highlighted += escapeHtml(input.slice(position, start));
-    highlighted += `<mark style="background:color-mix(in srgb,var(--accent-primary) 30%,transparent);border-radius:2px;color:inherit;">${escapeHtml(input.slice(start, end))}</mark>`;
+    const beforeMatch = input.slice(position, start);
+    const matchText = input.slice(start, end);
+    if (beforeMatch) highlighted.push({ text: beforeMatch, kind: "plain" });
+    if (matchText) highlighted.push({ text: matchText, kind: "match" });
     position = end;
   }
-  highlighted += escapeHtml(input.slice(position));
+  const afterMatches = input.slice(position);
+  if (afterMatches) highlighted.push({ text: afterMatches, kind: "plain" });
 
   return { matches, highlighted, error: null, summary: createSummary(matches) };
 }

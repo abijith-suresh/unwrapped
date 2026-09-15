@@ -1,10 +1,12 @@
+import type { CodeHighlightSegment } from "./codeHighlight";
+
 export type IndentSize = 2 | 4;
 
 type JsonPrimitive = null | boolean | number | string;
 type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue };
 
 export interface JsonFormatResult {
-  html: string;
+  segments: CodeHighlightSegment[];
   raw: string;
   error: string | null;
   errorPosition: number | null;
@@ -22,27 +24,38 @@ interface JsonErrorSourceContext {
   context: string;
 }
 
-export function syntaxHighlightJson(json: string): string {
-  return json
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(
-      /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g,
-      (match) => {
-        let style = "color: var(--accent-primary)";
-        if (/^"/.test(match)) {
-          style = /:$/.test(match)
-            ? "color: var(--text-primary); font-weight: 600"
-            : "color: var(--accent-success)";
-        } else if (/true|false/.test(match)) {
-          style = "color: var(--accent-warning)";
-        } else if (/null/.test(match)) {
-          style = "color: var(--text-muted)";
-        }
-        return `<span style="${style}">${match}</span>`;
-      }
-    );
+export function syntaxHighlightJson(json: string): CodeHighlightSegment[] {
+  const segments: CodeHighlightSegment[] = [];
+  const tokenPattern =
+    /"(?:\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*"(?:\s*:)?|\b(?:true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?/g;
+  let position = 0;
+
+  for (const match of json.matchAll(tokenPattern)) {
+    const token = match[0];
+    const start = match.index;
+
+    if (start > position) {
+      segments.push({ text: json.slice(position, start), kind: "plain" });
+    }
+
+    let kind: CodeHighlightSegment["kind"] = "json-number";
+    if (token.startsWith('"')) {
+      kind = token.endsWith(":") ? "json-key" : "json-string";
+    } else if (token === "true" || token === "false") {
+      kind = "json-boolean";
+    } else if (token === "null") {
+      kind = "json-null";
+    }
+
+    segments.push({ text: token, kind });
+    position = start + token.length;
+  }
+
+  if (position < json.length) {
+    segments.push({ text: json.slice(position), kind: "plain" });
+  }
+
+  return segments;
 }
 
 export function sortJsonKeys<T>(value: T): T {
@@ -130,7 +143,7 @@ export function formatJson(
   const trimmed = input.trim();
   if (!trimmed) {
     return {
-      html: "",
+      segments: [],
       raw: "",
       error: null,
       errorPosition: null,
@@ -152,7 +165,7 @@ export function formatJson(
     const errorLength = errorContext?.length ?? (input.length > 0 ? 1 : 0);
 
     return {
-      html: "",
+      segments: [],
       raw: "",
       error: `JSON parse error: ${message}`,
       errorPosition,
@@ -166,7 +179,7 @@ export function formatJson(
   const output = sortKeys ? sortJsonKeys(parsed) : parsed;
   const raw = minify ? JSON.stringify(output) : JSON.stringify(output, null, indent);
   return {
-    html: syntaxHighlightJson(raw),
+    segments: syntaxHighlightJson(raw),
     raw,
     error: null,
     errorPosition: null,
