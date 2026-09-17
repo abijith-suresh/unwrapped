@@ -73,6 +73,9 @@ export default function JwtDecoder() {
       {/* ------------------------------------------------------------------ */}
       <div class="flex flex-col gap-2">
         <Textarea
+          label="JWT token"
+          name="jwt-token"
+          autocomplete="off"
           value={input()}
           onInput={setInput}
           placeholder="Paste a JWT token here..."

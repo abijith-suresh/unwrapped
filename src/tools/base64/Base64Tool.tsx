@@ -257,19 +257,20 @@ export default function Base64Tool() {
       {/* Input                                                               */}
       {/* ------------------------------------------------------------------ */}
       <div class="flex flex-col gap-2">
-        <Label>
-          {mode() === "encode"
-            ? workflow() === "text"
-              ? "Plain text"
-              : "Binary file"
-            : variant() === "url"
-              ? "Base64url"
-              : "Base64"}
-        </Label>
-
         {/* Drop zone wrapper */}
         <div role="none" onDragOver={(e) => e.preventDefault()} onDrop={onDrop}>
           <Textarea
+            label={
+              mode() === "encode"
+                ? workflow() === "text"
+                  ? "Plain text"
+                  : "Binary file"
+                : variant() === "url"
+                  ? "Base64url"
+                  : "Base64"
+            }
+            name="base64-input"
+            autocomplete="off"
             value={mode() === "encode" && workflow() === "file" ? fileSummary() : input()}
             onInput={(e) => {
               setFileError(null);

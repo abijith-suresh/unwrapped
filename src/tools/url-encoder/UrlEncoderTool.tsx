@@ -44,25 +44,28 @@ export default function UrlEncoderTool() {
         </Card>
 
         <Card class="flex flex-col gap-4">
-          <div class="flex flex-col gap-1.5">
-            <Label>Percent-encoded text</Label>
-            <textarea
-              value={encodedText()}
-              onInput={(event) => setEncodedText(event.currentTarget.value)}
-              placeholder="Enter percent-encoded text to decode…"
-              rows={7}
-              spellcheck={false}
-              class="w-full rounded-lg border bg-[var(--bg-primary)] px-4 py-2.5 text-sm text-[var(--text-primary)] outline-none font-mono resize-y focus:border-[var(--accent-primary)]"
-              classList={{
-                "border-[var(--border)]": !decodeError(),
-                "border-[var(--accent-error)]": !!decodeError(),
-              }}
-            />
-          </div>
+          <Textarea
+            label="Percent-encoded text"
+            name="percent-encoded-text"
+            autocomplete="off"
+            value={encodedText()}
+            onInput={(value) => setEncodedText(value)}
+            placeholder="Enter percent-encoded text to decode…"
+            rows={7}
+            spellcheck={false}
+            resize="y"
+            describedBy={decodeError() ? "percent-encoded-text-error" : undefined}
+            error={!!decodeError()}
+            controlClass="!bg-[var(--bg-primary)] text-sm"
+          />
 
           <Show
             when={!decodeError()}
-            fallback={<ToolStatusMessage tone="error">{decodeError()}</ToolStatusMessage>}
+            fallback={
+              <ToolStatusMessage id="percent-encoded-text-error" tone="error">
+                {decodeError()}
+              </ToolStatusMessage>
+            }
           >
             <div class="flex items-center justify-between">
               <Label>Decoded output</Label>
