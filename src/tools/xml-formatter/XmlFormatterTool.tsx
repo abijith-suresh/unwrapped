@@ -22,7 +22,7 @@ export default function XmlFormatterTool() {
   });
 
   return (
-    <div class="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-5 p-6 mx-auto w-full max-w-[1100px]">
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] gap-5 p-6 mx-auto w-full max-w-[1100px]">
       <div class="flex flex-col gap-3">
         <Input
           label="Indent"

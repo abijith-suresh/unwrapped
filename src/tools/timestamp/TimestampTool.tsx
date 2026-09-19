@@ -80,7 +80,7 @@ export default function TimestampTool() {
       {/* ------------------------------------------------------------------ */}
       {/* Input row                                                           */}
       {/* ------------------------------------------------------------------ */}
-      <div class="grid grid-cols-[1fr_auto_1fr] gap-4 items-end">
+      <div class="grid grid-cols-1 gap-4 items-end sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
         {/* Epoch input */}
         <div class="flex flex-col gap-1.5">
           <Input
@@ -176,7 +176,7 @@ export default function TimestampTool() {
               <Label>Derived formats</Label>
             </div>
 
-            <div class="p-3 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3">
+            <div class="p-3 grid grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] gap-3">
               <For each={getDerivedTimestampFormats(d())}>
                 {(item) => (
                   <div class="flex flex-col gap-1.5 p-3 bg-[var(--bg-primary)] border border-[var(--border)] rounded">
@@ -208,7 +208,7 @@ export default function TimestampTool() {
             <div class="p-3 flex flex-col gap-3">
               <For each={zones()}>
                 {(zone, i) => (
-                  <div class="grid grid-cols-[180px_1fr_auto] gap-3 items-center">
+                  <div class="grid grid-cols-1 gap-3 items-center sm:grid-cols-[minmax(0,180px)_minmax(0,1fr)_auto]">
                     <Select
                       aria-label={`Timezone ${i() + 1}`}
                       name={`timezone-${i() + 1}`}
