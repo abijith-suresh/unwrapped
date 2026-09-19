@@ -144,21 +144,19 @@ export default function JsonFormatter() {
                 }
               >
                 <Show
-                  when={result().html}
+                  when={result().raw}
                   fallback={
                     <div class="flex min-h-0 flex-1 items-center justify-center rounded-[var(--radius-control)] border border-dashed border-[var(--border)] bg-[var(--bg-primary)] p-6 text-center text-sm leading-relaxed text-[var(--text-muted)]">
                       JSON output will appear here.
                     </div>
                   }
                 >
-                  {(html) => (
-                    <ToolCodeBlock
-                      fill
-                      html={html()}
-                      aria-label="JSON output"
-                      class="text-[0.8125rem]"
-                    />
-                  )}
+                  <ToolCodeBlock
+                    fill
+                    segments={result().segments}
+                    aria-label="JSON output"
+                    class="text-[0.8125rem]"
+                  />
                 </Show>
               </ToolPanel>
             ),

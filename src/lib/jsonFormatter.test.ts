@@ -103,7 +103,13 @@ describe("json formatter utilities", () => {
     });
   });
 
-  it("wraps highlighted JSON tokens in span elements", () => {
-    expect(syntaxHighlightJson('{"a":true}')).toContain("<span");
+  it("returns typed highlighted JSON segments without changing the source text", () => {
+    const source = '{"<script>":"</span><script>alert(1)</script>","active":true}';
+    const segments = syntaxHighlightJson(source);
+
+    expect(segments.map((segment) => segment.text).join("")).toBe(source);
+    expect(segments.some((segment) => segment.kind === "json-key")).toBe(true);
+    expect(segments.some((segment) => segment.kind === "json-string")).toBe(true);
+    expect(segments.some((segment) => segment.kind === "json-boolean")).toBe(true);
   });
 });

@@ -230,10 +230,17 @@ export default function RegexTester() {
             </Show>
           </div>
 
-          <pre
-            class="m-0 p-4 overflow-x-auto text-sm leading-relaxed text-[var(--text-primary)] font-mono whitespace-pre-wrap break-all"
-            innerHTML={result().highlighted}
-          />
+          <pre class="m-0 p-4 overflow-x-auto text-sm leading-relaxed text-[var(--text-primary)] font-mono whitespace-pre-wrap break-all">
+            <For each={result().highlighted}>
+              {(segment) => (
+                <Show when={segment.kind === "match"} fallback={<span>{segment.text}</span>}>
+                  <mark class="rounded-[2px] bg-[color-mix(in_srgb,var(--accent-primary)_30%,transparent)] text-inherit">
+                    {segment.text}
+                  </mark>
+                </Show>
+              )}
+            </For>
+          </pre>
         </Card>
       </Show>
 
