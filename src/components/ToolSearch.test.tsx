@@ -58,4 +58,37 @@ describe("ToolSearch", () => {
     expect(input).toHaveValue("");
     expect(getAllByRole("link")).toHaveLength(tools.length);
   });
+
+  it("exposes combobox state and announces result counts", () => {
+    const { getByRole, getByText } = render(() => <ToolSearch />);
+    const input = getByRole("textbox", { name: "Search tools" });
+
+    expect(input).toHaveAttribute("name", "tool-search");
+    expect(getByText(`${tools.length} tools available.`)).toBeInTheDocument();
+
+    fireEvent.input(input, { target: { value: "cron" } });
+
+    expect(getByText("1 tool available for cron.")).toBeInTheDocument();
+  });
+
+  it("keeps Home and End selection within the filtered results", () => {
+    const { getByRole, getAllByRole } = render(() => <ToolSearch />);
+    const input = getByRole("textbox", { name: "Search tools" });
+    const links = getAllByRole("link");
+
+    fireEvent.keyDown(input, { key: "Home" });
+    expect(links[0]).toHaveClass("lp-row--active");
+
+    fireEvent.keyDown(input, { key: "End" });
+    expect(links.at(-1)).toHaveClass("lp-row--active");
+  });
+
+  it("keeps native links for direct keyboard navigation", () => {
+    const { getAllByRole } = render(() => <ToolSearch />);
+
+    for (const link of getAllByRole("link")) {
+      expect(link).toHaveAttribute("href");
+      expect(link).not.toHaveAttribute("role", "option");
+    }
+  });
 });

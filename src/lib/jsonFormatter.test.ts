@@ -62,6 +62,22 @@ describe("json formatter utilities", () => {
     ]);
   });
 
+  it("preserves special object keys while sorting", () => {
+    const value = JSON.parse('{"__proto__":{"polluted":true},"constructor":"safe"}') as {
+      __proto__: { polluted: boolean };
+      constructor: string;
+    };
+    const sorted = sortJsonKeys(value) as typeof value;
+
+    expect(Object.hasOwn(sorted, "__proto__")).toBe(true);
+    expect(Object.getPrototypeOf(sorted)).toBe(Object.prototype);
+    expect(Object.getOwnPropertyDescriptor(sorted, "__proto__")?.value).toEqual({
+      polluted: true,
+    });
+    expect(sorted.constructor).toBe("safe");
+    expect(({} as { polluted?: boolean }).polluted).toBeUndefined();
+  });
+
   it("returns parse errors with line, column, and nearby context", () => {
     const result = formatJson('{"a":1,\n"b":\n}', 2, false, false);
 

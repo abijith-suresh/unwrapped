@@ -97,7 +97,7 @@ export default function RegexTester() {
           </ToolActionButton>
         </div>
 
-        <Label>Pattern</Label>
+        <Label for="regex-pattern">Pattern</Label>
         <div
           class="flex items-center bg-[var(--bg-secondary)] rounded-lg overflow-hidden transition-[border-color] duration-150"
           classList={{
@@ -108,11 +108,14 @@ export default function RegexTester() {
           <span class="pl-3.5 pr-2 text-[var(--text-muted)] font-mono text-lg select-none">/</span>
 
           <input
+            id="regex-pattern"
+            name="regex-pattern"
             type="text"
             value={pattern()}
             onInput={(e) => setPattern(e.currentTarget.value)}
             placeholder="pattern"
             spellcheck={false}
+            autocomplete="off"
             class="flex-1 py-2.5 bg-transparent border-none outline-none text-[var(--text-primary)] font-mono text-[0.9375rem]"
           />
 
@@ -124,6 +127,7 @@ export default function RegexTester() {
                 <button
                   type="button"
                   title={flag.title}
+                  aria-pressed={flags().has(flag.key)}
                   onClick={() => toggleFlag(flag.key)}
                   class="px-1.5 py-0.5 rounded border-none font-mono text-sm font-bold cursor-pointer transition-[background,color] duration-100"
                   classList={{
@@ -148,8 +152,10 @@ export default function RegexTester() {
       </Show>
 
       <div class="flex flex-col gap-1.5">
-        <Label>Test string</Label>
         <Textarea
+          label="Test string"
+          name="regex-test-string"
+          autocomplete="off"
           value={input()}
           onInput={(v) => {
             setInput(v);
@@ -163,10 +169,14 @@ export default function RegexTester() {
       </div>
 
       <Show when={mode() === "replace"}>
-        <div class="flex flex-col gap-1.5">
-          <Label>Replacement</Label>
-          <Input value={replacement()} onInput={setReplacement} placeholder="Replacement text" />
-        </div>
+        <Input
+          label="Replacement"
+          name="regex-replacement"
+          autocomplete="off"
+          value={replacement()}
+          onInput={setReplacement}
+          placeholder="Replacement text…"
+        />
       </Show>
 
       <Show when={pattern() && !result().error}>
