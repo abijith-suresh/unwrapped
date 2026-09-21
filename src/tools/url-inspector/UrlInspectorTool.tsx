@@ -48,7 +48,7 @@ export default function UrlInspectorTool() {
         when={!error()}
         fallback={<ToolStatusMessage tone="error">{error()}</ToolStatusMessage>}
       >
-        <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3">
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] gap-3">
           <For each={SECTION_LABELS}>
             {([key, label]) => {
               const value = () => {

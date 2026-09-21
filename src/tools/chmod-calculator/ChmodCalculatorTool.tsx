@@ -83,7 +83,7 @@ export default function ChmodCalculatorTool() {
         </table>
       </Card>
 
-      <div class="grid gap-3 grid-cols-[repeat(auto-fit,minmax(220px,1fr))]">
+      <div class="grid gap-3 grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))]">
         <Card>
           <div class="flex justify-between gap-3">
             <Label>Octal mode</Label>

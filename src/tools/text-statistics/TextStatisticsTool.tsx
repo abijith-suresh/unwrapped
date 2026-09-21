@@ -27,7 +27,7 @@ export default function TextStatisticsTool() {
         rows={10}
       />
 
-      <div class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3">
+      <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,180px),1fr))] gap-3">
         <For each={METRIC_LABELS}>
           {([key, label]) => (
             <Card class="flex flex-col gap-1.5">
