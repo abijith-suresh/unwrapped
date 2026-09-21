@@ -11,6 +11,7 @@ import {
 import Card from "@/components/primitives/solid/Card";
 import Label from "@/components/primitives/solid/Label";
 import Select from "@/components/primitives/solid/Select";
+import ToolStatusMessage from "@/components/ToolStatusMessage";
 import type { DiffAnalysisResult } from "@/lib/diffAnalysis";
 import { createDiffAnalysisExecutor } from "@/lib/diffExecution";
 import {
@@ -61,6 +62,21 @@ const STRATEGY_LABELS: Record<string, string> = {
   yaml: "Normalized YAML",
   env: "Normalized .env",
   text: "Text",
+};
+
+type DiffSide = "left" | "right";
+
+const DIFF_SIDES: readonly DiffSide[] = ["left", "right"];
+const SIDE_LABELS: Record<DiffSide, string> = {
+  left: "Original",
+  right: "Modified",
+};
+
+type FileFeedback = Record<DiffSide, string | null>;
+
+const EMPTY_FILE_FEEDBACK: FileFeedback = {
+  left: null,
+  right: null,
 };
 
 // ---------------------------------------------------------------------------
@@ -117,7 +133,7 @@ function InputPanel(props: InputPanelProps) {
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      class="flex-1 min-w-0 flex flex-col relative rounded-lg transition-[border-color] duration-150"
+      class="flex-1 min-w-0 flex flex-col relative rounded-lg transition-[border-color] duration-150 motion-reduce:transition-none"
       classList={{
         "border-2 border-dashed border-[var(--accent-primary)]": dragging(),
         "border-2 border-transparent": !dragging(),
@@ -205,9 +221,11 @@ export default function DiffTool() {
   const [rightLang, setRightLang] = createSignal<Language>("text");
   const [changesOnly, setChangesOnly] = createSignal(true);
   const [pending, setPending] = createSignal(false);
-  const [currentChangeIdx, setCurrentChangeIdx] = createSignal(0);
-  const [fileError, setFileError] = createSignal<string | null>(null);
-  const [fileNotice, setFileNotice] = createSignal<string | null>(null);
+  const [currentChangeIdx, setCurrentChangeIdx] = createSignal(-1);
+  const [changeAnnouncement, setChangeAnnouncement] = createSignal("");
+  const [analysisError, setAnalysisError] = createSignal<string | null>(null);
+  const [fileError, setFileError] = createSignal<FileFeedback>({ ...EMPTY_FILE_FEEDBACK });
+  const [fileNotice, setFileNotice] = createSignal<FileFeedback>({ ...EMPTY_FILE_FEEDBACK });
   const [leftFile, setLeftFile] = createSignal<ImportedFileMeta | null>(null);
   const [rightFile, setRightFile] = createSignal<ImportedFileMeta | null>(null);
   const [analysis, setAnalysis] = createSignal<DiffAnalysisResult | null>(null);
@@ -220,6 +238,7 @@ export default function DiffTool() {
     rightLang: Language;
   } | null>(null);
   let latestAnalysisRun = 0;
+  const fileLoadRuns: Record<DiffSide, number> = { left: 0, right: 0 };
 
   // --- Debounced diff trigger -----------------------------------------------
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -275,14 +294,19 @@ export default function DiffTool() {
       setPending(false);
       setAnalysis(null);
       setDiffData(null);
+      setAnalysisError(null);
+      setChangeAnnouncement("");
       return;
     }
 
     setPending(true);
+    setAnalysisError(null);
+    setChangeAnnouncement("");
     debounceTimer = setTimeout(() => {
       batch(() => {
         setDiffData({ original: left, modified: right, leftLang: ll, rightLang: rl });
-        setCurrentChangeIdx(0);
+        setCurrentChangeIdx(-1);
+        setChangeAnnouncement("");
       });
     }, DEBOUNCE_MS);
   });
@@ -295,10 +319,14 @@ export default function DiffTool() {
     if (!data) {
       setAnalysis(null);
       setPending(false);
+      setAnalysisError(null);
       return;
     }
 
     setPending(true);
+    setAnalysisError(null);
+    setCurrentChangeIdx(-1);
+    setChangeAnnouncement("");
 
     void diffExecutor
       .execute({
@@ -317,6 +345,7 @@ export default function DiffTool() {
         batch(() => {
           setAnalysis(response.result);
           setPending(false);
+          setAnalysisError(null);
         });
       })
       .catch(() => {
@@ -327,6 +356,7 @@ export default function DiffTool() {
         batch(() => {
           setAnalysis(null);
           setPending(false);
+          setAnalysisError("The comparison could not be completed. Please try again.");
         });
       });
   });
@@ -380,25 +410,41 @@ export default function DiffTool() {
   const isIdentical = createMemo(() => analysis()?.isIdentical ?? false);
 
   // --- File handling --------------------------------------------------------
-  async function handleFileLoad(side: "left" | "right", file: File) {
-    setFileError(null);
-    setFileNotice(null);
+  function updateFileFeedback(setter: typeof setFileError, side: DiffSide, message: string | null) {
+    setter((feedback) => ({ ...feedback, [side]: message }));
+  }
+
+  async function handleFileLoad(side: DiffSide, file: File) {
+    const runId = ++fileLoadRuns[side];
+    const isCurrentRun = () => fileLoadRuns[side] === runId;
+    updateFileFeedback(setFileError, side, null);
+    updateFileFeedback(setFileNotice, side, null);
 
     const result = await readImportedFile(file, { as: "text" });
 
+    if (!isCurrentRun()) return;
+
     if (!result.ok) {
       if (result.error.code === "file-too-large") {
-        setFileError(
+        updateFileFeedback(
+          setFileError,
+          side,
           `${file.name} is too large to open here. Maximum supported size is ${formatBytes(result.error.maxBytes)}.`
         );
       } else {
-        setFileError(`${file.name} could not be read. ${result.error.message}.`);
+        updateFileFeedback(
+          setFileError,
+          side,
+          `${file.name} could not be read. ${result.error.message}.`
+        );
       }
       return;
     }
 
     if (result.decision.status === "warn") {
-      setFileNotice(
+      updateFileFeedback(
+        setFileNotice,
+        side,
         `${file.name} is ${formatBytes(result.file.size)}. Large files may take longer to compare.`
       );
     }
@@ -425,10 +471,12 @@ export default function DiffTool() {
     if (indices.length === 0) return;
     const clamped = ((idx % indices.length) + indices.length) % indices.length;
     setCurrentChangeIdx(clamped);
+    setChangeAnnouncement(`Change ${clamped + 1} of ${indices.length}.`);
     const sourceRow = indices[clamped];
     const el = document.querySelector(`[data-source-row="${sourceRow}"]`);
     if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
     }
   }
 
@@ -499,20 +547,25 @@ export default function DiffTool() {
         </div>
       </Show>
 
-      <Show when={fileError()}>
-        <div
-          role="alert"
-          class="px-3.5 py-2.5 rounded-md border border-[var(--accent-error)] bg-[color-mix(in_srgb,var(--accent-error)_10%,transparent)] text-[var(--accent-error)] text-sm"
-        >
-          {fileError()}
-        </div>
-      </Show>
+      <For each={DIFF_SIDES}>
+        {(side) => (
+          <Show when={fileError()[side]}>
+            <ToolStatusMessage tone="error">
+              <strong>{SIDE_LABELS[side]}:</strong> {fileError()[side]}
+            </ToolStatusMessage>
+          </Show>
+        )}
+      </For>
 
-      <Show when={fileNotice()}>
-        <div class="px-3.5 py-2.5 rounded-md border border-[color-mix(in_srgb,var(--accent-warning)_60%,transparent)] bg-[color-mix(in_srgb,var(--accent-warning)_10%,transparent)] text-[var(--accent-warning)] text-sm">
-          {fileNotice()}
-        </div>
-      </Show>
+      <For each={DIFF_SIDES}>
+        {(side) => (
+          <Show when={fileNotice()[side]}>
+            <ToolStatusMessage tone="warning">
+              <strong>{SIDE_LABELS[side]}:</strong> {fileNotice()[side]}
+            </ToolStatusMessage>
+          </Show>
+        )}
+      </For>
 
       {/* -------------------------------------------------------------------- */}
       {/* Toolbar (only when there's data or pending)                          */}
@@ -526,7 +579,14 @@ export default function DiffTool() {
 
           {/* Pending spinner */}
           <Show when={pending()}>
-            <span class="text-sm text-[var(--text-muted)] italic">Comparing...</span>
+            <span
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+              class="text-sm text-[var(--text-muted)] italic"
+            >
+              Comparing…
+            </span>
           </Show>
 
           {/* Identical label */}
@@ -535,7 +595,7 @@ export default function DiffTool() {
           </Show>
 
           {/* Stats: +N / -N */}
-          <Show when={!pending() && !isIdentical() && diffData() !== null}>
+          <Show when={!pending() && analysis() !== null && !isIdentical() && diffData() !== null}>
             <span class="text-sm font-semibold text-[var(--accent-success)]">+{stats().added}</span>
             <span class="text-sm font-semibold text-[var(--accent-error)]">-{stats().removed}</span>
           </Show>
@@ -557,11 +617,12 @@ export default function DiffTool() {
           </label>
 
           {/* Next change button */}
-          <Show when={changeIndices().length > 0}>
+          <Show when={!pending() && analysis() !== null && changeIndices().length > 0}>
             <button
               type="button"
               onClick={handleNextChange}
-              class="bg-[var(--bg-tertiary)] text-[var(--text-secondary)] border border-[var(--border)] rounded px-2.5 py-1 text-xs cursor-pointer whitespace-nowrap"
+              disabled={pending() || analysis() === null}
+              class="bg-[var(--bg-tertiary)] text-[var(--text-secondary)] border border-[var(--border)] rounded px-2.5 py-1 text-xs cursor-pointer whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50"
               title="Jump to next change"
             >
               ↓ Next change
@@ -582,6 +643,14 @@ export default function DiffTool() {
             File limit {formatBytes(DEFAULT_IMPORT_MAX_BYTES)}
           </span>
         </div>
+
+        <Show when={analysisError()}>
+          <ToolStatusMessage tone="error">{analysisError()}</ToolStatusMessage>
+        </Show>
+
+        <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+          {changeAnnouncement()}
+        </span>
 
         {/* ------------------------------------------------------------------ */}
         {/* Error banners from structured normalization                        */}
@@ -605,7 +674,11 @@ export default function DiffTool() {
         {/* ------------------------------------------------------------------ */}
         {/* Diff output table                                                  */}
         {/* ------------------------------------------------------------------ */}
-        <Show when={!pending() && diffData() !== null && filteredRows().length > 0}>
+        <Show
+          when={
+            !pending() && analysis() !== null && diffData() !== null && filteredRows().length > 0
+          }
+        >
           <div class="overflow-x-auto border border-[var(--border)] rounded-lg bg-[var(--bg-secondary)]">
             <table class="w-full border-collapse table-fixed text-sm leading-[1.5]">
               <colgroup>
@@ -703,6 +776,7 @@ export default function DiffTool() {
         <Show
           when={
             !pending() &&
+            analysis() !== null &&
             diffData() !== null &&
             filteredRows().length === 0 &&
             changesOnly() &&
