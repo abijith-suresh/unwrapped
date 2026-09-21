@@ -22,7 +22,7 @@ function Panel(props: PanelProps) {
       {/* Panel header */}
       <div class="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border)]">
         <Label>{props.title}</Label>
-        <CopyButton text={props.content} />
+        <CopyButton text={props.content} label={`Copy ${props.title}`} />
       </div>
 
       {/* Panel body */}
