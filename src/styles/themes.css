@@ -16,3 +16,55 @@
   --radius-control: 0.5rem;
   --radius-panel: 0.75rem;
 }
+
+/* Per-tool accent identity. Tool pages set data-tool-accent from the registry
+   so every shared accent consumer recolors without per-tool CSS. */
+[data-tool-accent="blue"] {
+  --accent-primary: #5b9dff;
+  --accent-secondary: #9ec2ff;
+}
+
+[data-tool-accent="violet"] {
+  --accent-primary: #9d8cff;
+  --accent-secondary: #c3b8ff;
+}
+
+[data-tool-accent="magenta"] {
+  --accent-primary: #e07ce0;
+  --accent-secondary: #eeb1ee;
+}
+
+[data-tool-accent="rose"] {
+  --accent-primary: #ef7d9d;
+  --accent-secondary: #f5b1c4;
+}
+
+[data-tool-accent="orange"] {
+  --accent-primary: #ef9662;
+  --accent-secondary: #f4bd9b;
+}
+
+[data-tool-accent="amber"] {
+  --accent-primary: #e2b467;
+  --accent-secondary: #eed19f;
+}
+
+[data-tool-accent="lime"] {
+  --accent-primary: #a8d167;
+  --accent-secondary: #c8e4a0;
+}
+
+[data-tool-accent="emerald"] {
+  --accent-primary: #57c48f;
+  --accent-secondary: #97dcb8;
+}
+
+[data-tool-accent="teal"] {
+  --accent-primary: #52c2b0;
+  --accent-secondary: #93ddd2;
+}
+
+[data-tool-accent="cyan"] {
+  --accent-primary: #56bdd8;
+  --accent-secondary: #9bdcec;
+}
