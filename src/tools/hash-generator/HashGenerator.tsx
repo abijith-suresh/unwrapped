@@ -257,7 +257,7 @@ export default function HashGenerator() {
                   <span class="text-xs font-bold tracking-wider uppercase text-[var(--accent-primary)]">
                     {result.algorithm}
                   </span>
-                  <CopyButton text={result.hex} />
+                  <CopyButton text={result.hex} label={`Copy ${result.algorithm} hash`} />
                 </div>
 
                 <pre class="m-0 p-3 px-4 text-xs leading-relaxed text-[var(--text-primary)] font-mono whitespace-pre-wrap break-all">
