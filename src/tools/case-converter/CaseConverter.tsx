@@ -4,6 +4,7 @@ import Card from "@/components/primitives/solid/Card";
 import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
 import { convertCaseVariants } from "@/lib/caseConverter";
 
 const VARIANT_LABELS = [
@@ -26,7 +27,7 @@ export default function CaseConverter() {
   const hasInput = createMemo(() => input().trim().length > 0);
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[900px]">
+    <ToolContainer width="standard">
       <Textarea
         label="Source text"
         value={input()}
@@ -59,6 +60,6 @@ export default function CaseConverter() {
           </For>
         </div>
       </Show>
-    </div>
+    </ToolContainer>
   );
 }
