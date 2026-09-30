@@ -6,6 +6,7 @@ import Input from "@/components/primitives/solid/Input";
 import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
 import { formatXml } from "@/lib/xmlFormatter";
 
 export default function XmlFormatterTool() {
@@ -22,7 +23,7 @@ export default function XmlFormatterTool() {
   });
 
   return (
-    <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] gap-5 p-6 mx-auto w-full max-w-[1100px]">
+    <ToolContainer width="wide">
       <div class="flex flex-col gap-3">
         <Input
           label="Indent"
@@ -71,6 +72,6 @@ export default function XmlFormatterTool() {
           </pre>
         </Show>
       </Card>
-    </div>
+    </ToolContainer>
   );
 }

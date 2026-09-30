@@ -1,0 +1,112 @@
+/* Shared site chrome: skip link, header, brand, footer.
+   Both ToolShell (.ts-*) and LandingShell (.ls-*) reuse these rules. */
+
+.ts-skip-link,
+.ls-skip-link {
+  position: fixed;
+  z-index: 20;
+  top: 0.75rem;
+  left: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--accent-primary);
+  border-radius: 0.4rem;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform 120ms ease;
+}
+
+.ts-skip-link:focus-visible,
+.ls-skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+.ts-header,
+.ls-header {
+  display: flex;
+  align-items: center;
+  min-height: 4.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.ts-brand,
+.ls-brand {
+  position: relative;
+  padding-left: 0.8rem;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-decoration: none;
+  line-height: 1;
+}
+
+.ts-brand {
+  font-size: 0.875rem;
+}
+
+.ls-brand {
+  font-size: 1.05rem;
+  letter-spacing: -0.05em;
+}
+
+.ts-brand::before,
+.ls-brand::before {
+  position: absolute;
+  top: 0.05rem;
+  bottom: 0.05rem;
+  left: 0;
+  width: 2px;
+  background: var(--accent-primary);
+  content: "";
+}
+
+.ts-brand:hover,
+.ts-brand:focus-visible,
+.ls-brand:hover,
+.ls-brand:focus-visible {
+  color: var(--accent-secondary);
+}
+
+.ts-brand-tld,
+.ls-brand-tld {
+  color: var(--accent-primary);
+}
+
+.ts-footer,
+.ls-footer {
+  border-top: 1px solid var(--border);
+}
+
+.ts-footer-nav,
+.ls-footer-nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.ts-footer-link,
+.ls-footer-link {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.1s;
+}
+
+.ts-footer-link:hover,
+.ls-footer-link:hover {
+  color: var(--text-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ts-skip-link,
+  .ls-skip-link,
+  .ts-footer-link,
+  .ls-footer-link {
+    transition: none;
+  }
+}

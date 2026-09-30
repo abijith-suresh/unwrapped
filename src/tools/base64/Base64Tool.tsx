@@ -6,6 +6,8 @@ import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
+import ToolDropZone from "@/components/tool/ToolDropZone";
 import ToolFilePicker from "@/components/tool/ToolFilePicker";
 import {
   type Base64Mode,
@@ -13,13 +15,13 @@ import {
   type Base64Workflow,
   encodeBytesToBase64,
   formatBase64FileNotice,
-  formatBase64FileTooLargeMessage,
   processBase64Input,
 } from "@/lib/base64";
 import {
   DEFAULT_IMPORT_MAX_BYTES,
   type FileImportError,
-  formatBytes,
+  formatImportedFileSummary,
+  formatImportSizeLimitMessage,
   type ImportedFileMeta,
   readImportedFile,
 } from "@/lib/fileImport";
@@ -70,7 +72,7 @@ export default function Base64Tool() {
       return "";
     }
 
-    return `${file.name}\n${formatBytes(file.size)}${file.type ? `\n${file.type}` : ""}`;
+    return formatImportedFileSummary(file);
   });
 
   function swap() {
@@ -155,12 +157,6 @@ export default function Base64Tool() {
     setInput(result.value);
   }
 
-  function onDrop(e: DragEvent) {
-    e.preventDefault();
-    const file = e.dataTransfer?.files?.[0];
-    if (file) handleFile(file);
-  }
-
   function downloadDecodedBytes() {
     const current = result();
     if (!current.ok || current.outputKind !== "bytes" || current.bytes.length === 0) {
@@ -188,7 +184,7 @@ export default function Base64Tool() {
   };
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[860px]">
+    <ToolContainer width="standard">
       {/* ------------------------------------------------------------------ */}
       {/* Mode toggle + swap                                                  */}
       {/* ------------------------------------------------------------------ */}
@@ -258,8 +254,7 @@ export default function Base64Tool() {
       {/* Input                                                               */}
       {/* ------------------------------------------------------------------ */}
       <div class="flex flex-col gap-2">
-        {/* Drop zone wrapper */}
-        <div role="none" onDragOver={(e) => e.preventDefault()} onDrop={onDrop}>
+        <ToolDropZone onFile={(file) => void handleFile(file)}>
           <Textarea
             label={
               mode() === "encode"
@@ -293,7 +288,7 @@ export default function Base64Tool() {
             spellcheck={false}
             readonly={mode() === "encode" && workflow() === "file"}
           />
-        </div>
+        </ToolDropZone>
 
         {/* File open button */}
         <div class="flex items-center gap-2">
@@ -312,7 +307,7 @@ export default function Base64Tool() {
       </Show>
       <Show when={fileError()?.code === "file-too-large"}>
         <ToolStatusMessage tone="error">
-          {formatBase64FileTooLargeMessage(DEFAULT_IMPORT_MAX_BYTES)}
+          {formatImportSizeLimitMessage(DEFAULT_IMPORT_MAX_BYTES)}
         </ToolStatusMessage>
       </Show>
       <Show when={fileError()?.code === "read-failed"}>
@@ -360,6 +355,6 @@ export default function Base64Tool() {
           large-input warnings instead of failing silently.
         </ToolStatusMessage>
       </Show>
-    </div>
+    </ToolContainer>
   );
 }

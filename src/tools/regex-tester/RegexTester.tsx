@@ -7,6 +7,7 @@ import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
 import {
   buildRegexReplaceResult,
   buildRegexResult,
@@ -78,7 +79,7 @@ export default function RegexTester() {
   const hasCaptures = createMemo(() => result().matches.some((match) => match.groups.length > 0));
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full">
+    <ToolContainer width="full">
       <div class="flex flex-col gap-2">
         <div class="flex gap-2 flex-wrap">
           <ToolActionButton
@@ -352,6 +353,6 @@ export default function RegexTester() {
           Enter a regex pattern and test string to inspect matches or preview replacements locally.
         </ToolStatusMessage>
       </Show>
-    </div>
+    </ToolContainer>
   );
 }

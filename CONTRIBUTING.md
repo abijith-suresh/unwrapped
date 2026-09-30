@@ -18,16 +18,29 @@ Use `bun run format` to format files.
 - `src/tools/` contains tool-specific UI.
 - `src/lib/` contains shared behavior and data handling.
 - `src/components/` contains shared UI and error boundaries.
+- `src/components/tool/` contains the shared tool layout kit (ToolContainer, ToolPanel,
+  ToolWorkspace, ToolCodeEditor, ToolCodeBlock, ToolDropZone, ToolToolbar, ToolSegmentedControl,
+  ToolToast, ToolFilePicker).
 - `src/pages/tools/[slug].astro` generates tool pages from registry entries.
 - `src/pages/` contains the home, information, privacy, and dynamic tool routes.
 
 ## Adding a tool
 
 1. Add the component under `src/tools/<slug>/`.
-2. Add one complete entry to `src/tools/registry.ts`.
+2. Add one complete entry to `src/tools/registry.ts`, including `icon` (a lucide name present in
+   `src/lib/iconMap.tsx`) and `accent` (one of the hues from `ToolAccent`).
 3. Keep parsing, conversion, and other business logic in `src/lib/` or a tool-local module.
-4. Add focused tests for new behavior and edge cases.
-5. Run `bun run verify`.
+4. Build the tool UI on the shared layout kit:
+   - Root: `<ToolContainer width="narrow|standard|wide|full">` — never hand-roll padding, gap, or
+     max-width.
+   - Panels: `ToolPanel` (with `TOOL_EDITOR_PANEL_CLASSES`/`TOOL_EDITOR_BODY_CLASSES` for
+     code-editor panels), inputs via `ToolCodeEditor`, output via `ToolCodeBlock`.
+   - Side-by-side panes: `ToolWorkspace` with `views`.
+   - File input: `ToolFilePicker` + `ToolDropZone`, read files through `src/lib/fileImport.ts`.
+   - Feedback: `ToolStatusMessage` (or `ToolToast` for transient errors), actions via
+     `ToolActionButton`.
+5. Add focused tests for new behavior and edge cases.
+6. Run `bun run verify`.
 
 The dynamic route already handles registered tools. Do not add a separate page for each tool or a
 second tool list in documentation.

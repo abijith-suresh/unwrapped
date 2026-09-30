@@ -69,3 +69,10 @@ export default function ToolPanel(props: ToolPanelProps) {
     </section>
   );
 }
+
+/**
+ * Standard sizing for code-editor panels: clamp the editor viewport to the
+ * page height, then let the editor body flex-fill it.
+ */
+export const TOOL_EDITOR_PANEL_CLASSES = "flex h-[clamp(18rem,44dvh,28rem)] min-h-0 flex-col";
+export const TOOL_EDITOR_BODY_CLASSES = "flex min-h-0 flex-1 flex-col";

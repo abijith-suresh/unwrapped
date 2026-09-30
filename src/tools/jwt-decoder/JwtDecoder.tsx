@@ -5,6 +5,7 @@ import Card from "@/components/primitives/solid/Card";
 import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
 import { getJwtClaimsSummary, getJwtExpiryStatus, parseJwt, prettyJson } from "@/lib/jwt";
 
 // ---------------------------------------------------------------------------
@@ -67,7 +68,7 @@ export default function JwtDecoder() {
   });
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[860px]">
+    <ToolContainer width="standard">
       {/* ------------------------------------------------------------------ */}
       {/* Input area                                                          */}
       {/* ------------------------------------------------------------------ */}
@@ -157,6 +158,6 @@ export default function JwtDecoder() {
           </>
         )}
       </Show>
-    </div>
+    </ToolContainer>
   );
 }

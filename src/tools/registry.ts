@@ -7,6 +7,23 @@ export type ToolCategory =
   | "data"
   | "network";
 
+/**
+ * Named accent hues for per-tool identity. Each maps to CSS overrides for the
+ * shared `--accent-primary`/`--accent-secondary` tokens, set via
+ * `[data-tool-accent="…"]` in `src/styles/themes.css`.
+ */
+export type ToolAccent =
+  | "blue"
+  | "violet"
+  | "magenta"
+  | "rose"
+  | "orange"
+  | "amber"
+  | "lime"
+  | "emerald"
+  | "teal"
+  | "cyan";
+
 export interface Tool {
   id: string;
   name: string;
@@ -16,6 +33,7 @@ export interface Tool {
   icon: string; // lucide icon name
   slug: string; // matches folder name, used in URL
   componentPath: string;
+  accent: ToolAccent;
 }
 
 export const tools: Tool[] = [
@@ -28,6 +46,7 @@ export const tools: Tool[] = [
     icon: "KeyRound",
     slug: "jwt-decoder",
     componentPath: "/src/tools/jwt-decoder/JwtDecoder.tsx",
+    accent: "violet",
   },
   {
     id: "diff",
@@ -38,6 +57,7 @@ export const tools: Tool[] = [
     icon: "GitCompare",
     slug: "diff",
     componentPath: "/src/tools/diff/DiffTool.tsx",
+    accent: "blue",
   },
   {
     id: "base64",
@@ -48,6 +68,7 @@ export const tools: Tool[] = [
     icon: "Binary",
     slug: "base64",
     componentPath: "/src/tools/base64/Base64Tool.tsx",
+    accent: "cyan",
   },
   {
     id: "json-formatter",
@@ -58,6 +79,7 @@ export const tools: Tool[] = [
     icon: "Braces",
     slug: "json-formatter",
     componentPath: "/src/tools/json-formatter/JsonFormatter.tsx",
+    accent: "amber",
   },
   {
     id: "hash-generator",
@@ -68,6 +90,7 @@ export const tools: Tool[] = [
     icon: "Fingerprint",
     slug: "hash-generator",
     componentPath: "/src/tools/hash-generator/HashGenerator.tsx",
+    accent: "emerald",
   },
   {
     id: "uuid-generator",
@@ -78,6 +101,7 @@ export const tools: Tool[] = [
     icon: "Shuffle",
     slug: "uuid-generator",
     componentPath: "/src/tools/uuid-generator/UuidGenerator.tsx",
+    accent: "teal",
   },
   {
     id: "timestamp",
@@ -88,6 +112,7 @@ export const tools: Tool[] = [
     icon: "Clock",
     slug: "timestamp",
     componentPath: "/src/tools/timestamp/TimestampTool.tsx",
+    accent: "orange",
   },
   {
     id: "regex-tester",
@@ -98,6 +123,7 @@ export const tools: Tool[] = [
     icon: "Regex",
     slug: "regex-tester",
     componentPath: "/src/tools/regex-tester/RegexTester.tsx",
+    accent: "magenta",
   },
   {
     id: "case-converter",
@@ -108,6 +134,7 @@ export const tools: Tool[] = [
     icon: "CaseSensitive",
     slug: "case-converter",
     componentPath: "/src/tools/case-converter/CaseConverter.tsx",
+    accent: "lime",
   },
   {
     id: "text-statistics",
@@ -118,6 +145,7 @@ export const tools: Tool[] = [
     icon: "TextCursorInput",
     slug: "text-statistics",
     componentPath: "/src/tools/text-statistics/TextStatisticsTool.tsx",
+    accent: "teal",
   },
   {
     id: "token-generator",
@@ -128,6 +156,7 @@ export const tools: Tool[] = [
     icon: "KeySquare",
     slug: "token-generator",
     componentPath: "/src/tools/token-generator/TokenGenerator.tsx",
+    accent: "rose",
   },
   {
     id: "url-encoder",
@@ -138,6 +167,7 @@ export const tools: Tool[] = [
     icon: "Link2",
     slug: "url-encoder",
     componentPath: "/src/tools/url-encoder/UrlEncoderTool.tsx",
+    accent: "blue",
   },
   {
     id: "http-status-codes",
@@ -148,6 +178,7 @@ export const tools: Tool[] = [
     icon: "BadgeInfo",
     slug: "http-status-codes",
     componentPath: "/src/tools/http-status-codes/HttpStatusCodesTool.tsx",
+    accent: "cyan",
   },
   {
     id: "json-to-yaml",
@@ -158,6 +189,7 @@ export const tools: Tool[] = [
     icon: "ArrowRightLeft",
     slug: "json-to-yaml",
     componentPath: "/src/tools/json-to-yaml/JsonToYamlTool.tsx",
+    accent: "emerald",
   },
   {
     id: "yaml-to-json",
@@ -168,6 +200,7 @@ export const tools: Tool[] = [
     icon: "ArrowRightLeft",
     slug: "yaml-to-json",
     componentPath: "/src/tools/yaml-to-json/YamlToJsonTool.tsx",
+    accent: "amber",
   },
   {
     id: "yaml-formatter",
@@ -178,6 +211,7 @@ export const tools: Tool[] = [
     icon: "AlignLeft",
     slug: "yaml-formatter",
     componentPath: "/src/tools/yaml-formatter/YamlFormatterTool.tsx",
+    accent: "lime",
   },
   {
     id: "xml-formatter",
@@ -188,6 +222,7 @@ export const tools: Tool[] = [
     icon: "Tag",
     slug: "xml-formatter",
     componentPath: "/src/tools/xml-formatter/XmlFormatterTool.tsx",
+    accent: "orange",
   },
   {
     id: "json-to-csv",
@@ -198,6 +233,7 @@ export const tools: Tool[] = [
     icon: "TableProperties",
     slug: "json-to-csv",
     componentPath: "/src/tools/json-to-csv/JsonToCsvTool.tsx",
+    accent: "violet",
   },
   {
     id: "chmod-calculator",
@@ -208,6 +244,7 @@ export const tools: Tool[] = [
     icon: "ShieldCheck",
     slug: "chmod-calculator",
     componentPath: "/src/tools/chmod-calculator/ChmodCalculatorTool.tsx",
+    accent: "rose",
   },
   {
     id: "hmac-generator",
@@ -218,6 +255,7 @@ export const tools: Tool[] = [
     icon: "KeyRound",
     slug: "hmac-generator",
     componentPath: "/src/tools/hmac-generator/HmacGeneratorTool.tsx",
+    accent: "magenta",
   },
   {
     id: "url-inspector",
@@ -228,6 +266,7 @@ export const tools: Tool[] = [
     icon: "Search",
     slug: "url-inspector",
     componentPath: "/src/tools/url-inspector/UrlInspectorTool.tsx",
+    accent: "blue",
   },
   {
     id: "cron",
@@ -238,6 +277,7 @@ export const tools: Tool[] = [
     icon: "CalendarClock",
     slug: "cron",
     componentPath: "/src/tools/cron/CronTool.tsx",
+    accent: "violet",
   },
 ];
 

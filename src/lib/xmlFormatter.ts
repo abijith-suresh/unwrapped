@@ -1,16 +1,10 @@
+import { clampIndentSize, type TextTransformResult, toErrorMessage } from "./text";
+
 export interface XmlFormatterOptions {
   indent: number;
 }
 
-export type XmlFormatterResult =
-  | {
-      ok: true;
-      output: string;
-    }
-  | {
-      ok: false;
-      error: string;
-    };
+export type XmlFormatterResult = TextTransformResult;
 
 type XmlToken =
   | { type: "open"; raw: string; name: string }
@@ -123,7 +117,7 @@ export function formatXml(input: string, options: XmlFormatterOptions): XmlForma
     validateTokens(tokens);
 
     const lines: string[] = [];
-    const indentUnit = " ".repeat(Math.min(8, Math.max(2, Math.trunc(options.indent) || 2)));
+    const indentUnit = " ".repeat(clampIndentSize(options.indent));
     let level = 0;
 
     for (const token of tokens) {
@@ -155,7 +149,7 @@ export function formatXml(input: string, options: XmlFormatterOptions): XmlForma
   } catch (error) {
     return {
       ok: false,
-      error: `Invalid XML input: ${error instanceof Error ? error.message : "Unable to format XML."}`,
+      error: `Invalid XML input: ${toErrorMessage(error, "Unable to format XML.")}`,
     };
   }
 }

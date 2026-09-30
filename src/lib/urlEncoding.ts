@@ -1,12 +1,6 @@
-export type UrlDecodeResult =
-  | {
-      ok: true;
-      value: string;
-    }
-  | {
-      ok: false;
-      error: string;
-    };
+import type { TextTransformResult } from "./text";
+
+export type UrlDecodeResult = TextTransformResult<"value">;
 
 export function encodeUrlText(input: string): string {
   return encodeURIComponent(input);

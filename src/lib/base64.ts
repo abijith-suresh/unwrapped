@@ -1,4 +1,5 @@
-import { DEFAULT_IMPORT_MAX_BYTES, formatBytes, type ImportedFileMeta } from "./fileImport";
+import { bytesToHex } from "./bytes";
+import { formatLargeFileNotice, type ImportedFileMeta } from "./fileImport";
 
 export type Base64Variant = "standard" | "url";
 export type Base64Mode = "encode" | "decode";
@@ -141,13 +142,7 @@ export function formatBase64FileNotice(
   workflow: Base64Workflow
 ): string {
   const operation = mode === "encode" ? "encode" : workflow === "file" ? "inspect" : "decode";
-  return `${file.name} is ${formatBytes(file.size)}. Large files may take longer to ${operation}.`;
-}
-
-export function formatBase64FileTooLargeMessage(
-  maxBytes: number = DEFAULT_IMPORT_MAX_BYTES
-): string {
-  return `File is too large. Maximum supported size is ${formatBytes(maxBytes)}.`;
+  return formatLargeFileNotice(file, operation);
 }
 
 export function toBase64Url(value: string): string {
@@ -171,9 +166,7 @@ function normalizeBase64Input(input: string, variant: Base64Variant): string {
 }
 
 function formatByteSummary(bytes: Uint8Array): string {
-  const preview = Array.from(bytes.slice(0, 32))
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join(" ");
+  const preview = bytesToHex(bytes.slice(0, 32), " ");
 
   return bytes.length <= 32
     ? `${bytes.length} bytes\n${preview}`

@@ -5,7 +5,10 @@ import ToolActionButton from "@/components/ToolActionButton";
 import ToolCodeBlock from "@/components/tool/ToolCodeBlock";
 import ToolCodeEditor from "@/components/tool/ToolCodeEditor";
 import ToolContainer from "@/components/tool/ToolContainer";
-import ToolPanel from "@/components/tool/ToolPanel";
+import ToolPanel, {
+  TOOL_EDITOR_BODY_CLASSES,
+  TOOL_EDITOR_PANEL_CLASSES,
+} from "@/components/tool/ToolPanel";
 import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
 import ToolToast from "@/components/tool/ToolToast";
 import ToolToolbar from "@/components/tool/ToolToolbar";
@@ -13,9 +16,6 @@ import ToolWorkspace from "@/components/tool/ToolWorkspace";
 import { formatJson, type IndentSize, type JsonFormatResult } from "@/lib/jsonFormatter";
 
 type OutputFormat = "two-spaces" | "four-spaces" | "minified";
-
-const EDITOR_PANEL_CLASSES = "flex h-[clamp(18rem,44dvh,28rem)] min-h-0 flex-col";
-const EDITOR_BODY_CLASSES = "flex min-h-0 flex-1 flex-col";
 
 export default function JsonFormatter() {
   const [input, setInput] = createSignal("");
@@ -110,7 +110,11 @@ export default function JsonFormatter() {
             id: "input",
             label: "Input",
             content: (
-              <ToolPanel title="Input" class={EDITOR_PANEL_CLASSES} bodyClass={EDITOR_BODY_CLASSES}>
+              <ToolPanel
+                title="Input"
+                class={TOOL_EDITOR_PANEL_CLASSES}
+                bodyClass={TOOL_EDITOR_BODY_CLASSES}
+              >
                 <ToolCodeEditor
                   id="json-input"
                   name="json-input"
@@ -135,8 +139,8 @@ export default function JsonFormatter() {
             content: (
               <ToolPanel
                 title="Output"
-                class={EDITOR_PANEL_CLASSES}
-                bodyClass={EDITOR_BODY_CLASSES}
+                class={TOOL_EDITOR_PANEL_CLASSES}
+                bodyClass={TOOL_EDITOR_BODY_CLASSES}
                 actions={
                   <Show when={result().raw}>
                     <CopyButton text={result().raw} label="Copy JSON" />

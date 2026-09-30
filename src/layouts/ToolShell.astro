@@ -1,14 +1,17 @@
 ---
 import Base from "@/layouts/Base.astro";
 import { ClientRouter } from "astro:transitions";
+import type { ToolAccent } from "@/tools/registry";
 
 interface Props {
   title: string;
   description?: string;
   ogImage?: string;
+  category?: string;
+  accent?: ToolAccent;
 }
 
-const { title, description, ogImage } = Astro.props;
+const { title, description, ogImage, category, accent } = Astro.props;
 
 const FOOTER_LINKS = [
   { href: "/about", label: "About" },
@@ -29,7 +32,7 @@ const FOOTER_LINKS = [
 
   <a class="ts-skip-link" href="#main-content">Skip to content</a>
 
-  <div class="ts-page">
+  <div class="ts-page" {...(accent ? { "data-tool-accent": accent } : {})}>
     <header class="ts-header">
       <a href="/" class="ts-brand" translate="no">
         unwrapped<span class="ts-brand-tld">.tools</span>
@@ -38,8 +41,16 @@ const FOOTER_LINKS = [
 
     <main id="main-content" class="ts-main" tabindex="-1">
       <section class="ts-tool-heading" aria-labelledby="tool-title">
-        <h1 id="tool-title">{title}</h1>
-        {description ? <p class="ts-tool-description">{description}</p> : null}
+        <div class="ts-tool-identity">
+          <p class="ts-tool-category" translate="no">
+            {category ?? "tool"}
+          </p>
+          <h1 id="tool-title">
+            {title}
+            <span class="ts-tool-mark" aria-hidden="true">.</span>
+          </h1>
+          {description ? <p class="ts-tool-description">{description}</p> : null}
+        </div>
       </section>
       <slot />
     </main>
@@ -69,64 +80,11 @@ const FOOTER_LINKS = [
     padding-inline: clamp(1.25rem, 6vw, 7rem);
   }
 
-  .ts-skip-link {
-    position: fixed;
-    z-index: 20;
-    top: 0.75rem;
-    left: 0.75rem;
-    padding: 0.6rem 0.8rem;
-    border: 1px solid var(--accent-primary);
-    border-radius: 0.4rem;
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    font-size: 0.8rem;
-    text-decoration: none;
-    transform: translateY(-200%);
-    transition: transform 120ms ease;
-  }
-
-  .ts-skip-link:focus-visible {
-    transform: translateY(0);
-  }
-
   .ts-header {
-    display: flex;
-    align-items: center;
     width: min(100%, 1120px);
-    min-height: 4.25rem;
     margin-inline: auto;
     gap: 0.5rem;
     padding: 1rem 0;
-    border-bottom: 1px solid var(--border);
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-  }
-
-  .ts-brand {
-    position: relative;
-    padding-left: 0.8rem;
-    color: var(--text-primary);
-    text-decoration: none;
-    font-weight: 700;
-  }
-
-  .ts-brand::before {
-    position: absolute;
-    top: 0.05rem;
-    bottom: 0.05rem;
-    left: 0;
-    width: 2px;
-    background: var(--accent-primary);
-    content: "";
-  }
-
-  .ts-brand:hover,
-  .ts-brand:focus-visible {
-    color: var(--accent-secondary);
-  }
-
-  .ts-brand-tld {
-    color: var(--accent-primary);
   }
 
   .ts-main {
@@ -142,6 +100,31 @@ const FOOTER_LINKS = [
     border-bottom: 1px solid var(--border);
   }
 
+  .ts-tool-identity {
+    position: relative;
+    padding-left: 1.1rem;
+  }
+
+  .ts-tool-identity::before {
+    position: absolute;
+    top: 0.2rem;
+    bottom: 0.2rem;
+    left: 0;
+    width: 2px;
+    background: var(--accent-primary);
+    content: "";
+  }
+
+  .ts-tool-category {
+    margin: 0 0 0.55rem;
+    color: var(--accent-primary);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
   .ts-tool-heading h1 {
     margin: 0;
     color: var(--text-primary);
@@ -150,6 +133,10 @@ const FOOTER_LINKS = [
     letter-spacing: -0.06em;
     line-height: 1;
     text-wrap: balance;
+  }
+
+  .ts-tool-mark {
+    color: var(--accent-primary);
   }
 
   .ts-tool-description {
@@ -162,35 +149,10 @@ const FOOTER_LINKS = [
 
   .ts-footer {
     padding: 2rem 0 2.5rem;
-    border-top: 1px solid var(--border);
   }
 
   .ts-footer-nav {
-    display: flex;
-    align-items: center;
     justify-content: center;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-  }
-
-  .ts-footer-link {
-    font-family: var(--font-sans);
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: color 0.1s;
-  }
-
-  .ts-footer-link:hover {
-    color: var(--text-primary);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .ts-skip-link,
-    .ts-footer-link {
-      transition: none;
-    }
   }
 
   @media (max-width: 600px) {

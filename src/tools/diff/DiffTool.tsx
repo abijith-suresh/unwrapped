@@ -12,12 +12,17 @@ import Card from "@/components/primitives/solid/Card";
 import Label from "@/components/primitives/solid/Label";
 import Select from "@/components/primitives/solid/Select";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
+import ToolDropZone from "@/components/tool/ToolDropZone";
 import ToolFilePicker from "@/components/tool/ToolFilePicker";
 import type { DiffAnalysisResult } from "@/lib/diffAnalysis";
 import { createDiffAnalysisExecutor } from "@/lib/diffExecution";
 import {
   DEFAULT_IMPORT_MAX_BYTES,
   formatBytes,
+  formatFileReadFailureMessage,
+  formatFileTooLargeMessage,
+  formatLargeFileNotice,
   type ImportedFileMeta,
   readImportedFile,
 } from "@/lib/fileImport";
@@ -95,50 +100,13 @@ interface InputPanelProps {
 }
 
 function InputPanel(props: InputPanelProps) {
-  const [dragging, setDragging] = createSignal(false);
-
-  function handleDragOver(e: DragEvent) {
-    e.preventDefault();
-    if (!dragging()) setDragging(true);
-  }
-
-  function handleDragLeave(e: DragEvent) {
-    // Only clear when leaving the panel itself, not a child
-    const related = e.relatedTarget as Node | null;
-    const target = e.currentTarget as HTMLElement;
-    if (!related || !target.contains(related)) {
-      setDragging(false);
-    }
-  }
-
-  function handleDrop(e: DragEvent) {
-    e.preventDefault();
-    setDragging(false);
-    const file = e.dataTransfer?.files[0];
-    if (file) props.onFileLoad(file);
-  }
-
   return (
-    <div
-      role="none"
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-      class="flex-1 min-w-0 flex flex-col relative rounded-lg transition-[border-color] duration-150 motion-reduce:transition-none"
-      classList={{
-        "border-2 border-dashed border-[var(--accent-primary)]": dragging(),
-        "border-2 border-transparent": !dragging(),
-      }}
+    <ToolDropZone
+      onFile={props.onFileLoad}
+      class="flex-1 rounded-[var(--radius-panel)] border-2 border-transparent"
     >
-      {/* Drop overlay */}
-      <Show when={dragging()}>
-        <div class="absolute inset-0 flex items-center justify-center bg-[color-mix(in_srgb,var(--accent-primary)_10%,transparent)] rounded z-10 pointer-events-none text-base font-semibold text-[var(--accent-primary)]">
-          Drop file here
-        </div>
-      </Show>
-
       {/* Panel container */}
-      <Card class="flex flex-col h-full overflow-hidden p-0 rounded-lg">
+      <Card class="flex flex-col h-full overflow-hidden p-0 rounded-[var(--radius-panel)]">
         {/* Header */}
         <div class="flex items-center gap-2 px-3 py-2 border-b border-[var(--border)] shrink-0">
           <Label>{props.label}</Label>
@@ -178,7 +146,7 @@ function InputPanel(props: InputPanelProps) {
           class="flex-1 w-full p-3 bg-transparent text-[var(--text-primary)] font-mono text-sm leading-[1.6] resize-y min-h-[280px] outline-none tab-size-2"
         />
       </Card>
-    </div>
+    </ToolDropZone>
   );
 }
 
@@ -404,24 +372,16 @@ export default function DiffTool() {
         updateFileFeedback(
           setFileError,
           side,
-          `${file.name} is too large to open here. Maximum supported size is ${formatBytes(result.error.maxBytes)}.`
+          formatFileTooLargeMessage(file, result.error.maxBytes)
         );
       } else {
-        updateFileFeedback(
-          setFileError,
-          side,
-          `${file.name} could not be read. ${result.error.message}.`
-        );
+        updateFileFeedback(setFileError, side, formatFileReadFailureMessage(result.error));
       }
       return;
     }
 
     if (result.decision.status === "warn") {
-      updateFileFeedback(
-        setFileNotice,
-        side,
-        `${file.name} is ${formatBytes(result.file.size)}. Large files may take longer to compare.`
-      );
+      updateFileFeedback(setFileNotice, side, formatLargeFileNotice(result.file, "compare"));
     }
 
     const lang = detectLanguage({ filename: file.name, content: result.value });
@@ -486,7 +446,7 @@ export default function DiffTool() {
 
   // ---------------------------------------------------------------------------
   return (
-    <div class="flex flex-col gap-4 p-5 mx-auto w-full max-w-none">
+    <ToolContainer width="full" class="gap-4">
       {/* -------------------------------------------------------------------- */}
       {/* Input panels (two columns)                                           */}
       {/* -------------------------------------------------------------------- */}
@@ -761,6 +721,6 @@ export default function DiffTool() {
           </div>
         </Show>
       </Show>
-    </div>
+    </ToolContainer>
   );
 }

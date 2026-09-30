@@ -7,6 +7,7 @@ import Select from "@/components/primitives/solid/Select";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
 import { generateHmac, HMAC_ALGORITHMS, type HmacAlgorithm } from "@/lib/hmac";
 
 export default function HmacGeneratorTool() {
@@ -37,7 +38,7 @@ export default function HmacGeneratorTool() {
   }
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[900px]">
+    <ToolContainer width="standard">
       <div class="grid gap-4 grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))]">
         <Textarea label="Message" value={message()} onInput={(v) => setMessage(v)} rows={6} />
         <Textarea label="Secret" value={secret()} onInput={(v) => setSecret(v)} rows={6} />
@@ -76,6 +77,6 @@ export default function HmacGeneratorTool() {
       <ToolStatusMessage tone="muted">
         Secrets remain in memory only and are processed with the browser&apos;s Web Crypto API.
       </ToolStatusMessage>
-    </div>
+    </ToolContainer>
   );
 }

@@ -1,3 +1,5 @@
+import { toErrorMessage } from "./text";
+
 export const DEFAULT_IMPORT_WARN_BYTES = 512 * 1024;
 export const DEFAULT_IMPORT_MAX_BYTES = 2 * 1024 * 1024;
 
@@ -127,7 +129,7 @@ export async function readImportedFile(
       error: {
         code: "read-failed",
         file: fileMeta,
-        message: error instanceof Error ? error.message : "Failed to read file",
+        message: toErrorMessage(error, "Failed to read file"),
       },
     };
   }
@@ -145,4 +147,27 @@ export function formatBytes(bytes: number): string {
 
   const megabytes = kilobytes / 1024;
   return `${megabytes.toFixed(megabytes >= 10 ? 0 : 1)} MB`;
+}
+
+export function formatImportedFileSummary(file: ImportedFileMeta): string {
+  return `${file.name}\n${formatBytes(file.size)}${file.type ? `\n${file.type}` : ""}`;
+}
+
+export function formatFileTooLargeMessage(file: ImportedFileMeta, maxBytes: number): string {
+  return `${file.name} is too large to open here. Maximum supported size is ${formatBytes(maxBytes)}.`;
+}
+
+export function formatImportSizeLimitMessage(maxBytes: number): string {
+  return `File is too large. Maximum supported size is ${formatBytes(maxBytes)}.`;
+}
+
+export function formatFileReadFailureMessage(error: {
+  file: ImportedFileMeta;
+  message: string;
+}): string {
+  return `${error.file.name} could not be read. ${error.message}.`;
+}
+
+export function formatLargeFileNotice(file: ImportedFileMeta, context: string): string {
+  return `${file.name} is ${formatBytes(file.size)}. Large files may take longer to ${context}.`;
 }

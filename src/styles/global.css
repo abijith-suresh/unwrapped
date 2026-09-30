@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./themes.css";
+@import "./shell.css";
 
 @font-face {
   font-family: "Manrope Variable";
@@ -72,55 +73,6 @@ body {
 :focus-visible {
   outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
-}
-
-/* ── Shared tool layout classes ── */
-.tool-container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--tool-gap, 1.25rem);
-  padding: 1.5rem;
-  max-width: var(--tool-max-width, 900px);
-  margin: 0 auto;
-  width: 100%;
-}
-
-.tool-textarea {
-  width: 100%;
-  padding: 0.875rem 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--border);
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  line-height: 1.6;
-  resize: vertical;
-  box-sizing: border-box;
-}
-
-.tool-input {
-  width: 100%;
-  padding: 0.875rem 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--border);
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  font-size: 0.875rem;
-  box-sizing: border-box;
-}
-
-.tool-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-}
-
-/* Utility: monospace text */
-.font-code {
-  font-family: var(--font-mono);
 }
 
 /* Skeleton loading animation */

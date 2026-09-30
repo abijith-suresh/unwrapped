@@ -1,4 +1,5 @@
 import type { CodeHighlightSegment } from "./codeHighlight";
+import { normalizeNewlines, toErrorMessage } from "./text";
 
 export type IndentSize = 2 | 4;
 
@@ -83,7 +84,7 @@ export function parseJsonErrorSourceContext(
     return null;
   }
 
-  const normalized = source.replace(/\r\n?/g, "\n");
+  const normalized = normalizeNewlines(source);
   const safePosition = Math.min(position, normalized.length);
   const prefix = normalized.slice(0, safePosition);
   const line = prefix.split("\n").length;
@@ -157,7 +158,7 @@ export function formatJson(
   try {
     parsed = JSON.parse(input) as JsonValue;
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
+    const message = toErrorMessage(error, String(error));
     const errorContext = parseJsonErrorContext(input, message);
     const fallbackPosition = Math.max(input.length - 1, 0);
     const errorPosition = errorContext?.position ?? fallbackPosition;

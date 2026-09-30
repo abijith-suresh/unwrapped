@@ -7,6 +7,7 @@ import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
 import { formatYaml } from "@/lib/yamlFormatter";
 
 export default function YamlFormatterTool() {
@@ -25,7 +26,7 @@ export default function YamlFormatterTool() {
   });
 
   return (
-    <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] gap-5 p-6 mx-auto w-full max-w-[1100px]">
+    <ToolContainer width="wide">
       <div class="flex flex-col gap-3">
         <div class="flex items-center gap-3 flex-wrap">
           <Input
@@ -79,6 +80,6 @@ export default function YamlFormatterTool() {
           </pre>
         </Show>
       </Card>
-    </div>
+    </ToolContainer>
   );
 }

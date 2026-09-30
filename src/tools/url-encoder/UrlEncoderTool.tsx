@@ -5,6 +5,7 @@ import Card from "@/components/primitives/solid/Card";
 import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
 import { decodeUrlText, encodeUrlText } from "@/lib/urlEncoding";
 
 export default function UrlEncoderTool() {
@@ -23,7 +24,7 @@ export default function UrlEncoderTool() {
   });
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[1100px]">
+    <ToolContainer width="wide">
       <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] gap-5">
         <Card class="flex flex-col gap-4">
           <Textarea
@@ -77,6 +78,6 @@ export default function UrlEncoderTool() {
           </Show>
         </Card>
       </div>
-    </div>
+    </ToolContainer>
   );
 }

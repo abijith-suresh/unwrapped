@@ -5,11 +5,16 @@ import Card from "@/components/primitives/solid/Card";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
+import ToolDropZone from "@/components/tool/ToolDropZone";
 import ToolFilePicker from "@/components/tool/ToolFilePicker";
 import {
   DEFAULT_IMPORT_MAX_BYTES,
   type FileImportError,
   formatBytes,
+  formatFileReadFailureMessage,
+  formatImportedFileSummary,
+  formatLargeFileNotice,
   type ImportedFileMeta,
   readImportedFile,
 } from "@/lib/fileImport";
@@ -35,7 +40,7 @@ export default function HashGenerator() {
       return "";
     }
 
-    return `${file.name}\n${formatBytes(file.size)}${file.type ? `\n${file.type}` : ""}`;
+    return formatImportedFileSummary(file);
   });
   const readFileError = createMemo(() => {
     const error = fileError();
@@ -123,9 +128,7 @@ export default function HashGenerator() {
     }
 
     if (result.decision.status === "warn") {
-      setFileNotice(
-        `${result.file.name} is ${formatBytes(result.file.size)}. Large files may take longer to hash.`
-      );
+      setFileNotice(formatLargeFileNotice(result.file, "hash"));
     }
 
     setWorkflow("file");
@@ -135,20 +138,12 @@ export default function HashGenerator() {
     await computeBytes(result.value);
   }
 
-  function onDrop(event: DragEvent) {
-    event.preventDefault();
-    const file = event.dataTransfer?.files?.[0];
-    if (file) {
-      void handleFile(file);
-    }
-  }
-
   onCleanup(() => {
     clearTimeout(debounceTimer);
   });
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[860px]">
+    <ToolContainer width="standard">
       <div class="flex flex-wrap items-center gap-3">
         <div class="flex gap-1 items-center">
           <ToolActionButton
@@ -190,7 +185,7 @@ export default function HashGenerator() {
       </div>
 
       <div class="flex flex-col gap-1.5">
-        <div role="none" onDragOver={(event) => event.preventDefault()} onDrop={onDrop}>
+        <ToolDropZone onFile={(file) => void handleFile(file)}>
           <Textarea
             label={workflow() === "text" ? "Input text" : "Input file"}
             name="hash-input"
@@ -206,7 +201,7 @@ export default function HashGenerator() {
             spellcheck={false}
             readonly={workflow() === "file"}
           />
-        </div>
+        </ToolDropZone>
 
         <div class="flex items-center gap-2">
           <ToolFilePicker onFileChange={(file) => void handleFile(file)} />
@@ -227,7 +222,7 @@ export default function HashGenerator() {
       <Show when={readFileError()}>
         {(error) => (
           <ToolStatusMessage tone="error">
-            {error().file.name} could not be read. {error().message}.
+            {formatFileReadFailureMessage(error())}
           </ToolStatusMessage>
         )}
       </Show>
@@ -262,6 +257,6 @@ export default function HashGenerator() {
           SHA-1 · SHA-256 · SHA-384 · SHA-512 computed locally for text and file workflows
         </ToolStatusMessage>
       </Show>
-    </div>
+    </ToolContainer>
   );
 }
