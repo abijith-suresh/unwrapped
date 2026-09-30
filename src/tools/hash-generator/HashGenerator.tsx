@@ -5,6 +5,7 @@ import Card from "@/components/primitives/solid/Card";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolFilePicker from "@/components/tool/ToolFilePicker";
 import {
   DEFAULT_IMPORT_MAX_BYTES,
   type FileImportError,
@@ -208,20 +209,7 @@ export default function HashGenerator() {
         </div>
 
         <div class="flex items-center gap-2">
-          <label class="text-sm text-[var(--accent-primary)] cursor-pointer">
-            Open file
-            <input
-              type="file"
-              class="hidden"
-              onChange={(event) => {
-                const file = event.currentTarget.files?.[0];
-                if (file) {
-                  void handleFile(file);
-                }
-                event.currentTarget.value = "";
-              }}
-            />
-          </label>
+          <ToolFilePicker onFileChange={(file) => void handleFile(file)} />
           <span class="text-sm text-[var(--text-muted)]">
             Shared local file import flow with explicit read and size failures
           </span>
@@ -257,7 +245,7 @@ export default function HashGenerator() {
                   <span class="text-xs font-bold tracking-wider uppercase text-[var(--accent-primary)]">
                     {result.algorithm}
                   </span>
-                  <CopyButton text={result.hex} />
+                  <CopyButton text={result.hex} label={`Copy ${result.algorithm} hash`} />
                 </div>
 
                 <pre class="m-0 p-3 px-4 text-xs leading-relaxed text-[var(--text-primary)] font-mono whitespace-pre-wrap break-all">

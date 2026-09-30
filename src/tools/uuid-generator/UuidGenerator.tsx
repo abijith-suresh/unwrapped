@@ -101,12 +101,12 @@ export default function UuidGenerator() {
       {/* ------------------------------------------------------------------ */}
       <div class="flex flex-col gap-1.5">
         <For each={uuids()}>
-          {(uuid) => (
+          {(uuid, index) => (
             <div class="flex items-center justify-between px-4 py-2.5 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-md gap-4">
               <code class="text-sm text-[var(--text-primary)] font-mono tracking-wide flex-1 break-all">
                 {display(uuid)}
               </code>
-              <CopyButton text={display(uuid)} />
+              <CopyButton text={display(uuid)} label={`Copy UUID ${index() + 1}`} />
             </div>
           )}
         </For>

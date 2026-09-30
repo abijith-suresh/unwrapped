@@ -72,7 +72,12 @@ export default function TimestampTool() {
   }
 
   function changeZone(index: number, tz: string) {
-    setZones((prev) => prev.map((z, i) => (i === index ? { ...z, tz } : z)));
+    const selectedZone = PRESET_ZONES.find((zone) => zone.tz === tz);
+    setZones((prev) =>
+      prev.map((zone, i) =>
+        i === index ? { ...zone, tz, label: selectedZone?.label ?? tz } : zone
+      )
+    );
   }
 
   return (
@@ -80,7 +85,7 @@ export default function TimestampTool() {
       {/* ------------------------------------------------------------------ */}
       {/* Input row                                                           */}
       {/* ------------------------------------------------------------------ */}
-      <div class="grid grid-cols-[1fr_auto_1fr] gap-4 items-end">
+      <div class="grid grid-cols-1 gap-4 items-end sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
         {/* Epoch input */}
         <div class="flex flex-col gap-1.5">
           <Input
@@ -137,7 +142,10 @@ export default function TimestampTool() {
                 <code class="text-[0.9375rem] text-[var(--accent-primary)] font-mono flex-1 break-all">
                   {String(Math.floor(d().getTime() / 1000))}
                 </code>
-                <CopyButton text={String(Math.floor(d().getTime() / 1000))} />
+                <CopyButton
+                  text={String(Math.floor(d().getTime() / 1000))}
+                  label="Copy epoch seconds"
+                />
               </div>
             </Card>
 
@@ -148,7 +156,7 @@ export default function TimestampTool() {
                 <code class="text-[0.9375rem] text-[var(--accent-primary)] font-mono flex-1 break-all">
                   {String(d().getTime())}
                 </code>
-                <CopyButton text={String(d().getTime())} />
+                <CopyButton text={String(d().getTime())} label="Copy epoch milliseconds" />
               </div>
             </Card>
 
@@ -159,7 +167,7 @@ export default function TimestampTool() {
                 <code class="text-sm text-[var(--accent-success)] font-mono flex-1 break-all">
                   {d().toISOString()}
                 </code>
-                <CopyButton text={d().toISOString()} />
+                <CopyButton text={d().toISOString()} label="Copy ISO 8601" />
               </div>
             </Card>
           </div>
@@ -176,7 +184,7 @@ export default function TimestampTool() {
               <Label>Derived formats</Label>
             </div>
 
-            <div class="p-3 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3">
+            <div class="p-3 grid grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] gap-3">
               <For each={getDerivedTimestampFormats(d())}>
                 {(item) => (
                   <div class="flex flex-col gap-1.5 p-3 bg-[var(--bg-primary)] border border-[var(--border)] rounded">
@@ -185,7 +193,7 @@ export default function TimestampTool() {
                       {item.value}
                     </code>
                     <div class="flex justify-end">
-                      <CopyButton text={item.value} />
+                      <CopyButton text={item.value} label={`Copy ${item.label}`} />
                     </div>
                   </div>
                 )}
@@ -208,7 +216,7 @@ export default function TimestampTool() {
             <div class="p-3 flex flex-col gap-3">
               <For each={zones()}>
                 {(zone, i) => (
-                  <div class="grid grid-cols-[180px_1fr_auto] gap-3 items-center">
+                  <div class="grid grid-cols-1 gap-3 items-center sm:grid-cols-[minmax(0,180px)_minmax(0,1fr)_auto]">
                     <Select
                       aria-label={`Timezone ${i() + 1}`}
                       name={`timezone-${i() + 1}`}
@@ -222,7 +230,10 @@ export default function TimestampTool() {
                       {formatInZone(d(), zone.tz)}
                     </code>
 
-                    <CopyButton text={formatInZone(d(), zone.tz)} />
+                    <CopyButton
+                      text={formatInZone(d(), zone.tz)}
+                      label={`Copy ${zone.label} time`}
+                    />
                   </div>
                 )}
               </For>

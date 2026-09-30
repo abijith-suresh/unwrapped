@@ -20,8 +20,8 @@ describe("ToolWorkspace", () => {
     expect(outputTab).toHaveAttribute("aria-selected", "true");
     const inputPanel = getByRole("tabpanel", { name: "Input" });
     const outputPanel = getByRole("tabpanel", { name: "Output" });
-    expect(inputPanel).toHaveClass("hidden", "md:block");
-    expect(outputPanel).toHaveClass("hidden", "md:block");
+    expect(inputPanel).toHaveClass("hidden", "lg:block");
+    expect(outputPanel).toHaveClass("hidden", "lg:block");
     expect(getByText("input content")).toBeInTheDocument();
     expect(getByText("output content")).toBeInTheDocument();
 

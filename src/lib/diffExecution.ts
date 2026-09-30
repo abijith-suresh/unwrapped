@@ -34,6 +34,7 @@ interface WorkerLike {
 interface PendingWorkerRequest {
   input: DiffAnalysisInput;
   requestId: number;
+  reject: (reason?: unknown) => void;
   resolve: (response: DiffExecutionResponse) => void;
 }
 
@@ -137,7 +138,10 @@ export function createDiffAnalysisExecutor(
     pendingRequests.clear();
 
     for (const request of queuedRequests) {
-      void createFullSyncResponse(request.requestId, request.input).then(request.resolve);
+      void createFullSyncResponse(request.requestId, request.input).then(
+        request.resolve,
+        request.reject
+      );
     }
   }
 
@@ -201,13 +205,13 @@ export function createDiffAnalysisExecutor(
         return createFullSyncResponse(requestId, input);
       }
 
-      return new Promise((resolve) => {
-        pendingRequests.set(requestId, { input, requestId, resolve });
+      return new Promise((resolve, reject) => {
+        pendingRequests.set(requestId, { input, requestId, resolve, reject });
 
         const timeoutId = setTimeout(() => {
           if (pendingRequests.has(requestId)) {
             pendingRequests.delete(requestId);
-            void createFullSyncResponse(requestId, input).then(resolve);
+            void createFullSyncResponse(requestId, input).then(resolve, reject);
           }
         }, WORKER_TIMEOUT_MS);
 
@@ -217,7 +221,7 @@ export function createDiffAnalysisExecutor(
           clearTimeout(timeoutId);
           pendingRequests.delete(requestId);
           disposeWorker();
-          void createFullSyncResponse(requestId, input).then(resolve);
+          void createFullSyncResponse(requestId, input).then(resolve, reject);
         }
       });
     },
