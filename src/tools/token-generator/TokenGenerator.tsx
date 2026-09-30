@@ -5,6 +5,7 @@ import Card from "@/components/primitives/solid/Card";
 import Label from "@/components/primitives/solid/Label";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
 import {
   DEFAULT_TOKEN_OPTIONS,
   generateToken,
@@ -59,7 +60,7 @@ export default function TokenGenerator() {
   }
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[900px]">
+    <ToolContainer width="standard">
       <div class="grid grid-cols-[2fr_1fr] gap-4">
         <Card class="flex flex-col gap-1.5">
           <div class="flex justify-between gap-3">
@@ -128,6 +129,6 @@ export default function TokenGenerator() {
         Uses <code>crypto.getRandomValues()</code> locally with {activeGroups().length || "no"}{" "}
         character set{activeGroups().length === 1 ? "" : "s"} enabled.
       </ToolStatusMessage>
-    </div>
+    </ToolContainer>
   );
 }

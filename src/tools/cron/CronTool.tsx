@@ -4,6 +4,7 @@ import Input from "@/components/primitives/solid/Input";
 import Label from "@/components/primitives/solid/Label";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
 import { SUPPORTED_CRON_SYNTAX } from "@/lib/cron";
 import { buildCronScheduleSummary, type CronTimeZoneMode } from "@/lib/cronSchedule";
 
@@ -38,7 +39,7 @@ export default function CronTool() {
   });
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[900px]">
+    <ToolContainer width="standard">
       <div class="flex flex-col gap-1.5">
         <Input
           label="Cron expression"
@@ -103,6 +104,6 @@ export default function CronTool() {
         Supported subset: {SUPPORTED_CRON_SYNTAX.fieldOrder.join(" ")} · operators{" "}
         {SUPPORTED_CRON_SYNTAX.operators.join(" ")} · preview computation stays local-only.
       </ToolStatusMessage>
-    </div>
+    </ToolContainer>
   );
 }

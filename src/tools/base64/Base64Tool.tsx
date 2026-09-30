@@ -6,6 +6,7 @@ import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
 import ToolDropZone from "@/components/tool/ToolDropZone";
 import ToolFilePicker from "@/components/tool/ToolFilePicker";
 import {
@@ -183,7 +184,7 @@ export default function Base64Tool() {
   };
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[860px]">
+    <ToolContainer width="standard">
       {/* ------------------------------------------------------------------ */}
       {/* Mode toggle + swap                                                  */}
       {/* ------------------------------------------------------------------ */}
@@ -354,6 +355,6 @@ export default function Base64Tool() {
           large-input warnings instead of failing silently.
         </ToolStatusMessage>
       </Show>
-    </div>
+    </ToolContainer>
   );
 }

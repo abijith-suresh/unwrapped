@@ -5,6 +5,7 @@ import Card from "@/components/primitives/solid/Card";
 import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
 import { inspectUrl } from "@/lib/urlInspector";
 
 const SECTION_LABELS = [
@@ -34,7 +35,7 @@ export default function UrlInspectorTool() {
   });
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[1100px]">
+    <ToolContainer width="wide">
       <Textarea
         label="URL or raw query string"
         value={input()}
@@ -120,6 +121,6 @@ export default function UrlInspectorTool() {
           </Show>
         </Card>
       </Show>
-    </div>
+    </ToolContainer>
   );
 }

@@ -7,6 +7,7 @@ import Label from "@/components/primitives/solid/Label";
 import Select from "@/components/primitives/solid/Select";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
 import {
   DEFAULT_ZONES,
   formatInZone,
@@ -81,7 +82,7 @@ export default function TimestampTool() {
   }
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[760px]">
+    <ToolContainer width="narrow">
       {/* ------------------------------------------------------------------ */}
       {/* Input row                                                           */}
       {/* ------------------------------------------------------------------ */}
@@ -248,6 +249,6 @@ export default function TimestampTool() {
           Enter a Unix timestamp (seconds or ms auto-detected) or pick a date above
         </ToolStatusMessage>
       </Show>
-    </div>
+    </ToolContainer>
   );
 }

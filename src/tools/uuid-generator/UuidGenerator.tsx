@@ -4,6 +4,7 @@ import CopyButton from "@/components/CopyButton";
 import Label from "@/components/primitives/solid/Label";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
 import { copyToClipboard } from "@/lib/clipboard";
 
 // ---------------------------------------------------------------------------
@@ -47,7 +48,7 @@ export default function UuidGenerator() {
   }
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[860px]">
+    <ToolContainer width="standard">
       {/* ------------------------------------------------------------------ */}
       {/* Controls                                                            */}
       {/* ------------------------------------------------------------------ */}
@@ -115,6 +116,6 @@ export default function UuidGenerator() {
       <ToolStatusMessage tone="muted">
         UUID v4 generated via <code>crypto.randomUUID()</code> · max 100 at once
       </ToolStatusMessage>
-    </div>
+    </ToolContainer>
   );
 }

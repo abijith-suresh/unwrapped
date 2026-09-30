@@ -5,6 +5,7 @@ import Card from "@/components/primitives/solid/Card";
 import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
 import { convertJsonToCsv } from "@/lib/jsonToCsv";
 
 export default function JsonToCsvTool() {
@@ -20,7 +21,7 @@ export default function JsonToCsvTool() {
   });
 
   return (
-    <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] gap-5 p-6 mx-auto w-full max-w-[1100px]">
+    <ToolContainer width="wide">
       <Textarea
         label="JSON array input"
         value={input()}
@@ -46,6 +47,6 @@ export default function JsonToCsvTool() {
           </pre>
         </Show>
       </Card>
-    </div>
+    </ToolContainer>
   );
 }

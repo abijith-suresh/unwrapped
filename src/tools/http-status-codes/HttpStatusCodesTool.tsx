@@ -4,6 +4,7 @@ import Card from "@/components/primitives/solid/Card";
 import Input from "@/components/primitives/solid/Input";
 import Label from "@/components/primitives/solid/Label";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
 import { searchHttpStatusCodes } from "@/lib/httpStatusCodes";
 
 export default function HttpStatusCodesTool() {
@@ -11,7 +12,7 @@ export default function HttpStatusCodesTool() {
   const results = createMemo(() => searchHttpStatusCodes(query()));
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[960px]">
+    <ToolContainer width="standard">
       <Input
         label="Search by code or name"
         value={query()}
@@ -47,6 +48,6 @@ export default function HttpStatusCodesTool() {
           )}
         </For>
       </div>
-    </div>
+    </ToolContainer>
   );
 }

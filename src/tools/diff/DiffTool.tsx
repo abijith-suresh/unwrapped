@@ -12,6 +12,7 @@ import Card from "@/components/primitives/solid/Card";
 import Label from "@/components/primitives/solid/Label";
 import Select from "@/components/primitives/solid/Select";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
 import ToolDropZone from "@/components/tool/ToolDropZone";
 import ToolFilePicker from "@/components/tool/ToolFilePicker";
 import type { DiffAnalysisResult } from "@/lib/diffAnalysis";
@@ -445,7 +446,7 @@ export default function DiffTool() {
 
   // ---------------------------------------------------------------------------
   return (
-    <div class="flex flex-col gap-4 p-5 mx-auto w-full max-w-none">
+    <ToolContainer width="full" class="gap-4">
       {/* -------------------------------------------------------------------- */}
       {/* Input panels (two columns)                                           */}
       {/* -------------------------------------------------------------------- */}
@@ -720,6 +721,6 @@ export default function DiffTool() {
           </div>
         </Show>
       </Show>
-    </div>
+    </ToolContainer>
   );
 }

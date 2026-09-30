@@ -5,6 +5,7 @@ import Card from "@/components/primitives/solid/Card";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolContainer from "@/components/tool/ToolContainer";
 import ToolDropZone from "@/components/tool/ToolDropZone";
 import ToolFilePicker from "@/components/tool/ToolFilePicker";
 import {
@@ -142,7 +143,7 @@ export default function HashGenerator() {
   });
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[860px]">
+    <ToolContainer width="standard">
       <div class="flex flex-wrap items-center gap-3">
         <div class="flex gap-1 items-center">
           <ToolActionButton
@@ -256,6 +257,6 @@ export default function HashGenerator() {
           SHA-1 · SHA-256 · SHA-384 · SHA-512 computed locally for text and file workflows
         </ToolStatusMessage>
       </Show>
-    </div>
+    </ToolContainer>
   );
 }

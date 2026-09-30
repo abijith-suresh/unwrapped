@@ -3,6 +3,7 @@ import { createMemo, createSignal, For } from "solid-js";
 import CopyButton from "@/components/CopyButton";
 import Card from "@/components/primitives/solid/Card";
 import Label from "@/components/primitives/solid/Label";
+import ToolContainer from "@/components/tool/ToolContainer";
 import { buildChmodResult, type ChmodPermissions } from "@/lib/chmod";
 
 const SUBJECTS = [
@@ -41,7 +42,7 @@ export default function ChmodCalculatorTool() {
   }
 
   return (
-    <div class="flex flex-col gap-5 p-6 mx-auto w-full max-w-[900px]">
+    <ToolContainer width="standard">
       <Card class="overflow-auto">
         <table class="w-full border-collapse">
           <thead>
@@ -108,6 +109,6 @@ export default function ChmodCalculatorTool() {
           <code class="text-[var(--text-primary)] text-[0.95rem]">{result().command}</code>
         </Card>
       </div>
-    </div>
+    </ToolContainer>
   );
 }
