@@ -126,7 +126,7 @@ export default function JwtDecoder() {
                 <div class="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border)]">
                   <Label>Claims summary</Label>
                 </div>
-                <div class="p-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3">
+                <div class="p-4 grid grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] gap-3">
                   {claimsSummary().map((item) => (
                     <div class="flex flex-col gap-1 p-3 bg-[var(--bg-primary)] border border-[var(--border)] rounded">
                       <span class="text-[0.6875rem] font-bold tracking-wider uppercase text-[var(--text-muted)]">
