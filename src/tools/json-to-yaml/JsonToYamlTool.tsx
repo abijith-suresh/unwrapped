@@ -5,12 +5,12 @@ import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolCodeBlock from "@/components/tool/ToolCodeBlock";
 import ToolCodeEditor from "@/components/tool/ToolCodeEditor";
 import ToolContainer from "@/components/tool/ToolContainer";
-import ToolPanel from "@/components/tool/ToolPanel";
+import ToolPanel, {
+  TOOL_EDITOR_BODY_CLASSES,
+  TOOL_EDITOR_PANEL_CLASSES,
+} from "@/components/tool/ToolPanel";
 import ToolWorkspace from "@/components/tool/ToolWorkspace";
 import { convertJsonToYaml } from "@/lib/jsonToYaml";
-
-const EDITOR_PANEL_CLASSES = "flex h-[clamp(18rem,44dvh,28rem)] min-h-0 flex-col";
-const EDITOR_BODY_CLASSES = "flex min-h-0 flex-1 flex-col";
 
 export default function JsonToYamlTool() {
   const [input, setInput] = createSignal('{\n  "hello": "world"\n}');
@@ -39,7 +39,11 @@ export default function JsonToYamlTool() {
             id: "input",
             label: "Input",
             content: (
-              <ToolPanel title="Input" class={EDITOR_PANEL_CLASSES} bodyClass={EDITOR_BODY_CLASSES}>
+              <ToolPanel
+                title="Input"
+                class={TOOL_EDITOR_PANEL_CLASSES}
+                bodyClass={TOOL_EDITOR_BODY_CLASSES}
+              >
                 <ToolCodeEditor
                   id="json-to-yaml-input"
                   name="json-to-yaml-input"
@@ -63,8 +67,8 @@ export default function JsonToYamlTool() {
             content: (
               <ToolPanel
                 title="Output"
-                class={EDITOR_PANEL_CLASSES}
-                bodyClass={EDITOR_BODY_CLASSES}
+                class={TOOL_EDITOR_PANEL_CLASSES}
+                bodyClass={TOOL_EDITOR_BODY_CLASSES}
                 actions={
                   <Show when={output()}>
                     <CopyButton text={output()} label="Copy YAML" />

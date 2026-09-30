@@ -1,8 +1,8 @@
 import type { Component } from "solid-js";
 import { createResource, ErrorBoundary, Show } from "solid-js";
 import { Dynamic, isServer } from "solid-js/web";
-
 import ToolErrorFallback from "@/components/ToolErrorFallback";
+import ToolContainer from "@/components/tool/ToolContainer";
 
 interface ToolHostProps {
   componentPath: string;
@@ -27,17 +27,13 @@ function loadToolModule(componentPath: string): Promise<Component> {
 
 function ToolSkeleton() {
   return (
-    <div
-      class="mx-auto flex w-full max-w-[70rem] flex-col gap-5 p-4 sm:p-6"
-      role="status"
-      aria-label="Loading tool"
-    >
+    <ToolContainer width="wide" role="status" aria-label="Loading tool">
       <div class="h-12 w-full rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--bg-secondary)] animate-pulse" />
       <div class="grid min-w-0 gap-4 lg:grid-cols-2">
         <div class="h-[26rem] rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--bg-secondary)] animate-pulse" />
         <div class="h-[26rem] rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--bg-secondary)] animate-pulse" />
       </div>
-    </div>
+    </ToolContainer>
   );
 }
 
