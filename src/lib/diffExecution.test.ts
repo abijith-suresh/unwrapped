@@ -64,4 +64,50 @@ describe("diffExecution", () => {
     expect(first.requestId).toBe(1);
     expect(second.requestId).toBe(2);
   });
+
+  it("rejects when synchronous analysis fails", async () => {
+    const expectedError = new Error("analysis failed");
+    const executor = createDiffAnalysisExecutor({
+      createWorker: () => null,
+      syncExecutor: () => Promise.reject(expectedError),
+      workerThresholdChars: 0,
+    });
+
+    await expect(
+      executor.execute({
+        original: "alpha\n",
+        modified: "beta\n",
+        leftLanguage: "text",
+        rightLanguage: "text",
+        changesOnly: true,
+      })
+    ).rejects.toBe(expectedError);
+  });
+
+  it("rejects worker requests when the sync fallback fails", async () => {
+    const expectedError = new Error("fallback failed");
+    const worker = {
+      onerror: null as ((event: ErrorEvent) => void) | null,
+      onmessage: null,
+      postMessage: () => {},
+      terminate: () => {},
+    };
+    const executor = createDiffAnalysisExecutor({
+      createWorker: () => worker,
+      syncExecutor: () => Promise.reject(expectedError),
+      workerThresholdChars: 0,
+    });
+
+    const comparison = executor.execute({
+      original: "alpha\n",
+      modified: "beta\n",
+      leftLanguage: "text",
+      rightLanguage: "text",
+      changesOnly: true,
+    });
+
+    worker.onerror?.(new ErrorEvent("error"));
+
+    await expect(comparison).rejects.toBe(expectedError);
+  });
 });
