@@ -1,18 +1,11 @@
 import { sortJsonKeys } from "./jsonFormatter";
+import type { TextTransformResult } from "./text";
 
 type JsonPrimitive = string | number | boolean | null;
 type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue };
 type JsonRecord = Record<string, JsonValue>;
 
-export type JsonToCsvResult =
-  | {
-      ok: true;
-      output: string;
-    }
-  | {
-      ok: false;
-      error: string;
-    };
+export type JsonToCsvResult = TextTransformResult;
 
 function isJsonRecord(value: unknown): value is JsonRecord {
   return typeof value === "object" && value !== null && !Array.isArray(value);

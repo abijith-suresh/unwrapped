@@ -1,16 +1,9 @@
 import { stringify } from "yaml";
 
 import { sortJsonKeys } from "./jsonFormatter";
+import { type TextTransformResult, toErrorMessage } from "./text";
 
-export type JsonToYamlResult =
-  | {
-      ok: true;
-      output: string;
-    }
-  | {
-      ok: false;
-      error: string;
-    };
+export type JsonToYamlResult = TextTransformResult;
 
 export function convertJsonToYaml(input: string): JsonToYamlResult {
   if (input.trim().length === 0) {
@@ -34,7 +27,7 @@ export function convertJsonToYaml(input: string): JsonToYamlResult {
   } catch (error) {
     return {
       ok: false,
-      error: `Invalid JSON input: ${error instanceof Error ? error.message : "Unable to parse JSON."}`,
+      error: `Invalid JSON input: ${toErrorMessage(error, "Unable to parse JSON.")}`,
     };
   }
 }

@@ -1,3 +1,5 @@
+import { normalizeNewlines } from "./text";
+
 export interface TextStatistics {
   characters: number;
   words: number;
@@ -15,7 +17,7 @@ function countLines(input: string): number {
     return 0;
   }
 
-  return input.replace(/\r\n?/g, "\n").split("\n").length;
+  return normalizeNewlines(input).split("\n").length;
 }
 
 export function analyzeText(input: string): TextStatistics {

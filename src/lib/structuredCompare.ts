@@ -1,5 +1,6 @@
 import { parse as parseToml, stringify as stringifyToml, type TomlTable } from "smol-toml";
 import { parseAllDocuments, stringify } from "yaml";
+import { normalizeNewlines, toErrorMessage } from "./text";
 
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
 
@@ -59,7 +60,7 @@ function parseEnvKeyAndValue(line: string): { key: string; value: string } {
 }
 
 function parseEnvRecord(input: string): Record<string, string> {
-  const normalizedInput = input.replace(/\r\n?/g, "\n");
+  const normalizedInput = normalizeNewlines(input);
   const values: Record<string, string> = {};
   const lines = normalizedInput.split("\n");
 
@@ -196,7 +197,7 @@ export function normalizeJsonForDiff(input: string): NormalizeJsonResult {
   } catch (error) {
     return {
       ok: false,
-      message: error instanceof Error ? error.message : "Invalid JSON input",
+      message: toErrorMessage(error, "Invalid JSON input"),
     };
   }
 }
@@ -231,7 +232,7 @@ export function normalizeYamlForDiff(input: string): NormalizeYamlResult {
   } catch (error) {
     return {
       ok: false,
-      message: error instanceof Error ? error.message : "Invalid YAML input",
+      message: toErrorMessage(error, "Invalid YAML input"),
     };
   }
 }
@@ -247,14 +248,12 @@ export function normalizeTomlForDiff(input: string): NormalizeTomlResult {
 
     return {
       ok: true,
-      output: stringifyToml(sorted as TomlTable)
-        .replace(/\r\n?/g, "\n")
-        .trimEnd(),
+      output: normalizeNewlines(stringifyToml(sorted as TomlTable)).trimEnd(),
     };
   } catch (error) {
     return {
       ok: false,
-      message: error instanceof Error ? error.message : "Invalid TOML input",
+      message: toErrorMessage(error, "Invalid TOML input"),
     };
   }
 }
@@ -276,7 +275,7 @@ export function normalizeEnvForDiff(input: string): NormalizeEnvResult {
   } catch (error) {
     return {
       ok: false,
-      message: error instanceof Error ? error.message : "Invalid env input",
+      message: toErrorMessage(error, "Invalid env input"),
     };
   }
 }

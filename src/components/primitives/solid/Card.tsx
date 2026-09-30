@@ -10,7 +10,7 @@ export default function Card(props: CardProps) {
   return (
     <div
       class={cn(
-        "rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] p-4",
+        "rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--bg-secondary)] p-4",
         props.class
       )}
     >

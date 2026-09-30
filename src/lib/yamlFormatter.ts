@@ -1,21 +1,14 @@
 import { parseDocument, stringify } from "yaml";
 
 import { sortJsonKeys } from "./jsonFormatter";
+import { clampIndentSize, type TextTransformResult, toErrorMessage } from "./text";
 
 export interface YamlFormatterOptions {
   indent: number;
   sortKeys: boolean;
 }
 
-export type YamlFormatterResult =
-  | {
-      ok: true;
-      output: string;
-    }
-  | {
-      ok: false;
-      error: string;
-    };
+export type YamlFormatterResult = TextTransformResult;
 
 export function formatYaml(input: string, options: YamlFormatterOptions): YamlFormatterResult {
   if (input.trim().length === 0) {
@@ -38,7 +31,7 @@ export function formatYaml(input: string, options: YamlFormatterOptions): YamlFo
     return {
       ok: true,
       output: stringify(value, {
-        indent: Math.min(8, Math.max(2, Math.trunc(options.indent) || 2)),
+        indent: clampIndentSize(options.indent),
         defaultStringType: "PLAIN",
         sortMapEntries: options.sortKeys,
       }).trimEnd(),
@@ -46,7 +39,7 @@ export function formatYaml(input: string, options: YamlFormatterOptions): YamlFo
   } catch (error) {
     return {
       ok: false,
-      error: `Invalid YAML input: ${error instanceof Error ? error.message : "Unable to format YAML."}`,
+      error: `Invalid YAML input: ${toErrorMessage(error, "Unable to format YAML.")}`,
     };
   }
 }

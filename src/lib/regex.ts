@@ -1,4 +1,5 @@
 import type { CodeHighlightSegment } from "./codeHighlight";
+import { toErrorMessage } from "./text";
 
 export type FlagKey = "g" | "i" | "m" | "s";
 
@@ -54,7 +55,7 @@ export function buildRegexResult(pattern: string, flags: Set<FlagKey>, input: st
     return {
       matches: [],
       highlighted: plainHighlight(input),
-      error: error instanceof Error ? error.message : "Invalid regular expression",
+      error: toErrorMessage(error, "Invalid regular expression"),
       summary: createSummary([]),
     };
   }
@@ -125,7 +126,7 @@ export function buildRegexReplaceResult(
     regex = new RegExp(pattern, flagString);
   } catch (error) {
     return {
-      error: error instanceof Error ? error.message : "Invalid regular expression",
+      error: toErrorMessage(error, "Invalid regular expression"),
     };
   }
 

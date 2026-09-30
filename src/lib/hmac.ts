@@ -1,3 +1,6 @@
+import { bytesToHex } from "./bytes";
+import { type TextTransformResult, toErrorMessage } from "./text";
+
 export const HMAC_ALGORITHMS = [
   { id: "SHA-1", label: "HMAC-SHA1" },
   { id: "SHA-256", label: "HMAC-SHA256" },
@@ -13,19 +16,7 @@ export interface HmacInput {
   algorithm: HmacAlgorithm;
 }
 
-export type HmacResult =
-  | {
-      ok: true;
-      output: string;
-    }
-  | {
-      ok: false;
-      error: string;
-    };
-
-function bytesToHex(bytes: Uint8Array): string {
-  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
-}
+export type HmacResult = TextTransformResult;
 
 export async function generateHmac(
   input: HmacInput,
@@ -56,7 +47,7 @@ export async function generateHmac(
   } catch (error) {
     return {
       ok: false,
-      error: error instanceof Error ? error.message : "Unable to generate HMAC.",
+      error: toErrorMessage(error, "Unable to generate HMAC."),
     };
   }
 }
