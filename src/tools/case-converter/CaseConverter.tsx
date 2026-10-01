@@ -5,7 +5,9 @@ import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import { convertCaseVariants } from "@/lib/caseConverter";
+import { EXAMPLE_CASE_TEXT } from "@/lib/exampleData";
 
 const VARIANT_LABELS = [
   ["lowercase", "lowercase"],
@@ -23,7 +25,8 @@ const VARIANT_LABELS = [
 
 export default function CaseConverter() {
   const [input, setInput] = createSignal("");
-  const variants = createMemo(() => convertCaseVariants(input()));
+  const isExample = () => input() === "";
+  const variants = createMemo(() => convertCaseVariants(input() || EXAMPLE_CASE_TEXT));
   const hasInput = createMemo(() => input().trim().length > 0);
 
   return (
@@ -32,12 +35,14 @@ export default function CaseConverter() {
         label="Source text"
         value={input()}
         onInput={setInput}
-        placeholder="Paste text, identifiers, or titles to fan out into multiple case styles…"
+        placeholder={EXAMPLE_CASE_TEXT}
         rows={6}
       />
 
+      <ToolExampleNotice when={isExample()} />
+
       <Show
-        when={hasInput()}
+        when={isExample() || hasInput()}
         fallback={
           <ToolStatusMessage tone="muted">
             Enter text once to generate copyable case variants locally.
@@ -50,7 +55,9 @@ export default function CaseConverter() {
               <Card class="flex flex-col gap-2">
                 <div class="flex items-center justify-between gap-3">
                   <Label>{label}</Label>
-                  <CopyButton text={variants()[key]} label={`Copy ${label}`} />
+                  <Show when={!isExample()}>
+                    <CopyButton text={variants()[key]} label={`Copy ${label}`} />
+                  </Show>
                 </div>
                 <code class="m-0 text-[var(--text-primary)] text-sm leading-[1.7] font-mono whitespace-pre-wrap break-words">
                   {variants()[key] || "—"}

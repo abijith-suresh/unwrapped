@@ -6,14 +6,19 @@ import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import { EXAMPLE_TEXT } from "@/lib/exampleData";
 import { decodeUrlText, encodeUrlText } from "@/lib/urlEncoding";
 
 export default function UrlEncoderTool() {
   const [plainText, setPlainText] = createSignal("");
   const [encodedText, setEncodedText] = createSignal("");
 
-  const encodedOutput = createMemo(() => encodeUrlText(plainText()));
-  const decodedOutput = createMemo(() => decodeUrlText(encodedText()));
+  const isEncodingExample = () => plainText() === "";
+  const isDecodingExample = () => encodedText() === "";
+  const encodedExample = encodeUrlText(EXAMPLE_TEXT);
+  const encodedOutput = createMemo(() => encodeUrlText(plainText() || EXAMPLE_TEXT));
+  const decodedOutput = createMemo(() => decodeUrlText(encodedText() || encodedExample));
   const decodedValue = createMemo(() => {
     const current = decodedOutput();
     return current.ok ? current.value : "";
@@ -31,13 +36,16 @@ export default function UrlEncoderTool() {
             label="Plain text"
             value={plainText()}
             onInput={(v) => setPlainText(v)}
-            placeholder="Enter text to percent-encode…"
+            placeholder={EXAMPLE_TEXT}
             rows={7}
           />
 
+          <ToolExampleNotice when={isEncodingExample()} />
           <div class="flex items-center justify-between">
             <Label>Encoded output</Label>
-            <CopyButton text={encodedOutput()} label="Copy encoded" />
+            <Show when={!isEncodingExample()}>
+              <CopyButton text={encodedOutput()} label="Copy encoded" />
+            </Show>
           </div>
           <pre class="m-0 px-4 py-3.5 rounded-lg border border-[var(--border)] bg-[var(--bg-primary)] text-[var(--text-primary)] font-mono text-sm leading-[1.7] min-h-[7rem] whitespace-pre-wrap break-all">
             {encodedOutput() || "—"}
@@ -51,7 +59,7 @@ export default function UrlEncoderTool() {
             autocomplete="off"
             value={encodedText()}
             onInput={(value) => setEncodedText(value)}
-            placeholder="Enter percent-encoded text to decode…"
+            placeholder={encodedExample}
             rows={7}
             spellcheck={false}
             resize="y"
@@ -60,6 +68,7 @@ export default function UrlEncoderTool() {
             controlClass="!bg-[var(--bg-primary)] text-sm"
           />
 
+          <ToolExampleNotice when={isDecodingExample()} />
           <Show
             when={!decodeError()}
             fallback={
@@ -70,7 +79,9 @@ export default function UrlEncoderTool() {
           >
             <div class="flex items-center justify-between">
               <Label>Decoded output</Label>
-              <CopyButton text={decodedValue()} label="Copy decoded" />
+              <Show when={!isDecodingExample()}>
+                <CopyButton text={decodedValue()} label="Copy decoded" />
+              </Show>
             </div>
             <pre class="m-0 px-4 py-3.5 rounded-lg border border-[var(--border)] bg-[var(--bg-primary)] text-[var(--text-primary)] font-mono text-sm leading-[1.7] min-h-[7rem] whitespace-pre-wrap break-all">
               {decodedValue() || "—"}
