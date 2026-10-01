@@ -97,7 +97,7 @@ export default function TimestampTool() {
             type="text"
             value={epochInput()}
             onInput={handleEpochInput}
-            placeholder="e.g. 1700000000"
+            placeholder="1700000000"
           />
           <Show when={parsed()}>
             {(p) => (

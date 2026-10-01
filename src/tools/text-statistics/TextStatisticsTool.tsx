@@ -24,7 +24,7 @@ export default function TextStatisticsTool() {
         label="Text input"
         value={input()}
         onInput={setInput}
-        placeholder="Type or paste text to inspect its raw size and structure locally…"
+        placeholder={"Hello, world!\nA second line of text."}
         rows={10}
       />
 

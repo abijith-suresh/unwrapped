@@ -194,7 +194,7 @@ export default function HashGenerator() {
             onInput={(event) => handleInput(event)}
             placeholder={
               workflow() === "text"
-                ? "Type or paste text to hash…"
+                ? "Hello, world!"
                 : "Drop a file here or use the file picker to hash it locally…"
             }
             rows={5}

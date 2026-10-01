@@ -140,10 +140,10 @@ function InputPanel(props: InputPanelProps) {
           name={`diff-${props.label.toLowerCase()}-text`}
           value={props.content}
           onInput={(e) => props.onContentChange(e.currentTarget.value)}
-          placeholder={`Paste ${props.label.toLowerCase()} text here, or drop a file...`}
+          placeholder={`Hello, world!\nVersion: ${props.label === "Original" ? 1 : 2}`}
           spellcheck={false}
           autocomplete="off"
-          class="flex-1 w-full p-3 bg-transparent text-[var(--text-primary)] font-mono text-sm leading-[1.6] resize-y min-h-[280px] outline-none tab-size-2"
+          class="flex-1 w-full p-3 bg-transparent text-[var(--text-primary)] placeholder:text-[var(--text-muted)] font-mono text-sm leading-[1.6] resize-y min-h-[280px] outline-none tab-size-2"
         />
       </Card>
     </ToolDropZone>

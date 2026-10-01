@@ -13,7 +13,7 @@ import ToolWorkspace from "@/components/tool/ToolWorkspace";
 import { convertJsonToYaml } from "@/lib/jsonToYaml";
 
 export default function JsonToYamlTool() {
-  const [input, setInput] = createSignal('{\n  "hello": "world"\n}');
+  const [input, setInput] = createSignal("");
   const result = createMemo(() => convertJsonToYaml(input()));
   const output = createMemo(() => {
     const current = result();
@@ -51,7 +51,7 @@ export default function JsonToYamlTool() {
                   labelClass="sr-only"
                   value={input()}
                   onInput={(value) => setInput(value)}
-                  placeholder="Paste JSON to convert…"
+                  placeholder={'{\n  "hello": "world"\n}'}
                   rows={12}
                   spellcheck={false}
                   autocomplete="off"

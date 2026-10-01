@@ -10,7 +10,7 @@ import ToolContainer from "@/components/tool/ToolContainer";
 import { formatXml } from "@/lib/xmlFormatter";
 
 export default function XmlFormatterTool() {
-  const [input, setInput] = createSignal('<root><item id="1">value</item></root>');
+  const [input, setInput] = createSignal("");
   const [indent, setIndent] = createSignal(2);
   const result = createMemo(() => formatXml(input(), { indent: indent() }));
   const output = createMemo(() => {
@@ -43,7 +43,7 @@ export default function XmlFormatterTool() {
           label="XML input"
           value={input()}
           onInput={(value) => setInput(value)}
-          placeholder="Paste XML to format…"
+          placeholder={'<root><item id="1">value</item></root>'}
           rows={14}
           spellcheck={false}
           name="xml-input"

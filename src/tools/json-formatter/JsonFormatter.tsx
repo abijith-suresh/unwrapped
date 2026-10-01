@@ -123,7 +123,7 @@ export default function JsonFormatter() {
                   diagnostic={diagnostic()}
                   value={input()}
                   onInput={(value) => setInput(value)}
-                  placeholder="Paste JSON here…"
+                  placeholder={'{\n  "name": "Alice",\n  "active": true\n}'}
                   rows={12}
                   spellcheck={false}
                   autocomplete="off"

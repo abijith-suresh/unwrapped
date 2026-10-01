@@ -3,6 +3,10 @@ import { describe, expect, it } from "vitest";
 import { convertJsonToCsv } from "./jsonToCsv";
 
 describe("convertJsonToCsv", () => {
+  it.each(["", " \n\t "])("returns empty output for blank input %j", (input) => {
+    expect(convertJsonToCsv(input)).toEqual({ ok: true, output: "" });
+  });
+
   it("converts arrays of JSON objects with stable headers and escaped values", () => {
     expect(
       convertJsonToCsv(

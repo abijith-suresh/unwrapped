@@ -11,7 +11,7 @@ import ToolContainer from "@/components/tool/ToolContainer";
 import { formatYaml } from "@/lib/yamlFormatter";
 
 export default function YamlFormatterTool() {
-  const [input, setInput] = createSignal("root:\n  child: [3, 2, 1]");
+  const [input, setInput] = createSignal("");
   const [indent, setIndent] = createSignal(2);
   const [sortKeys, setSortKeys] = createSignal(false);
 
@@ -51,7 +51,7 @@ export default function YamlFormatterTool() {
           label="YAML input"
           value={input()}
           onInput={(value) => setInput(value)}
-          placeholder="Paste YAML to format…"
+          placeholder={"root:\n  child: [3, 2, 1]"}
           rows={14}
           spellcheck={false}
           name="yaml-input"

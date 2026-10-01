@@ -9,7 +9,7 @@ import ToolContainer from "@/components/tool/ToolContainer";
 import { convertJsonToCsv } from "@/lib/jsonToCsv";
 
 export default function JsonToCsvTool() {
-  const [input, setInput] = createSignal('[{"name":"Alice","active":true},{"name":"Bob"}]');
+  const [input, setInput] = createSignal("");
   const result = createMemo(() => convertJsonToCsv(input()));
   const output = createMemo(() => {
     const current = result();
@@ -26,7 +26,7 @@ export default function JsonToCsvTool() {
         label="JSON array input"
         value={input()}
         onInput={(value) => setInput(value)}
-        placeholder="Paste an array of JSON objects to convert…"
+        placeholder={'[{"name":"Alice","active":true},{"name":"Bob"}]'}
         rows={14}
         spellcheck={false}
         error={!!error()}

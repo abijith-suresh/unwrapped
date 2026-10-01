@@ -31,7 +31,7 @@ export default function UrlEncoderTool() {
             label="Plain text"
             value={plainText()}
             onInput={(v) => setPlainText(v)}
-            placeholder="Enter text to percent-encode…"
+            placeholder="Hello, world!"
             rows={7}
           />
 
@@ -51,7 +51,7 @@ export default function UrlEncoderTool() {
             autocomplete="off"
             value={encodedText()}
             onInput={(value) => setEncodedText(value)}
-            placeholder="Enter percent-encoded text to decode…"
+            placeholder="Hello%2C%20world%21"
             rows={7}
             spellcheck={false}
             resize="y"

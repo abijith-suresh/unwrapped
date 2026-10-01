@@ -32,7 +32,7 @@ export default function CaseConverter() {
         label="Source text"
         value={input()}
         onInput={setInput}
-        placeholder="Paste text, identifiers, or titles to fan out into multiple case styles…"
+        placeholder="hello_world"
         rows={6}
       />
 

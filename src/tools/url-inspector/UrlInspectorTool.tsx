@@ -20,9 +20,7 @@ const SECTION_LABELS = [
 ] as const;
 
 export default function UrlInspectorTool() {
-  const [input, setInput] = createSignal(
-    "https://user:pass@example.com:8443/path/name?foo=1&foo=2&bar=hello%20world#frag"
-  );
+  const [input, setInput] = createSignal("");
   const result = createMemo(() => inspectUrl(input()));
 
   const inspection = createMemo(() => {
@@ -30,6 +28,7 @@ export default function UrlInspectorTool() {
     return current.ok ? current.inspection : null;
   });
   const error = createMemo(() => {
+    if (!input().trim()) return "";
     const current = result();
     return current.ok ? "" : current.error;
   });
@@ -40,6 +39,7 @@ export default function UrlInspectorTool() {
         label="URL or raw query string"
         value={input()}
         onInput={(value) => setInput(value)}
+        placeholder="https://user:pass@example.com:8443/path/name?foo=1&foo=2&bar=hello%20world#frag"
         rows={5}
         spellcheck={false}
         error={!!error()}
@@ -117,7 +117,11 @@ export default function UrlInspectorTool() {
           </div>
 
           <Show when={(inspection()?.queryParams.length ?? 0) === 0}>
-            <ToolStatusMessage tone="muted">No query params found.</ToolStatusMessage>
+            <ToolStatusMessage tone="muted">
+              {inspection()
+                ? "No query params found."
+                : "Enter a URL or query string to inspect its parts."}
+            </ToolStatusMessage>
           </Show>
         </Card>
       </Show>

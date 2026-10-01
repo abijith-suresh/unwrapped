@@ -15,7 +15,7 @@ function formatPreview(date: Date, mode: CronTimeZoneMode): string {
 }
 
 export default function CronTool() {
-  const [input, setInput] = createSignal("30 9 * * 1");
+  const [input, setInput] = createSignal("");
   const [timeZone, setTimeZone] = createSignal<CronTimeZoneMode>("local");
 
   const summary = createMemo(() =>
@@ -34,6 +34,7 @@ export default function CronTool() {
     return current.ok ? current.nextRuns : [];
   });
   const error = createMemo(() => {
+    if (!input().trim()) return "";
     const current = summary();
     return current.ok ? "" : current.error.message;
   });
@@ -74,11 +75,22 @@ export default function CronTool() {
       </div>
 
       <Show
-        when={!error()}
+        when={input().trim() && !error()}
         fallback={
-          <ToolStatusMessage id="cron-expression-error" tone="error">
-            {error()}
-          </ToolStatusMessage>
+          <Show
+            when={error()}
+            fallback={
+              <ToolStatusMessage tone="muted">
+                Enter a cron expression to see its schedule and next runs.
+              </ToolStatusMessage>
+            }
+          >
+            {(message) => (
+              <ToolStatusMessage id="cron-expression-error" tone="error">
+                {message()}
+              </ToolStatusMessage>
+            )}
+          </Show>
         }
       >
         <Card class="flex flex-col gap-3">

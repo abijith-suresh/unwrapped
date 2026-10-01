@@ -278,11 +278,11 @@ export default function Base64Tool() {
             placeholder={
               mode() === "encode"
                 ? workflow() === "text"
-                  ? "Type or paste text to encode, or drop a file…"
+                  ? "Hello, world!"
                   : "Drop or open a file to encode it as Base64…"
-                : workflow() === "file"
-                  ? "Paste Base64 to inspect as bytes, or drop an encoded file…"
-                  : "Paste Base64 to decode as UTF-8 text, or drop a file…"
+                : variant() === "url"
+                  ? "SGVsbG8sIHdvcmxkIQ"
+                  : "SGVsbG8sIHdvcmxkIQ=="
             }
             rows={8}
             spellcheck={false}

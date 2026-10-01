@@ -114,10 +114,10 @@ export default function RegexTester() {
             type="text"
             value={pattern()}
             onInput={(e) => setPattern(e.currentTarget.value)}
-            placeholder="pattern"
+            placeholder="([A-Za-z]+)"
             spellcheck={false}
             autocomplete="off"
-            class="flex-1 py-2.5 bg-transparent border-none outline-none text-[var(--text-primary)] font-mono text-[0.9375rem]"
+            class="flex-1 py-2.5 bg-transparent border-none outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] font-mono text-[0.9375rem]"
           />
 
           <span class="text-[var(--text-muted)] font-mono text-lg select-none">/</span>
@@ -163,7 +163,7 @@ export default function RegexTester() {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => setDebouncedInput(v), 250);
           }}
-          placeholder="Enter text to test against the pattern…"
+          placeholder="Hello, world!"
           rows={6}
           spellcheck={false}
         />
@@ -176,7 +176,7 @@ export default function RegexTester() {
           autocomplete="off"
           value={replacement()}
           onInput={setReplacement}
-          placeholder="Replacement text…"
+          placeholder="[$1]"
         />
       </Show>
 

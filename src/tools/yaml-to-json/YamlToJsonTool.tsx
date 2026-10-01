@@ -13,7 +13,7 @@ import ToolWorkspace from "@/components/tool/ToolWorkspace";
 import { convertYamlToJson } from "@/lib/yamlToJson";
 
 export default function YamlToJsonTool() {
-  const [input, setInput] = createSignal("name: demo\nenabled: true");
+  const [input, setInput] = createSignal("");
   const result = createMemo(() => convertYamlToJson(input()));
   const output = createMemo(() => {
     const current = result();
@@ -51,7 +51,7 @@ export default function YamlToJsonTool() {
                   labelClass="sr-only"
                   value={input()}
                   onInput={(value) => setInput(value)}
-                  placeholder="Paste YAML to convert…"
+                  placeholder={"name: demo\nenabled: true"}
                   rows={12}
                   spellcheck={false}
                   autocomplete="off"

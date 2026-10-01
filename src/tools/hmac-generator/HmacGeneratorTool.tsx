@@ -40,8 +40,20 @@ export default function HmacGeneratorTool() {
   return (
     <ToolContainer width="standard">
       <div class="grid gap-4 grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))]">
-        <Textarea label="Message" value={message()} onInput={(v) => setMessage(v)} rows={6} />
-        <Textarea label="Secret" value={secret()} onInput={(v) => setSecret(v)} rows={6} />
+        <Textarea
+          label="Message"
+          value={message()}
+          onInput={(v) => setMessage(v)}
+          placeholder="Hello, world!"
+          rows={6}
+        />
+        <Textarea
+          label="Secret"
+          value={secret()}
+          onInput={(v) => setSecret(v)}
+          placeholder="your-secret-key"
+          rows={6}
+        />
       </div>
 
       <div class="flex gap-3 flex-wrap items-center">

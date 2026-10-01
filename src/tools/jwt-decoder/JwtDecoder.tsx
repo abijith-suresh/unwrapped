@@ -79,7 +79,7 @@ export default function JwtDecoder() {
           autocomplete="off"
           value={input()}
           onInput={setInput}
-          placeholder="Paste a JWT token here..."
+          placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjMiLCJuYW1lIjoiQWxpY2UifQ.ZGVtby1zaWduYXR1cmU"
           rows={5}
           spellcheck={false}
         />
