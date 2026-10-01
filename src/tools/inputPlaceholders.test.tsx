@@ -5,12 +5,22 @@ import CronTool from "@/tools/cron/CronTool";
 import CssMinifierTool from "@/tools/css-minifier/Tool";
 import JsonToCsvTool from "@/tools/json-to-csv/JsonToCsvTool";
 import JsonToYamlTool from "@/tools/json-to-yaml/JsonToYamlTool";
+import TomlFormatterTool from "@/tools/toml-formatter/Tool";
 import UrlInspectorTool from "@/tools/url-inspector/UrlInspectorTool";
 import XmlFormatterTool from "@/tools/xml-formatter/XmlFormatterTool";
 import YamlFormatterTool from "@/tools/yaml-formatter/YamlFormatterTool";
 import YamlToJsonTool from "@/tools/yaml-to-json/YamlToJsonTool";
 
 const tools = [
+  {
+    name: "TOML formatter",
+    Tool: TomlFormatterTool,
+    label: "Source",
+    input: 'name = "User"',
+    invalid: "date = 2024-02-30",
+    exampleOutput: "8080",
+    userOutput: "User",
+  },
   {
     name: "CSS minifier",
     Tool: CssMinifierTool,

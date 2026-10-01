@@ -258,6 +258,17 @@ export const tools: Tool[] = [
     accent: "amber",
   },
   {
+    id: "toml-formatter",
+    name: "TOML Formatter",
+    description: "Parse and format TOML tables, arrays, and configuration values locally.",
+    category: "data",
+    keywords: ["toml", "formatter"],
+    icon: "AlignLeft",
+    slug: "toml-formatter",
+    componentPath: "/src/tools/toml-formatter/Tool.tsx",
+    accent: "teal",
+  },
+  {
     id: "yaml-formatter",
     name: "YAML Formatter",
     description: "Format YAML locally with indent controls and optional key sorting.",
