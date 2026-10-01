@@ -44,16 +44,18 @@ export default function HmacGeneratorTool() {
         <Textarea label="Secret" value={secret()} onInput={(v) => setSecret(v)} rows={6} />
       </div>
 
-      <div class="flex gap-3 flex-wrap items-center">
+      <div class="flex gap-3 flex-wrap items-end">
         <Select
           label="Algorithm"
           value={algorithm()}
           onChange={(v) => setAlgorithm(v as HmacAlgorithm)}
           options={HMAC_ALGORITHMS.map((a) => ({ value: a.id, label: a.label }))}
+          controlClass="h-11"
         />
         <ToolActionButton
           onClick={() => void handleGenerate()}
           variant="primary"
+          class="h-11"
           disabled={pending()}
         >
           {pending() ? "Generating…" : "Generate HMAC"}

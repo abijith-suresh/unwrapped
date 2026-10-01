@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.0.5](https://github.com/abijith-suresh/unwrapped/compare/0.0.4...0.0.5) (2026-10-01)
+
+
+### Features
+
+* add cron schedule builder ([#252](https://github.com/abijith-suresh/unwrapped/issues/252)) ([6ad46e7](https://github.com/abijith-suresh/unwrapped/commit/6ad46e7831e183dfc496df5eb9dc096a09e16d71))
+* add CSS minifier ([#256](https://github.com/abijith-suresh/unwrapped/issues/256)) ([0767c3f](https://github.com/abijith-suresh/unwrapped/commit/0767c3fb9bec5fb8d0f321688e8050b17de1ea51))
+* add DNS and HTTP headers reference ([#259](https://github.com/abijith-suresh/unwrapped/issues/259)) ([ea5d020](https://github.com/abijith-suresh/unwrapped/commit/ea5d0204501c90ab50174078a92aae3efa1271d9))
+* add HTML entities encoder and decoder ([#253](https://github.com/abijith-suresh/unwrapped/issues/253)) ([850ccbf](https://github.com/abijith-suresh/unwrapped/commit/850ccbf3deb41c13029d2762626b9b1a06276e41))
+* add JSON Schema validator ([#255](https://github.com/abijith-suresh/unwrapped/issues/255)) ([f65d879](https://github.com/abijith-suresh/unwrapped/commit/f65d8796e18729f9f82f26f91fcf1926d505a243))
+* add password strength meter ([#258](https://github.com/abijith-suresh/unwrapped/issues/258)) ([b70ecc0](https://github.com/abijith-suresh/unwrapped/commit/b70ecc026d1302e0200f11544f73fc08bf7773ec))
+* add query string editor ([#251](https://github.com/abijith-suresh/unwrapped/issues/251)) ([7a2b835](https://github.com/abijith-suresh/unwrapped/commit/7a2b835e3d56f97d4b18d307518f501351a7a14f))
+
+
+### Bug Fixes
+
+* align HMAC controls and sync algorithm selection ([#260](https://github.com/abijith-suresh/unwrapped/issues/260)) ([3af1e51](https://github.com/abijith-suresh/unwrapped/commit/3af1e51bbd2bb900e618281ec3f4b3d28be697cf))
+
 ## [0.0.4](https://github.com/abijith-suresh/unwrapped/compare/0.0.3...0.0.4) (2026-09-30)
 
 
