@@ -32,6 +32,9 @@ describe("Markdown table converter", () => {
     expect(convertTable("a,b\n1,2,3", "csv").ok).toBe(false);
     expect(convertTable('a,b\n"oops', "csv").ok).toBe(false);
     expect(convertTable("# Hello", "markdown").ok).toBe(false);
+    expect(convertTable("| a |\n| --- |\n| 1 |\n\n| b |\n| --- |\n| 2 |", "markdown").ok).toBe(
+      false
+    );
     expect(convertTable("a,b\n x,2", "csv").ok).toBe(false);
     expect(convertTable("", "csv")).toEqual({ ok: true, output: "" });
   });

@@ -18,7 +18,11 @@ export function convertTable(input: string, mode: TableMode): TextTransformResul
   try {
     if (mode === "markdown") {
       const tokens = new MarkdownIt({ html: false }).parse(input, {});
-      if (tokens[0]?.type !== "table_open" || tokens.at(-1)?.type !== "table_close")
+      if (
+        tokens[0]?.type !== "table_open" ||
+        tokens.at(-1)?.type !== "table_close" ||
+        tokens.filter((token) => token.type === "table_open").length !== 1
+      )
         return { ok: false, error: "Input must contain exactly one Markdown table." };
       const rows: string[][] = [];
       for (let index = 0; index < tokens.length; index++) {
