@@ -22,3 +22,6 @@ export const EXAMPLE_SCHEMA_DOCUMENT = '{"name":"Ada"}';
 export const EXAMPLE_JSON_SCHEMA =
   '{"type":"object","properties":{"name":{"type":"string"}},"required":["name"],"additionalProperties":false}';
 export const EXAMPLE_QUERY = "https://example.com/search?q=hello+world&tag=one&tag=two#results";
+export const EXAMPLE_CSS =
+  "/* Example */\n.card {\n  color: #ffffff;\n  margin: 0px 0px 0px 0px;\n}\n";
+export const EXAMPLE_PASSWORD = "example-only-password";

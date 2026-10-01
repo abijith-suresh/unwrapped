@@ -2,6 +2,7 @@ import { fireEvent, render } from "@solidjs/testing-library";
 import { describe, expect, it } from "vitest";
 
 import CronTool from "@/tools/cron/CronTool";
+import CssMinifierTool from "@/tools/css-minifier/Tool";
 import JsonToCsvTool from "@/tools/json-to-csv/JsonToCsvTool";
 import JsonToYamlTool from "@/tools/json-to-yaml/JsonToYamlTool";
 import UrlInspectorTool from "@/tools/url-inspector/UrlInspectorTool";
@@ -10,6 +11,15 @@ import YamlFormatterTool from "@/tools/yaml-formatter/YamlFormatterTool";
 import YamlToJsonTool from "@/tools/yaml-to-json/YamlToJsonTool";
 
 const tools = [
+  {
+    name: "CSS minifier",
+    Tool: CssMinifierTool,
+    label: "Source",
+    input: ".user { color: red; }",
+    invalid: ".user { color: red; } }",
+    exampleOutput: ".card",
+    userOutput: ".user",
+  },
   {
     name: "Cron",
     Tool: CronTool,

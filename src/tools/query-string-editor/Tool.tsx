@@ -1,6 +1,7 @@
 import { createMemo, createSignal, For, Index, Show } from "solid-js";
 import CopyButton from "@/components/CopyButton";
 import Input from "@/components/primitives/solid/Input";
+import Label from "@/components/primitives/solid/Label";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolCodeBlock from "@/components/tool/ToolCodeBlock";
@@ -97,10 +98,16 @@ export default function Tool() {
             }
           >
             <For each={exampleDocument.entries}>
-              {(entry) => (
+              {(entry, index) => (
                 <div class="grid gap-2 sm:grid-cols-2">
-                  <ToolCodeBlock class="!min-h-0">{entry.key}</ToolCodeBlock>
-                  <ToolCodeBlock class="!min-h-0">{entry.value}</ToolCodeBlock>
+                  <div class="flex flex-col gap-1.5">
+                    <Label>Key {index() + 1}</Label>
+                    <ToolCodeBlock class="!min-h-0">{entry.key}</ToolCodeBlock>
+                  </div>
+                  <div class="flex flex-col gap-1.5">
+                    <Label>Value {index() + 1}</Label>
+                    <ToolCodeBlock class="!min-h-0">{entry.value}</ToolCodeBlock>
+                  </div>
                 </div>
               )}
             </For>

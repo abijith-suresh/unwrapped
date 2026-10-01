@@ -4,9 +4,34 @@ import { EXAMPLE_JSON_SCHEMA, EXAMPLE_SCHEMA_DOCUMENT } from "@/lib/exampleData"
 import CronTool from "@/tools/cron/CronTool";
 import HtmlEntitiesTool from "@/tools/html-entities/Tool";
 import JsonSchemaTool from "@/tools/json-schema-validator/Tool";
+import PasswordStrengthTool from "@/tools/password-strength/Tool";
 import QueryStringTool from "@/tools/query-string-editor/Tool";
 
 describe("Examples in added tools", () => {
+  it("shows a password estimate without prefilling or evaluating any partial user input", () => {
+    const view = render(() => <PasswordStrengthTool />);
+    const input = view.getByLabelText("Password to evaluate");
+    const evaluate = view.getByRole("button", { name: "Evaluate strength" });
+    expect(input).toHaveValue("");
+    expect(input.getAttribute("placeholder")).toBeTruthy();
+    expect(evaluate).toBeDisabled();
+    expect(view.getByRole("note", { name: "Example output" })).toBeInTheDocument();
+    expect(view.getByRole("meter")).toBeInTheDocument();
+    fireEvent.input(input, { target: { value: "password" } });
+    expect(view.queryByRole("note", { name: "Example output" })).toBeNull();
+    expect(view.queryByRole("meter")).toBeNull();
+    fireEvent.click(evaluate);
+    expect(view.getByRole("meter")).toHaveAttribute("value", "0");
+    fireEvent.input(input, { target: { value: "a".repeat(257) } });
+    fireEvent.click(evaluate);
+    expect(view.getByRole("alert")).toHaveTextContent("Use at most 256 characters");
+    expect(view.queryByRole("meter")).toBeNull();
+    expect(view.queryByRole("note", { name: "Example output" })).toBeNull();
+    fireEvent.click(view.getByRole("button", { name: "Clear" }));
+    expect(input).toHaveValue("");
+    expect(view.getByRole("note", { name: "Example output" })).toBeInTheDocument();
+    expect(view.getByRole("meter")).toBeInTheDocument();
+  });
   it("uses a matching HTML example in both modes without inserting source markup", () => {
     const view = render(() => <HtmlEntitiesTool />);
     const source = view.getByLabelText("Source");
