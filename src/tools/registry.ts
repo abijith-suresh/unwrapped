@@ -148,6 +148,17 @@ export const tools: Tool[] = [
     accent: "teal",
   },
   {
+    id: "password-strength",
+    name: "Password Strength Meter",
+    description: "Estimate password guessability using bundled dictionaries and pattern matching.",
+    category: "security",
+    keywords: ["password", "strength"],
+    icon: "ShieldCheck",
+    slug: "password-strength",
+    componentPath: "/src/tools/password-strength/Tool.tsx",
+    accent: "rose",
+  },
+  {
     id: "token-generator",
     name: "Token Generator",
     description: "Generate configurable random tokens with browser-local cryptography.",
