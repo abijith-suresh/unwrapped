@@ -1,10 +1,10 @@
 import { fireEvent, render } from "@solidjs/testing-library";
 import { describe, expect, it } from "vitest";
-
 import CronTool from "@/tools/cron/CronTool";
 import CssMinifierTool from "@/tools/css-minifier/Tool";
 import JsonToCsvTool from "@/tools/json-to-csv/JsonToCsvTool";
 import JsonToYamlTool from "@/tools/json-to-yaml/JsonToYamlTool";
+import MarkdownTableTool from "@/tools/markdown-table/Tool";
 import TomlFormatterTool from "@/tools/toml-formatter/Tool";
 import UrlInspectorTool from "@/tools/url-inspector/UrlInspectorTool";
 import XmlFormatterTool from "@/tools/xml-formatter/XmlFormatterTool";
@@ -20,6 +20,15 @@ const tools = [
     invalid: "date = 2024-02-30",
     exampleOutput: "8080",
     userOutput: "User",
+  },
+  {
+    name: "Markdown table converter",
+    Tool: MarkdownTableTool,
+    label: "Source",
+    input: "Name,Role\nUser,Reviewer",
+    invalid: "a,b\n1,2,3",
+    exampleOutput: "Scientist",
+    userOutput: "Reviewer",
   },
   {
     name: "CSS minifier",

@@ -26,3 +26,5 @@ export const EXAMPLE_CSS =
   "/* Example */\n.card {\n  color: #ffffff;\n  margin: 0px 0px 0px 0px;\n}\n";
 export const EXAMPLE_PASSWORD = "example-only-password";
 export const EXAMPLE_TOML = 'title = "Example"\n[server]\nport=8080\nenabled=true';
+
+export const EXAMPLE_CSV = "Name,Role\nAda,Engineer\nGrace,Scientist";
