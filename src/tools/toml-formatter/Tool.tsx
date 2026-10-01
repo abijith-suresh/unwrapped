@@ -5,18 +5,21 @@ import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolCodeBlock from "@/components/tool/ToolCodeBlock";
 import ToolCodeEditor from "@/components/tool/ToolCodeEditor";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolPanel, {
   TOOL_EDITOR_BODY_CLASSES,
   TOOL_EDITOR_PANEL_CLASSES,
 } from "@/components/tool/ToolPanel";
 import ToolToolbar from "@/components/tool/ToolToolbar";
 import ToolWorkspace from "@/components/tool/ToolWorkspace";
+import { EXAMPLE_TOML } from "@/lib/exampleData";
 import { formatToml } from "@/lib/tomlFormatter";
 
 export default function Tool() {
-  const [input, setInput] = createSignal('title = "Example"\n[server]\nport=8080\nenabled=true');
+  const [input, setInput] = createSignal("");
+  const isExample = () => input() === "";
 
-  const result = createMemo(() => formatToml(input()));
+  const result = createMemo(() => formatToml(input() || EXAMPLE_TOML));
   const output = () => {
     const current = result();
     return current.ok ? current.output : "";
@@ -30,6 +33,7 @@ export default function Tool() {
       <ToolToolbar label="Options">
         <ToolActionButton onClick={() => setInput("")}>Clear input</ToolActionButton>
       </ToolToolbar>
+      <ToolExampleNotice when={isExample()} />
       <ToolWorkspace
         views={[
           {
@@ -44,6 +48,7 @@ export default function Tool() {
                 <ToolCodeEditor
                   label="Source"
                   value={input()}
+                  placeholder={EXAMPLE_TOML}
                   onInput={setInput}
                   spellcheck={false}
                   autocomplete="off"
@@ -61,7 +66,11 @@ export default function Tool() {
                 title="Output"
                 class={TOOL_EDITOR_PANEL_CLASSES}
                 bodyClass={TOOL_EDITOR_BODY_CLASSES}
-                actions={<CopyButton text={output()} label="Copy output" />}
+                actions={
+                  <Show when={!isExample()}>
+                    <CopyButton text={output()} label="Copy output" />
+                  </Show>
+                }
               >
                 <Show
                   when={!error()}
@@ -79,8 +88,9 @@ export default function Tool() {
         ]}
       />
       <ToolStatusMessage tone="muted">
-        Formats TOML by parsing and serializing it. Comments and original whitespace are removed;
-        values are preserved.
+        Formats TOML 1.0. Numeric literals and timestamp precision are preserved. Comments and
+        original whitespace are removed. Leap-second timestamps are rejected. Input limit: 100,000
+        characters.
       </ToolStatusMessage>
     </ToolContainer>
   );
