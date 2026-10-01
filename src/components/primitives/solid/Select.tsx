@@ -67,7 +67,9 @@ export default function Select(props: SelectProps) {
         )}
       >
         {local.options?.map((opt) => (
-          <option value={opt.value}>{opt.label}</option>
+          <option value={opt.value} selected={opt.value === local.value}>
+            {opt.label}
+          </option>
         ))}
       </select>
     </div>
