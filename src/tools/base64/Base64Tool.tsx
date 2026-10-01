@@ -8,6 +8,7 @@ import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolDropZone from "@/components/tool/ToolDropZone";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolFilePicker from "@/components/tool/ToolFilePicker";
 import {
   type Base64Mode,
@@ -17,6 +18,7 @@ import {
   formatBase64FileNotice,
   processBase64Input,
 } from "@/lib/base64";
+import { EXAMPLE_TEXT } from "@/lib/exampleData";
 import {
   DEFAULT_IMPORT_MAX_BYTES,
   type FileImportError,
@@ -40,7 +42,15 @@ export default function Base64Tool() {
   const [loadedFileBytes, setLoadedFileBytes] = createSignal<Uint8Array | null>(null);
   const [fileNotice, setFileNotice] = createSignal<string | null>(null);
 
-  const textInput = createMemo(() => (mode() === "encode" && workflow() === "file" ? "" : input()));
+  const isExample = () => workflow() === "text" && input() === "" && !loadedFile() && !fileError();
+  const exampleInput = createMemo(() =>
+    mode() === "encode"
+      ? EXAMPLE_TEXT
+      : encodeBytesToBase64(new TextEncoder().encode(EXAMPLE_TEXT), variant())
+  );
+  const textInput = createMemo(() =>
+    isExample() ? exampleInput() : mode() === "encode" && workflow() === "file" ? "" : input()
+  );
   const result = createMemo(() => {
     if (mode() === "encode" && workflow() === "file" && loadedFileBytes()) {
       return {
@@ -76,6 +86,7 @@ export default function Base64Tool() {
   });
 
   function swap() {
+    if (isExample()) return;
     const current = outputValue();
     setFileError(null);
     setFileNotice(null);
@@ -241,7 +252,7 @@ export default function Base64Tool() {
         </div>
 
         <div class="flex gap-2 items-center ml-auto">
-          <ToolActionButton onClick={swap} title="Swap input/output">
+          <ToolActionButton onClick={swap} title="Swap input/output" disabled={isExample()}>
             ⇅ Swap
           </ToolActionButton>
           <ToolActionButton onClick={reset} variant="ghost">
@@ -278,11 +289,9 @@ export default function Base64Tool() {
             placeholder={
               mode() === "encode"
                 ? workflow() === "text"
-                  ? "Type or paste text to encode, or drop a file…"
+                  ? exampleInput()
                   : "Drop or open a file to encode it as Base64…"
-                : workflow() === "file"
-                  ? "Paste Base64 to inspect as bytes, or drop an encoded file…"
-                  : "Paste Base64 to decode as UTF-8 text, or drop a file…"
+                : exampleInput()
             }
             rows={8}
             spellcheck={false}
@@ -320,6 +329,7 @@ export default function Base64Tool() {
       {/* ------------------------------------------------------------------ */}
       {/* Output                                                              */}
       {/* ------------------------------------------------------------------ */}
+      <ToolExampleNotice when={isExample()} />
       <Show when={outputValue()}>
         {(value) => (
           <Card class="overflow-hidden p-0">
@@ -334,8 +344,10 @@ export default function Base64Tool() {
                     ? "Decoded bytes · binary output"
                     : "Decoded text"}
               </Label>
-              <Show when={binaryOutput()} fallback={<CopyButton text={value()} />}>
-                <ToolActionButton onClick={downloadDecodedBytes}>Download file</ToolActionButton>
+              <Show when={!isExample()}>
+                <Show when={binaryOutput()} fallback={<CopyButton text={value()} />}>
+                  <ToolActionButton onClick={downloadDecodedBytes}>Download file</ToolActionButton>
+                </Show>
               </Show>
             </div>
 

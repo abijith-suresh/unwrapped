@@ -6,6 +6,8 @@ import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import { EXAMPLE_URL } from "@/lib/exampleData";
 import { inspectUrl } from "@/lib/urlInspector";
 
 const SECTION_LABELS = [
@@ -20,16 +22,16 @@ const SECTION_LABELS = [
 ] as const;
 
 export default function UrlInspectorTool() {
-  const [input, setInput] = createSignal(
-    "https://user:pass@example.com:8443/path/name?foo=1&foo=2&bar=hello%20world#frag"
-  );
-  const result = createMemo(() => inspectUrl(input()));
+  const [input, setInput] = createSignal("");
+  const isExample = () => input() === "";
+  const result = createMemo(() => inspectUrl(input() || EXAMPLE_URL));
 
   const inspection = createMemo(() => {
     const current = result();
     return current.ok ? current.inspection : null;
   });
   const error = createMemo(() => {
+    if (!input().trim()) return "";
     const current = result();
     return current.ok ? "" : current.error;
   });
@@ -40,10 +42,13 @@ export default function UrlInspectorTool() {
         label="URL or raw query string"
         value={input()}
         onInput={(value) => setInput(value)}
+        placeholder={EXAMPLE_URL}
         rows={5}
         spellcheck={false}
         error={!!error()}
       />
+
+      <ToolExampleNotice when={isExample()} />
 
       <Show
         when={!error()}
@@ -62,7 +67,9 @@ export default function UrlInspectorTool() {
                 <Card class="flex flex-col gap-2">
                   <div class="flex justify-between gap-3">
                     <Label>{label}</Label>
-                    <CopyButton text={value()} label={`Copy ${label}`} />
+                    <Show when={!isExample()}>
+                      <CopyButton text={value()} label={`Copy ${label}`} />
+                    </Show>
                   </div>
                   <code class="text-[var(--text-primary)] text-sm leading-relaxed break-all">
                     {value() || "—"}
@@ -117,7 +124,11 @@ export default function UrlInspectorTool() {
           </div>
 
           <Show when={(inspection()?.queryParams.length ?? 0) === 0}>
-            <ToolStatusMessage tone="muted">No query params found.</ToolStatusMessage>
+            <ToolStatusMessage tone="muted">
+              {inspection()
+                ? "No query params found."
+                : "Enter a URL or query string to inspect its parts."}
+            </ToolStatusMessage>
           </Show>
         </Card>
       </Show>

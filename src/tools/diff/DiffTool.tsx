@@ -14,9 +14,11 @@ import Select from "@/components/primitives/solid/Select";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolDropZone from "@/components/tool/ToolDropZone";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolFilePicker from "@/components/tool/ToolFilePicker";
 import type { DiffAnalysisResult } from "@/lib/diffAnalysis";
 import { createDiffAnalysisExecutor } from "@/lib/diffExecution";
+import { EXAMPLE_DIFF_MODIFIED, EXAMPLE_DIFF_ORIGINAL } from "@/lib/exampleData";
 import {
   DEFAULT_IMPORT_MAX_BYTES,
   formatBytes,
@@ -140,10 +142,10 @@ function InputPanel(props: InputPanelProps) {
           name={`diff-${props.label.toLowerCase()}-text`}
           value={props.content}
           onInput={(e) => props.onContentChange(e.currentTarget.value)}
-          placeholder={`Paste ${props.label.toLowerCase()} text here, or drop a file...`}
+          placeholder={props.label === "Original" ? EXAMPLE_DIFF_ORIGINAL : EXAMPLE_DIFF_MODIFIED}
           spellcheck={false}
           autocomplete="off"
-          class="flex-1 w-full p-3 bg-transparent text-[var(--text-primary)] font-mono text-sm leading-[1.6] resize-y min-h-[280px] outline-none tab-size-2"
+          class="flex-1 w-full p-3 bg-transparent text-[var(--text-primary)] placeholder:text-[var(--text-muted)] font-mono text-sm leading-[1.6] resize-y min-h-[280px] outline-none tab-size-2"
         />
       </Card>
     </ToolDropZone>
@@ -182,6 +184,13 @@ export default function DiffTool() {
   } | null>(null);
   let latestAnalysisRun = 0;
   const fileLoadRuns: Record<DiffSide, number> = { left: 0, right: 0 };
+  const isExample = () =>
+    leftContent() === "" &&
+    rightContent() === "" &&
+    !leftFile() &&
+    !rightFile() &&
+    !fileError().left &&
+    !fileError().right;
 
   // --- Debounced diff trigger -----------------------------------------------
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -226,10 +235,14 @@ export default function DiffTool() {
 
   createEffect(() => {
     // Access reactive dependencies
-    const left = leftContent();
-    const right = rightContent();
-    const ll = leftLang();
-    const rl = rightLang();
+    const example = isExample();
+    const left = example ? EXAMPLE_DIFF_ORIGINAL : leftContent();
+    const right = example ? EXAMPLE_DIFF_MODIFIED : rightContent();
+    const ll = example ? "text" : leftLang();
+    const rl = example ? "text" : rightLang();
+
+    latestAnalysisRun++;
+    setAnalysis(null);
 
     if (debounceTimer !== null) clearTimeout(debounceTimer);
 
@@ -245,6 +258,10 @@ export default function DiffTool() {
     setPending(true);
     setAnalysisError(null);
     setChangeAnnouncement("");
+    if (example) {
+      setDiffData({ original: left, modified: right, leftLang: ll, rightLang: rl });
+      return;
+    }
     debounceTimer = setTimeout(() => {
       batch(() => {
         setDiffData({ original: left, modified: right, leftLang: ll, rightLang: rl });
@@ -474,11 +491,7 @@ export default function DiffTool() {
       {/* -------------------------------------------------------------------- */}
       {/* Empty state                                                          */}
       {/* -------------------------------------------------------------------- */}
-      <Show when={isEmpty()}>
-        <div class="text-center text-[var(--text-muted)] text-sm py-8 px-4">
-          Paste two texts to compare, or open files with the buttons above.
-        </div>
-      </Show>
+      <ToolExampleNotice when={isExample()} />
 
       <For each={DIFF_SIDES}>
         {(side) => (
@@ -503,7 +516,7 @@ export default function DiffTool() {
       {/* -------------------------------------------------------------------- */}
       {/* Toolbar (only when there's data or pending)                          */}
       {/* -------------------------------------------------------------------- */}
-      <Show when={!isEmpty()}>
+      <Show when={!isEmpty() || isExample()}>
         <div class="flex flex-wrap items-center gap-2 px-3.5 py-2.5 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg">
           {/* Strategy badge */}
           <span class="text-xs font-semibold tracking-widest uppercase text-[var(--accent-primary)] bg-[color-mix(in_srgb,var(--accent-primary)_12%,transparent)] border border-[color-mix(in_srgb,var(--accent-primary)_30%,transparent)] rounded px-2 py-0.5">

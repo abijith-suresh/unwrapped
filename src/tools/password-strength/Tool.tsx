@@ -1,9 +1,11 @@
-import { createSignal, For, Show } from "solid-js";
+import { createMemo, createSignal, For, Show } from "solid-js";
 import Input from "@/components/primitives/solid/Input";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolPanel from "@/components/tool/ToolPanel";
+import { EXAMPLE_PASSWORD } from "@/lib/exampleData";
 import { estimatePassword, type PasswordEstimate } from "@/lib/passwordStrength";
 
 const labels = ["Very weak", "Weak", "Fair", "Strong", "Very strong"];
@@ -12,6 +14,10 @@ export default function Tool() {
   const [visible, setVisible] = createSignal(false);
   const [result, setResult] = createSignal<PasswordEstimate | null>(null);
   const [error, setError] = createSignal("");
+  const isExample = () => password() === "";
+  const displayedResult = createMemo(() =>
+    isExample() ? estimatePassword(EXAMPLE_PASSWORD) : result()
+  );
   function evaluate() {
     try {
       setResult(estimatePassword(password()));
@@ -31,6 +37,7 @@ export default function Tool() {
           label="Password to evaluate"
           type={visible() ? "text" : "password"}
           value={password()}
+          placeholder={EXAMPLE_PASSWORD}
           autocomplete="off"
           spellcheck={false}
           autocapitalize="off"
@@ -66,7 +73,8 @@ export default function Tool() {
           {error()}
         </ToolStatusMessage>
       </Show>
-      <Show when={result()}>
+      <ToolExampleNotice when={isExample()} />
+      <Show when={displayedResult()}>
         {(estimate) => (
           <ToolPanel title="Strength estimate">
             <div class="flex flex-col gap-3" aria-live="polite">

@@ -32,6 +32,10 @@ function serializeCsvValue(value: JsonValue | undefined): string {
 }
 
 export function convertJsonToCsv(input: string): JsonToCsvResult {
+  if (input.trim().length === 0) {
+    return { ok: true, output: "" };
+  }
+
   try {
     const parsed = JSON.parse(input) as unknown;
 

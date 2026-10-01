@@ -7,12 +7,15 @@ import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import { EXAMPLE_XML } from "@/lib/exampleData";
 import { formatXml } from "@/lib/xmlFormatter";
 
 export default function XmlFormatterTool() {
-  const [input, setInput] = createSignal('<root><item id="1">value</item></root>');
+  const [input, setInput] = createSignal("");
+  const isExample = () => input() === "";
   const [indent, setIndent] = createSignal(2);
-  const result = createMemo(() => formatXml(input(), { indent: indent() }));
+  const result = createMemo(() => formatXml(input() || EXAMPLE_XML, { indent: indent() }));
   const output = createMemo(() => {
     const current = result();
     return current.ok ? current.output : "";
@@ -43,7 +46,7 @@ export default function XmlFormatterTool() {
           label="XML input"
           value={input()}
           onInput={(value) => setInput(value)}
-          placeholder="Paste XML to format…"
+          placeholder={EXAMPLE_XML}
           rows={14}
           spellcheck={false}
           name="xml-input"
@@ -53,10 +56,14 @@ export default function XmlFormatterTool() {
         />
       </div>
 
+      <ToolExampleNotice when={isExample()} />
+
       <Card class="flex flex-col gap-3">
         <div class="flex items-center justify-between">
           <Label>Formatted XML</Label>
-          <CopyButton text={output()} label="Copy XML" />
+          <Show when={!isExample()}>
+            <CopyButton text={output()} label="Copy XML" />
+          </Show>
         </div>
 
         <Show
