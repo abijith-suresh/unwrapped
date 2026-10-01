@@ -82,6 +82,17 @@ export const tools: Tool[] = [
     accent: "cyan",
   },
   {
+    id: "json-schema-validator",
+    name: "JSON Schema Validator",
+    description: "Validate JSON against draft-07 schemas and inspect errors by document path.",
+    category: "data",
+    keywords: ["json", "schema", "validator"],
+    icon: "Braces",
+    slug: "json-schema-validator",
+    componentPath: "/src/tools/json-schema-validator/Tool.tsx",
+    accent: "amber",
+  },
+  {
     id: "json-formatter",
     name: "JSON Formatter",
     description: "Format and minify JSON with syntax highlighting.",
