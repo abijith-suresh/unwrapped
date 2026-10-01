@@ -5,6 +5,7 @@ import ToolActionButton from "@/components/ToolActionButton";
 import ToolCodeBlock from "@/components/tool/ToolCodeBlock";
 import ToolCodeEditor from "@/components/tool/ToolCodeEditor";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolPanel, {
   TOOL_EDITOR_BODY_CLASSES,
   TOOL_EDITOR_PANEL_CLASSES,
@@ -13,18 +14,20 @@ import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
 import ToolToast from "@/components/tool/ToolToast";
 import ToolToolbar from "@/components/tool/ToolToolbar";
 import ToolWorkspace from "@/components/tool/ToolWorkspace";
+import { EXAMPLE_JSON } from "@/lib/exampleData";
 import { formatJson, type IndentSize, type JsonFormatResult } from "@/lib/jsonFormatter";
 
 type OutputFormat = "two-spaces" | "four-spaces" | "minified";
 
 export default function JsonFormatter() {
   const [input, setInput] = createSignal("");
+  const isExample = () => input() === "";
   const [outputFormat, setOutputFormat] = createSignal<OutputFormat>("two-spaces");
   const [sortKeys, setSortKeys] = createSignal(false);
   const indent = createMemo<IndentSize>(() => (outputFormat() === "four-spaces" ? 4 : 2));
   const minify = createMemo(() => outputFormat() === "minified");
   const result = createMemo(
-    (): JsonFormatResult => formatJson(input(), indent(), minify(), sortKeys())
+    (): JsonFormatResult => formatJson(input() || EXAMPLE_JSON, indent(), minify(), sortKeys())
   );
   const errorHint = createMemo(() => {
     const current = result();
@@ -103,6 +106,8 @@ export default function JsonFormatter() {
         </p>
       </Show>
 
+      <ToolExampleNotice when={isExample()} />
+
       <ToolWorkspace
         switcherLabel="JSON formatter views"
         views={[
@@ -123,7 +128,7 @@ export default function JsonFormatter() {
                   diagnostic={diagnostic()}
                   value={input()}
                   onInput={(value) => setInput(value)}
-                  placeholder={'{\n  "name": "Alice",\n  "active": true\n}'}
+                  placeholder={EXAMPLE_JSON}
                   rows={12}
                   spellcheck={false}
                   autocomplete="off"
@@ -142,7 +147,7 @@ export default function JsonFormatter() {
                 class={TOOL_EDITOR_PANEL_CLASSES}
                 bodyClass={TOOL_EDITOR_BODY_CLASSES}
                 actions={
-                  <Show when={result().raw}>
+                  <Show when={!isExample() && result().raw}>
                     <CopyButton text={result().raw} label="Copy JSON" />
                   </Show>
                 }

@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, Show } from "solid-js";
+import { createMemo, createResource, createSignal, For, onCleanup, Show } from "solid-js";
 
 import CopyButton from "@/components/CopyButton";
 import Card from "@/components/primitives/solid/Card";
@@ -7,7 +7,9 @@ import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolDropZone from "@/components/tool/ToolDropZone";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolFilePicker from "@/components/tool/ToolFilePicker";
+import { EXAMPLE_TEXT } from "@/lib/exampleData";
 import {
   DEFAULT_IMPORT_MAX_BYTES,
   type FileImportError,
@@ -33,6 +35,20 @@ export default function HashGenerator() {
   const [fileNotice, setFileNotice] = createSignal<string | null>(null);
 
   let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+  let latestCompute = 0;
+  let latestFileLoad = 0;
+  const isExample = () => workflow() === "text" && input() === "" && !loadedFile() && !fileError();
+  const [example] = createResource(isExample, () =>
+    hashTextWithAlgorithms(EXAMPLE_TEXT).catch(() => [])
+  );
+  const displayedResults = createMemo(() => (isExample() ? (example() ?? []) : results()));
+
+  function invalidateResults() {
+    latestCompute++;
+    latestFileLoad++;
+    setResults([]);
+    setComputing(false);
+  }
 
   const fileSummary = createMemo(() => {
     const file = loadedFile();
@@ -48,6 +64,7 @@ export default function HashGenerator() {
   });
 
   async function computeText(text: string) {
+    const run = ++latestCompute;
     if (!text.trim()) {
       setResults([]);
       setComputing(false);
@@ -57,13 +74,15 @@ export default function HashGenerator() {
     setComputing(true);
 
     try {
-      setResults(await hashTextWithAlgorithms(text));
+      const next = await hashTextWithAlgorithms(text);
+      if (run === latestCompute) setResults(next);
     } finally {
-      setComputing(false);
+      if (run === latestCompute) setComputing(false);
     }
   }
 
   async function computeBytes(bytes: Uint8Array) {
+    const run = ++latestCompute;
     if (bytes.length === 0) {
       setResults([]);
       setComputing(false);
@@ -73,13 +92,15 @@ export default function HashGenerator() {
     setComputing(true);
 
     try {
-      setResults(await hashBytesWithAlgorithms(bytes));
+      const next = await hashBytesWithAlgorithms(bytes);
+      if (run === latestCompute) setResults(next);
     } finally {
-      setComputing(false);
+      if (run === latestCompute) setComputing(false);
     }
   }
 
   function handleInput(value: string) {
+    invalidateResults();
     setInput(value);
     setFileError(null);
     setFileNotice(null);
@@ -88,6 +109,7 @@ export default function HashGenerator() {
   }
 
   function handleWorkflowChange(nextWorkflow: HashWorkflow) {
+    invalidateResults();
     clearTimeout(debounceTimer);
     setWorkflow(nextWorkflow);
     setInput("");
@@ -100,6 +122,7 @@ export default function HashGenerator() {
   }
 
   function handleClear() {
+    invalidateResults();
     clearTimeout(debounceTimer);
     setInput("");
     setResults([]);
@@ -112,6 +135,8 @@ export default function HashGenerator() {
   }
 
   async function handleFile(file: File) {
+    invalidateResults();
+    const run = latestFileLoad;
     clearTimeout(debounceTimer);
     setFileError(null);
     setFileNotice(null);
@@ -120,6 +145,7 @@ export default function HashGenerator() {
       as: "bytes",
       policy: { maxBytes: DEFAULT_IMPORT_MAX_BYTES },
     });
+    if (run !== latestFileLoad) return;
 
     if (!result.ok) {
       setFileError(result.error);
@@ -139,6 +165,7 @@ export default function HashGenerator() {
   }
 
   onCleanup(() => {
+    invalidateResults();
     clearTimeout(debounceTimer);
   });
 
@@ -194,7 +221,7 @@ export default function HashGenerator() {
             onInput={(event) => handleInput(event)}
             placeholder={
               workflow() === "text"
-                ? "Hello, world!"
+                ? EXAMPLE_TEXT
                 : "Drop a file here or use the file picker to hash it locally…"
             }
             rows={5}
@@ -231,16 +258,19 @@ export default function HashGenerator() {
         <ToolStatusMessage tone="muted">Computing…</ToolStatusMessage>
       </Show>
 
-      <Show when={results().length > 0}>
+      <ToolExampleNotice when={isExample()} />
+      <Show when={displayedResults().length > 0}>
         <div class="flex flex-col gap-3">
-          <For each={results()}>
+          <For each={displayedResults()}>
             {(result) => (
               <Card class="overflow-hidden p-0">
                 <div class="flex items-center justify-between px-4 py-2 border-b border-[var(--border)]">
                   <span class="text-xs font-bold tracking-wider uppercase text-[var(--accent-primary)]">
                     {result.algorithm}
                   </span>
-                  <CopyButton text={result.hex} label={`Copy ${result.algorithm} hash`} />
+                  <Show when={!isExample()}>
+                    <CopyButton text={result.hex} label={`Copy ${result.algorithm} hash`} />
+                  </Show>
                 </div>
 
                 <pre class="m-0 p-3 px-4 text-xs leading-relaxed text-[var(--text-primary)] font-mono whitespace-pre-wrap break-all">
@@ -252,7 +282,7 @@ export default function HashGenerator() {
         </div>
       </Show>
 
-      <Show when={!input().trim() && !loadedFileBytes() && results().length === 0}>
+      <Show when={!isExample() && !input().trim() && !loadedFileBytes() && results().length === 0}>
         <ToolStatusMessage tone="muted">
           SHA-1 · SHA-256 · SHA-384 · SHA-512 computed locally for text and file workflows
         </ToolStatusMessage>

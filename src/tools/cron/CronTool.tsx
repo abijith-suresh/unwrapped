@@ -5,8 +5,10 @@ import Label from "@/components/primitives/solid/Label";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import { SUPPORTED_CRON_SYNTAX } from "@/lib/cron";
 import { buildCronScheduleSummary, type CronTimeZoneMode } from "@/lib/cronSchedule";
+import { EXAMPLE_CRON } from "@/lib/exampleData";
 
 function formatPreview(date: Date, mode: CronTimeZoneMode): string {
   return mode === "utc"
@@ -17,9 +19,10 @@ function formatPreview(date: Date, mode: CronTimeZoneMode): string {
 export default function CronTool() {
   const [input, setInput] = createSignal("");
   const [timeZone, setTimeZone] = createSignal<CronTimeZoneMode>("local");
+  const isExample = () => input() === "";
 
   const summary = createMemo(() =>
-    buildCronScheduleSummary(input(), {
+    buildCronScheduleSummary(input() || EXAMPLE_CRON, {
       start: new Date(),
       count: 5,
       timeZone: timeZone(),
@@ -49,7 +52,7 @@ export default function CronTool() {
           type="text"
           value={input()}
           onInput={setInput}
-          placeholder="30 9 * * 1"
+          placeholder={EXAMPLE_CRON}
           spellcheck={false}
           describedBy={error() ? "cron-expression-error" : undefined}
           error={!!error()}
@@ -74,8 +77,10 @@ export default function CronTool() {
         </ToolActionButton>
       </div>
 
+      <ToolExampleNotice when={isExample()} />
+
       <Show
-        when={input().trim() && !error()}
+        when={(isExample() || input().trim()) && !error()}
         fallback={
           <Show
             when={error()}

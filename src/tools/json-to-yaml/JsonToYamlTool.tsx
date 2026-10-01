@@ -5,16 +5,19 @@ import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolCodeBlock from "@/components/tool/ToolCodeBlock";
 import ToolCodeEditor from "@/components/tool/ToolCodeEditor";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolPanel, {
   TOOL_EDITOR_BODY_CLASSES,
   TOOL_EDITOR_PANEL_CLASSES,
 } from "@/components/tool/ToolPanel";
 import ToolWorkspace from "@/components/tool/ToolWorkspace";
+import { EXAMPLE_JSON } from "@/lib/exampleData";
 import { convertJsonToYaml } from "@/lib/jsonToYaml";
 
 export default function JsonToYamlTool() {
   const [input, setInput] = createSignal("");
-  const result = createMemo(() => convertJsonToYaml(input()));
+  const isExample = () => input() === "";
+  const result = createMemo(() => convertJsonToYaml(input() || EXAMPLE_JSON));
   const output = createMemo(() => {
     const current = result();
     return current.ok ? current.output : "";
@@ -31,6 +34,8 @@ export default function JsonToYamlTool() {
           {error()}
         </p>
       </Show>
+
+      <ToolExampleNotice when={isExample()} />
 
       <ToolWorkspace
         switcherLabel="JSON to YAML views"
@@ -51,7 +56,7 @@ export default function JsonToYamlTool() {
                   labelClass="sr-only"
                   value={input()}
                   onInput={(value) => setInput(value)}
-                  placeholder={'{\n  "hello": "world"\n}'}
+                  placeholder={EXAMPLE_JSON}
                   rows={12}
                   spellcheck={false}
                   autocomplete="off"
@@ -70,7 +75,7 @@ export default function JsonToYamlTool() {
                 class={TOOL_EDITOR_PANEL_CLASSES}
                 bodyClass={TOOL_EDITOR_BODY_CLASSES}
                 actions={
-                  <Show when={output()}>
+                  <Show when={!isExample() && output()}>
                     <CopyButton text={output()} label="Copy YAML" />
                   </Show>
                 }

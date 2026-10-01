@@ -6,6 +6,8 @@ import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import { EXAMPLE_URL } from "@/lib/exampleData";
 import { inspectUrl } from "@/lib/urlInspector";
 
 const SECTION_LABELS = [
@@ -21,7 +23,8 @@ const SECTION_LABELS = [
 
 export default function UrlInspectorTool() {
   const [input, setInput] = createSignal("");
-  const result = createMemo(() => inspectUrl(input()));
+  const isExample = () => input() === "";
+  const result = createMemo(() => inspectUrl(input() || EXAMPLE_URL));
 
   const inspection = createMemo(() => {
     const current = result();
@@ -39,11 +42,13 @@ export default function UrlInspectorTool() {
         label="URL or raw query string"
         value={input()}
         onInput={(value) => setInput(value)}
-        placeholder="https://user:pass@example.com:8443/path/name?foo=1&foo=2&bar=hello%20world#frag"
+        placeholder={EXAMPLE_URL}
         rows={5}
         spellcheck={false}
         error={!!error()}
       />
+
+      <ToolExampleNotice when={isExample()} />
 
       <Show
         when={!error()}
@@ -62,7 +67,9 @@ export default function UrlInspectorTool() {
                 <Card class="flex flex-col gap-2">
                   <div class="flex justify-between gap-3">
                     <Label>{label}</Label>
-                    <CopyButton text={value()} label={`Copy ${label}`} />
+                    <Show when={!isExample()}>
+                      <CopyButton text={value()} label={`Copy ${label}`} />
+                    </Show>
                   </div>
                   <code class="text-[var(--text-primary)] text-sm leading-relaxed break-all">
                     {value() || "—"}

@@ -8,14 +8,19 @@ import Textarea from "@/components/primitives/solid/Textarea";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import { EXAMPLE_YAML_FORMAT } from "@/lib/exampleData";
 import { formatYaml } from "@/lib/yamlFormatter";
 
 export default function YamlFormatterTool() {
   const [input, setInput] = createSignal("");
+  const isExample = () => input() === "";
   const [indent, setIndent] = createSignal(2);
   const [sortKeys, setSortKeys] = createSignal(false);
 
-  const result = createMemo(() => formatYaml(input(), { indent: indent(), sortKeys: sortKeys() }));
+  const result = createMemo(() =>
+    formatYaml(input() || EXAMPLE_YAML_FORMAT, { indent: indent(), sortKeys: sortKeys() })
+  );
   const output = createMemo(() => {
     const current = result();
     return current.ok ? current.output : "";
@@ -51,7 +56,7 @@ export default function YamlFormatterTool() {
           label="YAML input"
           value={input()}
           onInput={(value) => setInput(value)}
-          placeholder={"root:\n  child: [3, 2, 1]"}
+          placeholder={EXAMPLE_YAML_FORMAT}
           rows={14}
           spellcheck={false}
           name="yaml-input"
@@ -61,10 +66,14 @@ export default function YamlFormatterTool() {
         />
       </div>
 
+      <ToolExampleNotice when={isExample()} />
+
       <Card class="flex flex-col gap-3">
         <div class="flex items-center justify-between">
           <Label>Formatted YAML</Label>
-          <CopyButton text={output()} label="Copy YAML" />
+          <Show when={!isExample()}>
+            <CopyButton text={output()} label="Copy YAML" />
+          </Show>
         </div>
 
         <Show

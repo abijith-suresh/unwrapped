@@ -6,6 +6,8 @@ import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import { EXAMPLE_JWT } from "@/lib/exampleData";
 import { getJwtClaimsSummary, getJwtExpiryStatus, parseJwt, prettyJson } from "@/lib/jwt";
 
 // ---------------------------------------------------------------------------
@@ -15,6 +17,7 @@ import { getJwtClaimsSummary, getJwtExpiryStatus, parseJwt, prettyJson } from "@
 interface PanelProps {
   title: string;
   content: string;
+  example: boolean;
 }
 
 function Panel(props: PanelProps) {
@@ -23,7 +26,9 @@ function Panel(props: PanelProps) {
       {/* Panel header */}
       <div class="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border)]">
         <Label>{props.title}</Label>
-        <CopyButton text={props.content} label={`Copy ${props.title}`} />
+        <Show when={!props.example}>
+          <CopyButton text={props.content} label={`Copy ${props.title}`} />
+        </Show>
       </div>
 
       {/* Panel body */}
@@ -40,9 +45,10 @@ function Panel(props: PanelProps) {
 
 export default function JwtDecoder() {
   const [input, setInput] = createSignal("");
+  const isExample = () => input() === "";
 
   const parsed = createMemo(() => {
-    const raw = input().trim();
+    const raw = (input() || EXAMPLE_JWT).trim();
     if (!raw) return null;
     return parseJwt(raw);
   });
@@ -79,7 +85,7 @@ export default function JwtDecoder() {
           autocomplete="off"
           value={input()}
           onInput={setInput}
-          placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjMiLCJuYW1lIjoiQWxpY2UifQ.ZGVtby1zaWduYXR1cmU"
+          placeholder={EXAMPLE_JWT}
           rows={5}
           spellcheck={false}
         />
@@ -101,6 +107,7 @@ export default function JwtDecoder() {
       {/* ------------------------------------------------------------------ */}
       {/* Output panels (only when valid JWT)                                */}
       {/* ------------------------------------------------------------------ */}
+      <ToolExampleNotice when={isExample()} />
       <Show when={parsed()}>
         {(result) => (
           <>
@@ -148,13 +155,13 @@ export default function JwtDecoder() {
             </Show>
 
             {/* Header panel */}
-            <Panel title="Header" content={prettyJson(result().header)} />
+            <Panel title="Header" content={prettyJson(result().header)} example={isExample()} />
 
             {/* Payload panel */}
-            <Panel title="Payload" content={prettyJson(result().payload)} />
+            <Panel title="Payload" content={prettyJson(result().payload)} example={isExample()} />
 
             {/* Signature panel */}
-            <Panel title="Signature" content={result().signature} />
+            <Panel title="Signature" content={result().signature} example={isExample()} />
           </>
         )}
       </Show>

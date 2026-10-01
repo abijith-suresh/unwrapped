@@ -6,11 +6,14 @@ import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import { EXAMPLE_JSON_ARRAY } from "@/lib/exampleData";
 import { convertJsonToCsv } from "@/lib/jsonToCsv";
 
 export default function JsonToCsvTool() {
   const [input, setInput] = createSignal("");
-  const result = createMemo(() => convertJsonToCsv(input()));
+  const isExample = () => input() === "";
+  const result = createMemo(() => convertJsonToCsv(input() || EXAMPLE_JSON_ARRAY));
   const output = createMemo(() => {
     const current = result();
     return current.ok ? current.output : "";
@@ -26,16 +29,20 @@ export default function JsonToCsvTool() {
         label="JSON array input"
         value={input()}
         onInput={(value) => setInput(value)}
-        placeholder={'[{"name":"Alice","active":true},{"name":"Bob"}]'}
+        placeholder={EXAMPLE_JSON_ARRAY}
         rows={14}
         spellcheck={false}
         error={!!error()}
       />
 
+      <ToolExampleNotice when={isExample()} />
+
       <Card class="flex flex-col gap-3">
         <div class="flex items-center justify-between">
           <Label>CSV output</Label>
-          <CopyButton text={output()} label="Copy CSV" />
+          <Show when={!isExample()}>
+            <CopyButton text={output()} label="Copy CSV" />
+          </Show>
         </div>
 
         <Show

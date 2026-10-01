@@ -5,6 +5,8 @@ import Label from "@/components/primitives/solid/Label";
 import Textarea from "@/components/primitives/solid/Textarea";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import { EXAMPLE_STATS_TEXT } from "@/lib/exampleData";
 import { analyzeText } from "@/lib/textStatistics";
 
 const METRIC_LABELS = [
@@ -16,7 +18,8 @@ const METRIC_LABELS = [
 
 export default function TextStatisticsTool() {
   const [input, setInput] = createSignal("");
-  const statistics = createMemo(() => analyzeText(input()));
+  const isExample = () => input() === "";
+  const statistics = createMemo(() => analyzeText(input() || EXAMPLE_STATS_TEXT));
 
   return (
     <ToolContainer width="standard">
@@ -24,9 +27,11 @@ export default function TextStatisticsTool() {
         label="Text input"
         value={input()}
         onInput={setInput}
-        placeholder={"Hello, world!\nA second line of text."}
+        placeholder={EXAMPLE_STATS_TEXT}
         rows={10}
       />
+
+      <ToolExampleNotice when={isExample()} />
 
       <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,180px),1fr))] gap-3">
         <For each={METRIC_LABELS}>

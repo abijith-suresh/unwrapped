@@ -8,6 +8,8 @@ import Textarea from "@/components/primitives/solid/Textarea";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import { EXAMPLE_REGEX_PATTERN, EXAMPLE_REGEX_REPLACEMENT, EXAMPLE_TEXT } from "@/lib/exampleData";
 import {
   buildRegexReplaceResult,
   buildRegexResult,
@@ -39,6 +41,10 @@ export default function RegexTester() {
   let debounceTimer: ReturnType<typeof setTimeout> | undefined;
   onCleanup(() => clearTimeout(debounceTimer));
   const [debouncedInput, setDebouncedInput] = createSignal("");
+  const isExample = () => pattern() === "" && input() === "" && replacement() === "";
+  const effectivePattern = () => (isExample() ? EXAMPLE_REGEX_PATTERN : pattern());
+  const effectiveInput = () =>
+    isExample() ? EXAMPLE_TEXT : debouncedInput() === input() ? debouncedInput() : "";
 
   function toggleFlag(key: FlagKey) {
     setFlags((prev) => {
@@ -52,10 +58,15 @@ export default function RegexTester() {
     });
   }
 
-  const result = createMemo(() => buildRegexResult(pattern(), flags(), debouncedInput()));
+  const result = createMemo(() => buildRegexResult(effectivePattern(), flags(), effectiveInput()));
   const matchCount = createMemo(() => result().matches.length);
   const replaceResult = createMemo(() =>
-    buildRegexReplaceResult(pattern(), flags(), debouncedInput(), replacement())
+    buildRegexReplaceResult(
+      effectivePattern(),
+      flags(),
+      effectiveInput(),
+      isExample() ? EXAMPLE_REGEX_REPLACEMENT : replacement()
+    )
   );
   const replaceOutput = createMemo(() => {
     const current = replaceResult();
@@ -114,7 +125,7 @@ export default function RegexTester() {
             type="text"
             value={pattern()}
             onInput={(e) => setPattern(e.currentTarget.value)}
-            placeholder="([A-Za-z]+)"
+            placeholder={EXAMPLE_REGEX_PATTERN}
             spellcheck={false}
             autocomplete="off"
             class="flex-1 py-2.5 bg-transparent border-none outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] font-mono text-[0.9375rem]"
@@ -163,7 +174,7 @@ export default function RegexTester() {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => setDebouncedInput(v), 250);
           }}
-          placeholder="Hello, world!"
+          placeholder={EXAMPLE_TEXT}
           rows={6}
           spellcheck={false}
         />
@@ -176,11 +187,12 @@ export default function RegexTester() {
           autocomplete="off"
           value={replacement()}
           onInput={setReplacement}
-          placeholder="[$1]"
+          placeholder={EXAMPLE_REGEX_REPLACEMENT}
         />
       </Show>
 
-      <Show when={pattern() && !result().error}>
+      <ToolExampleNotice when={isExample()} />
+      <Show when={effectivePattern() && !result().error}>
         <div class="flex gap-3 flex-wrap">
           <ToolStatusMessage tone={matchCount() > 0 ? "success" : "muted"}>
             {matchCount() === 0
@@ -205,12 +217,12 @@ export default function RegexTester() {
         </div>
       </Show>
 
-      <Show when={input().trim()}>
+      <Show when={isExample() || input().trim()}>
         <Card class="overflow-hidden p-0">
           <div class="flex items-center justify-between px-4 py-2 border-b border-[var(--border)]">
             <Label>{mode() === "replace" ? "Match preview" : "Matches"}</Label>
             <Show
-              when={pattern() && !result().error}
+              when={effectivePattern() && !result().error}
               fallback={<span class="text-xs text-[var(--text-muted)]">—</span>}
             >
               <span
@@ -247,13 +259,18 @@ export default function RegexTester() {
 
       <Show
         when={
-          mode() === "replace" && input().trim() && !result().error && !("error" in replaceResult())
+          mode() === "replace" &&
+          (isExample() || input().trim()) &&
+          !result().error &&
+          !("error" in replaceResult())
         }
       >
         <Card class="overflow-hidden p-0">
           <div class="flex items-center justify-between px-4 py-2 border-b border-[var(--border)]">
             <Label>Replaced output</Label>
-            <CopyButton text={replaceOutput()} label="Copy replaced output" />
+            <Show when={!isExample()}>
+              <CopyButton text={replaceOutput()} label="Copy replaced output" />
+            </Show>
           </div>
 
           <pre class="m-0 p-4 overflow-x-auto text-sm leading-relaxed text-[var(--text-primary)] font-mono whitespace-pre-wrap break-all">
@@ -310,7 +327,12 @@ export default function RegexTester() {
                           <span class="flex-1 overflow-hidden text-ellipsis">
                             {match.fullMatch}
                           </span>
-                          <CopyButton text={match.fullMatch} label={`Copy match ${index() + 1}`} />
+                          <Show when={!isExample()}>
+                            <CopyButton
+                              text={match.fullMatch}
+                              label={`Copy match ${index() + 1}`}
+                            />
+                          </Show>
                         </div>
                       </td>
                       <Show when={namedGroupNames().length > 0}>
@@ -348,7 +370,7 @@ export default function RegexTester() {
         </Card>
       </Show>
 
-      <Show when={!pattern() && !input().trim()}>
+      <Show when={!isExample() && !pattern() && !input().trim()}>
         <ToolStatusMessage tone="muted">
           Enter a regex pattern and test string to inspect matches or preview replacements locally.
         </ToolStatusMessage>

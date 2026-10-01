@@ -8,6 +8,8 @@ import Select from "@/components/primitives/solid/Select";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import { EXAMPLE_EPOCH } from "@/lib/exampleData";
 import {
   DEFAULT_ZONES,
   formatInZone,
@@ -27,8 +29,10 @@ export default function TimestampTool() {
   const [epochInput, setEpochInput] = createSignal("");
   const [datetimeInput, setDatetimeInput] = createSignal("");
   const [zones, setZones] = createSignal<TimeZoneOption[]>(DEFAULT_ZONES);
+  const isExample = () => epochInput() === "" && datetimeInput() === "";
 
   const parsed = createMemo((): { ms: number; unit: "s" | "ms" } | null => {
+    if (isExample()) return parseEpoch(EXAMPLE_EPOCH);
     // Prefer epoch input; fall back to datetime-local
     const raw = epochInput().trim();
     if (raw) return parseEpoch(raw);
@@ -59,17 +63,13 @@ export default function TimestampTool() {
   function handleEpochInput(value: string) {
     setEpochInput(value);
     const p = parseEpoch(value);
-    if (p) {
-      setDatetimeInput(msToLocalInput(p.ms));
-    }
+    setDatetimeInput(p ? msToLocalInput(p.ms) : "");
   }
 
   function handleDatetimeInput(value: string) {
     setDatetimeInput(value);
     const ms = localInputToMs(value);
-    if (ms !== null) {
-      setEpochInput(String(Math.floor(ms / 1000)));
-    }
+    setEpochInput(ms !== null ? String(Math.floor(ms / 1000)) : "");
   }
 
   function changeZone(index: number, tz: string) {
@@ -97,9 +97,9 @@ export default function TimestampTool() {
             type="text"
             value={epochInput()}
             onInput={handleEpochInput}
-            placeholder="1700000000"
+            placeholder={EXAMPLE_EPOCH}
           />
-          <Show when={parsed()}>
+          <Show when={!isExample() && parsed()}>
             {(p) => (
               <span class="text-xs text-[var(--text-muted)]">
                 Detected: {p().unit === "s" ? "seconds" : "milliseconds"}
@@ -133,6 +133,7 @@ export default function TimestampTool() {
       {/* ------------------------------------------------------------------ */}
       {/* Derived epoch values                                                */}
       {/* ------------------------------------------------------------------ */}
+      <ToolExampleNotice when={isExample()} />
       <Show when={date()}>
         {(d) => (
           <div class="flex gap-3 flex-wrap">
@@ -143,10 +144,12 @@ export default function TimestampTool() {
                 <code class="text-[0.9375rem] text-[var(--accent-primary)] font-mono flex-1 break-all">
                   {String(Math.floor(d().getTime() / 1000))}
                 </code>
-                <CopyButton
-                  text={String(Math.floor(d().getTime() / 1000))}
-                  label="Copy epoch seconds"
-                />
+                <Show when={!isExample()}>
+                  <CopyButton
+                    text={String(Math.floor(d().getTime() / 1000))}
+                    label="Copy epoch seconds"
+                  />
+                </Show>
               </div>
             </Card>
 
@@ -157,7 +160,9 @@ export default function TimestampTool() {
                 <code class="text-[0.9375rem] text-[var(--accent-primary)] font-mono flex-1 break-all">
                   {String(d().getTime())}
                 </code>
-                <CopyButton text={String(d().getTime())} label="Copy epoch milliseconds" />
+                <Show when={!isExample()}>
+                  <CopyButton text={String(d().getTime())} label="Copy epoch milliseconds" />
+                </Show>
               </div>
             </Card>
 
@@ -168,7 +173,9 @@ export default function TimestampTool() {
                 <code class="text-sm text-[var(--accent-success)] font-mono flex-1 break-all">
                   {d().toISOString()}
                 </code>
-                <CopyButton text={d().toISOString()} label="Copy ISO 8601" />
+                <Show when={!isExample()}>
+                  <CopyButton text={d().toISOString()} label="Copy ISO 8601" />
+                </Show>
               </div>
             </Card>
           </div>
@@ -194,7 +201,9 @@ export default function TimestampTool() {
                       {item.value}
                     </code>
                     <div class="flex justify-end">
-                      <CopyButton text={item.value} label={`Copy ${item.label}`} />
+                      <Show when={!isExample()}>
+                        <CopyButton text={item.value} label={`Copy ${item.label}`} />
+                      </Show>
                     </div>
                   </div>
                 )}
@@ -231,10 +240,12 @@ export default function TimestampTool() {
                       {formatInZone(d(), zone.tz)}
                     </code>
 
-                    <CopyButton
-                      text={formatInZone(d(), zone.tz)}
-                      label={`Copy ${zone.label} time`}
-                    />
+                    <Show when={!isExample()}>
+                      <CopyButton
+                        text={formatInZone(d(), zone.tz)}
+                        label={`Copy ${zone.label} time`}
+                      />
+                    </Show>
                   </div>
                 )}
               </For>

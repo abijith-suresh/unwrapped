@@ -16,6 +16,8 @@ const tools = [
     label: "Cron expression",
     input: "0 12 * * *",
     invalid: "invalid",
+    exampleOutput: "09:30 on Monday",
+    userOutput: "12:00",
   },
   {
     name: "JSON to CSV",
@@ -23,6 +25,8 @@ const tools = [
     label: "JSON array input",
     input: '[{"name":"Ada"}]',
     invalid: "[",
+    exampleOutput: "Alice",
+    userOutput: "Ada",
   },
   {
     name: "JSON to YAML",
@@ -30,6 +34,8 @@ const tools = [
     label: "JSON document",
     input: '{"name":"Ada"}',
     invalid: "{",
+    exampleOutput: "Alice",
+    userOutput: "Ada",
   },
   {
     name: "URL Inspector",
@@ -37,6 +43,8 @@ const tools = [
     label: "URL or raw query string",
     input: "https://example.net/?q=user",
     invalid: "https://[",
+    exampleOutput: "hello world",
+    userOutput: "example.net",
   },
   {
     name: "XML Formatter",
@@ -44,6 +52,8 @@ const tools = [
     label: "XML input",
     input: "<user>Ada</user>",
     invalid: "<user>",
+    exampleOutput: '<item id="1">',
+    userOutput: "Ada",
   },
   {
     name: "YAML Formatter",
@@ -51,6 +61,8 @@ const tools = [
     label: "YAML input",
     input: "name: Ada",
     invalid: "name: [",
+    exampleOutput: "child:",
+    userOutput: "Ada",
   },
   {
     name: "YAML to JSON",
@@ -58,39 +70,46 @@ const tools = [
     label: "YAML document",
     input: "name: Ada",
     invalid: "name: [",
+    exampleOutput: '"enabled": true',
+    userOutput: "Ada",
   },
 ];
 
 describe("Tool input placeholders", () => {
   it.each(tools)(
     "$name starts empty and validates only user input",
-    ({ Tool, label, input, invalid }) => {
-      const { getByRole, queryByRole, queryAllByRole } = render(() => <Tool />);
+    ({ Tool, label, input, invalid, exampleOutput, userOutput }) => {
+      const { container, getByRole, queryByRole, queryAllByRole } = render(() => <Tool />);
       const editor = getByRole("textbox", { name: label });
 
       expect(editor).toHaveValue("");
       expect(editor.getAttribute("placeholder")?.trim()).toBeTruthy();
       expect(editor).not.toHaveAttribute("aria-invalid", "true");
       expect(queryByRole("alert")).not.toBeInTheDocument();
-      for (const button of queryAllByRole("button", { name: /^Copy / })) {
-        expect(button).toBeDisabled();
-      }
+      expect(getByRole("note", { name: "Example output" })).toBeInTheDocument();
+      expect(container).toHaveTextContent(exampleOutput);
+      expect(queryAllByRole("button", { name: /^Copy / })).toHaveLength(0);
 
       fireEvent.input(editor, { target: { value: input } });
       expect(editor).toHaveValue(input);
       expect(queryByRole("alert")).not.toBeInTheDocument();
+      expect(queryByRole("note", { name: "Example output" })).not.toBeInTheDocument();
+      expect(container).toHaveTextContent(userOutput);
+      expect(container).not.toHaveTextContent(exampleOutput);
 
       fireEvent.input(editor, { target: { value: invalid } });
       expect(getByRole("alert")).toBeInTheDocument();
       expect(editor).toHaveAttribute("aria-invalid", "true");
+      expect(queryByRole("note", { name: "Example output" })).not.toBeInTheDocument();
+      expect(container).not.toHaveTextContent(exampleOutput);
 
       fireEvent.input(editor, { target: { value: "" } });
       expect(editor).toHaveValue("");
       expect(editor).not.toHaveAttribute("aria-invalid", "true");
       expect(queryByRole("alert")).not.toBeInTheDocument();
-      for (const button of queryAllByRole("button", { name: /^Copy / })) {
-        expect(button).toBeDisabled();
-      }
+      expect(getByRole("note", { name: "Example output" })).toBeInTheDocument();
+      expect(container).toHaveTextContent(exampleOutput);
+      expect(queryAllByRole("button", { name: /^Copy / })).toHaveLength(0);
     }
   );
 });
