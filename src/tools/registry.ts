@@ -170,6 +170,17 @@ export const tools: Tool[] = [
     accent: "blue",
   },
   {
+    id: "network-reference",
+    name: "DNS & HTTP Headers Reference",
+    description: "Search bundled DNS record types and HTTP headers with copyable examples.",
+    category: "network",
+    keywords: ["network", "reference"],
+    icon: "BadgeInfo",
+    slug: "network-reference",
+    componentPath: "/src/tools/network-reference/Tool.tsx",
+    accent: "cyan",
+  },
+  {
     id: "http-status-codes",
     name: "HTTP Status Codes",
     description: "Search a bundled local reference of common HTTP response codes.",
