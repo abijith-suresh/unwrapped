@@ -159,6 +159,17 @@ export const tools: Tool[] = [
     accent: "lime",
   },
   {
+    id: "css-minifier",
+    name: "CSS Minifier",
+    description: "Minify CSS locally while preserving rule order and displaying parser errors.",
+    category: "text",
+    keywords: ["css", "minifier"],
+    icon: "AlignLeft",
+    slug: "css-minifier",
+    componentPath: "/src/tools/css-minifier/Tool.tsx",
+    accent: "cyan",
+  },
+  {
     id: "text-statistics",
     name: "Text Statistics",
     description: "Inspect character, word, line, and byte counts for local text input.",
