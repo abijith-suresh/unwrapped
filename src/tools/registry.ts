@@ -269,6 +269,17 @@ export const tools: Tool[] = [
     accent: "magenta",
   },
   {
+    id: "query-string-editor",
+    name: "Query String Editor",
+    description: "Edit URL query parameters while preserving duplicate keys, order, and fragments.",
+    category: "network",
+    keywords: ["query", "string", "editor"],
+    icon: "Link2",
+    slug: "query-string-editor",
+    componentPath: "/src/tools/query-string-editor/Tool.tsx",
+    accent: "blue",
+  },
+  {
     id: "url-inspector",
     name: "URL Inspector",
     description: "Parse full URLs or raw query strings locally and inspect decoded sections.",
