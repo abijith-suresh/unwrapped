@@ -291,6 +291,17 @@ export const tools: Tool[] = [
     accent: "orange",
   },
   {
+    id: "markdown-table",
+    name: "Markdown Table Converter",
+    description: "Convert CSV and TSV into Markdown tables, or export Markdown tables as CSV.",
+    category: "text",
+    keywords: ["markdown", "table"],
+    icon: "TableProperties",
+    slug: "markdown-table",
+    componentPath: "/src/tools/markdown-table/Tool.tsx",
+    accent: "lime",
+  },
+  {
     id: "json-to-csv",
     name: "JSON to CSV",
     description: "Convert arrays of JSON objects into CSV locally.",
