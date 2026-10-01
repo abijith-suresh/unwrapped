@@ -16,7 +16,8 @@ it("masks the secret, evaluates locally and clears the secret and result", () =>
   fireEvent.click(screen.getByRole("button", { name: "Clear" }));
   expect(input).toHaveValue("");
   expect(input).toHaveAttribute("type", "password");
-  expect(screen.queryByRole("meter")).toBeNull();
+  expect(screen.getByRole("note", { name: "Example output" })).toBeInTheDocument();
+  expect(screen.getByRole("meter")).toBeInTheDocument();
   expect(request).not.toHaveBeenCalled();
   expect(storage).not.toHaveBeenCalled();
   request.mockRestore();

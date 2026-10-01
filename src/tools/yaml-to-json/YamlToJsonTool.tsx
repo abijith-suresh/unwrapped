@@ -5,16 +5,19 @@ import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolCodeBlock from "@/components/tool/ToolCodeBlock";
 import ToolCodeEditor from "@/components/tool/ToolCodeEditor";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolPanel, {
   TOOL_EDITOR_BODY_CLASSES,
   TOOL_EDITOR_PANEL_CLASSES,
 } from "@/components/tool/ToolPanel";
 import ToolWorkspace from "@/components/tool/ToolWorkspace";
+import { EXAMPLE_YAML } from "@/lib/exampleData";
 import { convertYamlToJson } from "@/lib/yamlToJson";
 
 export default function YamlToJsonTool() {
-  const [input, setInput] = createSignal("name: demo\nenabled: true");
-  const result = createMemo(() => convertYamlToJson(input()));
+  const [input, setInput] = createSignal("");
+  const isExample = () => input() === "";
+  const result = createMemo(() => convertYamlToJson(input() || EXAMPLE_YAML));
   const output = createMemo(() => {
     const current = result();
     return current.ok ? current.output : "";
@@ -31,6 +34,8 @@ export default function YamlToJsonTool() {
           {error()}
         </p>
       </Show>
+
+      <ToolExampleNotice when={isExample()} />
 
       <ToolWorkspace
         switcherLabel="YAML to JSON views"
@@ -51,7 +56,7 @@ export default function YamlToJsonTool() {
                   labelClass="sr-only"
                   value={input()}
                   onInput={(value) => setInput(value)}
-                  placeholder="Paste YAML to convert…"
+                  placeholder={EXAMPLE_YAML}
                   rows={12}
                   spellcheck={false}
                   autocomplete="off"
@@ -70,7 +75,7 @@ export default function YamlToJsonTool() {
                 class={TOOL_EDITOR_PANEL_CLASSES}
                 bodyClass={TOOL_EDITOR_BODY_CLASSES}
                 actions={
-                  <Show when={output()}>
+                  <Show when={!isExample() && output()}>
                     <CopyButton text={output()} label="Copy JSON" />
                   </Show>
                 }

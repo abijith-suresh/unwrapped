@@ -19,7 +19,7 @@ export default function Tool() {
         value={query()}
         onInput={setQuery}
         autocomplete="off"
-        placeholder="IPv6, cache, CORS..."
+        placeholder="IPv6"
       />
       <ToolToolbar label="Reference category">
         <ToolActionButton active={kind() === "all"} onClick={() => setKind("all")}>

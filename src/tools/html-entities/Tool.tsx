@@ -5,19 +5,26 @@ import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolCodeBlock from "@/components/tool/ToolCodeBlock";
 import ToolCodeEditor from "@/components/tool/ToolCodeEditor";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolPanel, {
   TOOL_EDITOR_BODY_CLASSES,
   TOOL_EDITOR_PANEL_CLASSES,
 } from "@/components/tool/ToolPanel";
 import ToolToolbar from "@/components/tool/ToolToolbar";
 import ToolWorkspace from "@/components/tool/ToolWorkspace";
+import { EXAMPLE_HTML } from "@/lib/exampleData";
 import { transformEntities } from "@/lib/htmlEntities";
 
 export default function Tool() {
-  const [input, setInput] = createSignal('<p title="Hello">Tom & Jerry \u00a9</p>');
+  const [input, setInput] = createSignal("");
   const [mode, setMode] = createSignal<"encode" | "decode">("encode");
   const [nonAscii, setNonAscii] = createSignal(false);
-  const result = createMemo(() => transformEntities(input(), mode(), nonAscii()));
+  const isExample = () => input() === "";
+  const exampleInput = createMemo(() => {
+    const encoded = transformEntities(EXAMPLE_HTML, "encode", nonAscii());
+    return mode() === "decode" && encoded.ok ? encoded.output : EXAMPLE_HTML;
+  });
+  const result = createMemo(() => transformEntities(input() || exampleInput(), mode(), nonAscii()));
   const output = () => {
     const current = result();
     return current.ok ? current.output : "";
@@ -40,6 +47,7 @@ export default function Tool() {
         </ToolActionButton>
         <ToolActionButton onClick={() => setInput("")}>Clear input</ToolActionButton>
       </ToolToolbar>
+      <ToolExampleNotice when={isExample()} />
       <ToolWorkspace
         views={[
           {
@@ -54,6 +62,7 @@ export default function Tool() {
                 <ToolCodeEditor
                   label="Source"
                   value={input()}
+                  placeholder={exampleInput()}
                   onInput={setInput}
                   spellcheck={false}
                   autocomplete="off"
@@ -71,7 +80,11 @@ export default function Tool() {
                 title="Output"
                 class={TOOL_EDITOR_PANEL_CLASSES}
                 bodyClass={TOOL_EDITOR_BODY_CLASSES}
-                actions={<CopyButton text={output()} label="Copy output" />}
+                actions={
+                  <Show when={!isExample()}>
+                    <CopyButton text={output()} label="Copy output" />
+                  </Show>
+                }
               >
                 <Show
                   when={!error()}

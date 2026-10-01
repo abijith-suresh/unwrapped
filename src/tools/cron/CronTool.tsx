@@ -6,10 +6,12 @@ import Label from "@/components/primitives/solid/Label";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolPanel from "@/components/tool/ToolPanel";
 import { CRON_FIELD_SPECS, SUPPORTED_CRON_SYNTAX } from "@/lib/cron";
-import { buildCron, CRON_PRESETS, cronFields } from "@/lib/cronBuilder";
+import { buildCron, CRON_PRESETS, type CronBuilderFields, cronFields } from "@/lib/cronBuilder";
 import { buildCronScheduleSummary, type CronTimeZoneMode } from "@/lib/cronSchedule";
+import { EXAMPLE_CRON } from "@/lib/exampleData";
 
 function formatPreview(date: Date, mode: CronTimeZoneMode): string {
   return mode === "utc"
@@ -18,17 +20,27 @@ function formatPreview(date: Date, mode: CronTimeZoneMode): string {
 }
 
 export default function CronTool() {
-  const [input, setInput] = createSignal("30 9 * * 1");
-  const [fields, setFields] = createSignal(cronFields("30 9 * * 1"));
-  const built = createMemo(() => buildCron(fields()));
+  const [input, setInput] = createSignal("");
+  const exampleFields = cronFields(EXAMPLE_CRON);
+  const [fields, setFields] = createSignal<CronBuilderFields>({
+    minute: "",
+    hour: "",
+    dayOfMonth: "",
+    month: "",
+    dayOfWeek: "",
+  });
+  const isBuilderExample = () =>
+    SUPPORTED_CRON_SYNTAX.fieldOrder.every((field) => fields()[field] === "");
+  const built = createMemo(() => buildCron(isBuilderExample() ? exampleFields : fields()));
   const builtOutput = () => {
     const result = built();
     return result.ok ? result.output : "";
   };
   const [timeZone, setTimeZone] = createSignal<CronTimeZoneMode>("local");
+  const isExample = () => input() === "";
 
   const summary = createMemo(() =>
-    buildCronScheduleSummary(input(), {
+    buildCronScheduleSummary(input() || EXAMPLE_CRON, {
       start: new Date(),
       count: 5,
       timeZone: timeZone(),
@@ -43,6 +55,7 @@ export default function CronTool() {
     return current.ok ? current.nextRuns : [];
   });
   const error = createMemo(() => {
+    if (!input().trim()) return "";
     const current = summary();
     return current.ok ? "" : current.error.message;
   });
@@ -73,6 +86,7 @@ export default function CronTool() {
               <Input
                 label={`${CRON_FIELD_SPECS[field].label} (${CRON_FIELD_SPECS[field].min}-${CRON_FIELD_SPECS[field].max})`}
                 value={fields()[field]}
+                placeholder={exampleFields[field]}
                 autocomplete="off"
                 onInput={(value) => setFields((current) => ({ ...current, [field]: value }))}
               />
@@ -85,12 +99,15 @@ export default function CronTool() {
               const result = built();
               if (result.ok) setInput(result.output);
             }}
-            disabled={!built().ok}
+            disabled={isBuilderExample() || !built().ok}
           >
             Preview built schedule
           </ToolActionButton>
-          <CopyButton text={builtOutput()} label="Copy built expression" />
+          <Show when={!isBuilderExample()}>
+            <CopyButton text={builtOutput()} label="Copy built expression" />
+          </Show>
           <ToolActionButton
+            disabled={!input().trim() || !!error()}
             onClick={() => {
               try {
                 setFields(cronFields(input()));
@@ -102,6 +119,7 @@ export default function CronTool() {
             Load expression into builder
           </ToolActionButton>
         </div>
+        <ToolExampleNotice when={isBuilderExample()} label="Example builder output" />
         <ToolStatusMessage tone={built().ok ? "muted" : "error"}>
           {(() => {
             const result = built();
@@ -117,7 +135,7 @@ export default function CronTool() {
           type="text"
           value={input()}
           onInput={setInput}
-          placeholder="30 9 * * 1"
+          placeholder={EXAMPLE_CRON}
           spellcheck={false}
           describedBy={error() ? "cron-expression-error" : undefined}
           error={!!error()}
@@ -142,12 +160,25 @@ export default function CronTool() {
         </ToolActionButton>
       </div>
 
+      <ToolExampleNotice when={isExample()} />
+
       <Show
-        when={!error()}
+        when={(isExample() || input().trim()) && !error()}
         fallback={
-          <ToolStatusMessage id="cron-expression-error" tone="error">
-            {error()}
-          </ToolStatusMessage>
+          <Show
+            when={error()}
+            fallback={
+              <ToolStatusMessage tone="muted">
+                Enter a cron expression to see its schedule and next runs.
+              </ToolStatusMessage>
+            }
+          >
+            {(message) => (
+              <ToolStatusMessage id="cron-expression-error" tone="error">
+                {message()}
+              </ToolStatusMessage>
+            )}
+          </Show>
         }
       >
         <Card class="flex flex-col gap-3">

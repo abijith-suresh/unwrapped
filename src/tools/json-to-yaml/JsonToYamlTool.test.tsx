@@ -5,13 +5,18 @@ import JsonToYamlTool from "./JsonToYamlTool";
 
 describe("JsonToYamlTool", () => {
   it("renders the converter in the shared workspace", () => {
-    const { getByRole } = render(() => <JsonToYamlTool />);
+    const { getByRole, queryByRole } = render(() => <JsonToYamlTool />);
 
     expect(getByRole("textbox", { name: "JSON document" })).toBeInTheDocument();
     expect(getByRole("heading", { name: "Input" })).toBeInTheDocument();
     expect(getByRole("heading", { name: "Output" })).toBeInTheDocument();
-    expect(getByRole("button", { name: "Copy YAML" })).toBeInTheDocument();
+    expect(queryByRole("button", { name: "Copy YAML" })).not.toBeInTheDocument();
     expect(getByRole("tab", { name: "Input" })).toHaveAttribute("aria-selected", "true");
+
+    fireEvent.input(getByRole("textbox", { name: "JSON document" }), {
+      target: { value: '{"name":"Ada"}' },
+    });
+    expect(getByRole("button", { name: "Copy YAML" })).toBeInTheDocument();
   });
 
   it("keeps conversion errors visible and associated with the editor", async () => {
