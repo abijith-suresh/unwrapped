@@ -29,6 +29,7 @@
     "ajv-formats": "^3.0.1",
     "astro": "^7.3.5",
     "diff": "^9.0.0",
+    "html-entities": "^2.6.0",
     "lucide-solid": "^1.48.0",
     "smol-toml": "^1.9.0",
     "solid-js": "^1.9.15",
