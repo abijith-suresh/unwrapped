@@ -17,3 +17,8 @@ export const EXAMPLE_REGEX_PATTERN = "([A-Za-z]+)";
 export const EXAMPLE_REGEX_REPLACEMENT = "[$1]";
 export const EXAMPLE_DIFF_ORIGINAL = "Hello, world!\nVersion: 1";
 export const EXAMPLE_DIFF_MODIFIED = "Hello, world!\nVersion: 2";
+export const EXAMPLE_HTML = '<p title="Hello">Tom & Jerry ©</p>';
+export const EXAMPLE_SCHEMA_DOCUMENT = '{"name":"Ada"}';
+export const EXAMPLE_JSON_SCHEMA =
+  '{"type":"object","properties":{"name":{"type":"string"}},"required":["name"],"additionalProperties":false}';
+export const EXAMPLE_QUERY = "https://example.com/search?q=hello+world&tag=one&tag=two#results";
