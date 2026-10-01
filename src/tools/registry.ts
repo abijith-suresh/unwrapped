@@ -60,6 +60,17 @@ export const tools: Tool[] = [
     accent: "blue",
   },
   {
+    id: "html-entities",
+    name: "HTML Entities",
+    description: "Encode HTML special characters or decode named and numeric character references.",
+    category: "encoding",
+    keywords: ["html", "entities"],
+    icon: "Tag",
+    slug: "html-entities",
+    componentPath: "/src/tools/html-entities/Tool.tsx",
+    accent: "orange",
+  },
+  {
     id: "base64",
     name: "Base64",
     description: "Encode and decode Base64 strings. Supports file drag-and-drop.",
