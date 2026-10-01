@@ -31,20 +31,20 @@ const TONE_STYLES: Record<ToolStatusTone, JSX.CSSProperties> = {
 
 export default function ToolStatusMessage(props: ToolStatusMessageProps) {
   const [local, rest] = splitProps(props, ["children", "style", "tone"]);
-  const tone = local.tone ?? "muted";
-  const style = typeof local.style === "object" && local.style !== null ? local.style : {};
+  const tone = () => local.tone ?? "muted";
+  const style = () => (typeof local.style === "object" && local.style !== null ? local.style : {});
 
   return (
     <div
       {...rest}
-      aria-live={tone === "error" ? "assertive" : "polite"}
-      role={tone === "error" ? "alert" : "status"}
+      aria-live={tone() === "error" ? "assertive" : "polite"}
+      role={tone() === "error" ? "alert" : "status"}
       style={{
         padding: "0.75rem 1rem",
         "border-radius": "0.5rem",
         "font-size": "0.8125rem",
-        ...TONE_STYLES[tone],
-        ...style,
+        ...TONE_STYLES[tone()],
+        ...style(),
       }}
     >
       {local.children}
