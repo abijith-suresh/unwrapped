@@ -282,9 +282,9 @@ export const tools: Tool[] = [
   {
     id: "cron",
     name: "Cron Schedule",
-    description: "Parse supported cron syntax, humanize it, and preview upcoming runs locally.",
+    description: "Build cron expressions, humanize schedules, and preview upcoming runs locally.",
     category: "time",
-    keywords: ["cron", "schedule", "time", "parser", "preview", "humanize"],
+    keywords: ["cron", "schedule", "time", "parser", "builder", "preview", "humanize"],
     icon: "CalendarClock",
     slug: "cron",
     componentPath: "/src/tools/cron/CronTool.tsx",
