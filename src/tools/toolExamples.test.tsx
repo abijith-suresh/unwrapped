@@ -78,7 +78,7 @@ describe("Example output", () => {
     }
   );
 
-  it("updates Base64 examples for decode and leaves file workflows empty", () => {
+  it("updates Base64 decode examples without exposing file actions", () => {
     const { container, getByRole, queryByRole } = render(() => <Base64Tool />);
     expect(getByRole("button", { name: /Swap/ })).toBeDisabled();
     fireEvent.click(getByRole("radio", { name: "Decode" }));
@@ -93,10 +93,10 @@ describe("Example output", () => {
       "SGVsbG8sIHdvcmxkIQ"
     );
     expect(container.querySelector("pre")).toHaveTextContent("Hello, world!");
-    fireEvent.click(getByRole("radio", { name: "File / binary" }));
-    expect(queryByRole("note")).not.toBeInTheDocument();
+    expect(queryByRole("radio", { name: "File / binary" })).not.toBeInTheDocument();
+    expect(queryByRole("note")).toBeInTheDocument();
     expect(queryByRole("button", { name: "Download file" })).not.toBeInTheDocument();
-    expect(container.querySelector("pre")).not.toBeInTheDocument();
+    expect(container.querySelector("pre")).toHaveTextContent("Hello, world!");
   });
 
   it("keeps the URL encoding and decoding examples independent", () => {

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  decodeBase64Input,
   decodeBase64ToBytes,
   decodeBase64ToText,
   deriveDecodedFileName,
@@ -11,6 +12,38 @@ import {
 } from "./base64";
 
 describe("base64 utilities", () => {
+  it("previews readable Unicode and keeps the original bytes for download", () => {
+    const bytes = new TextEncoder().encode("\uFEFFAda ☕\n");
+    const result = decodeBase64Input(encodeBytesToBase64(bytes, "url"), "url", "note.txt.b64");
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.outputKind).toBe("text");
+      expect(result.value).toBe("Ada ☕\n");
+      expect([...result.bytes]).toEqual([...bytes]);
+      expect(result.downloadName).toBe("note.txt");
+    }
+  });
+
+  it("automatically previews binary bytes, including valid UTF-8 control bytes", () => {
+    for (const bytes of [new Uint8Array([0, 255, 16]), new Uint8Array([0, 1, 2])]) {
+      const result = decodeBase64Input(encodeBytesToBase64(bytes, "standard"), "standard");
+      expect(result.ok).toBe(true);
+      if (result.ok) {
+        expect(result.outputKind).toBe("bytes");
+        expect(result.value).toContain("3 bytes");
+        expect(result.bytes).toEqual(bytes);
+      }
+    }
+  });
+
+  it("distinguishes invalid Base64 from empty and binary input", () => {
+    expect(decodeBase64Input("!invalid", "standard").ok).toBe(false);
+    expect(decodeBase64Input("", "standard")).toMatchObject({
+      ok: true,
+      value: "",
+      bytes: new Uint8Array(),
+    });
+  });
   it("encodes and decodes standard base64 text", () => {
     const encoded = encodeTextToBase64("hello world", "standard");
 

@@ -9,7 +9,6 @@ import ToolDropZone from "@/components/tool/ToolDropZone";
 import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolFilePicker from "@/components/tool/ToolFilePicker";
 import ToolInputPanel from "@/components/tool/ToolInputPanel";
-import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
 import ToolToolbar from "@/components/tool/ToolToolbar";
 import { EXAMPLE_TEXT } from "@/lib/exampleData";
 import {
@@ -17,17 +16,14 @@ import {
   type FileImportError,
   formatBytes,
   formatFileReadFailureMessage,
-  formatImportedFileSummary,
   formatLargeFileNotice,
   type ImportedFileMeta,
   readImportedFile,
 } from "@/lib/fileImport";
 import { type HashResult, hashBytesWithAlgorithms, hashTextWithAlgorithms } from "@/lib/hash";
 
-type HashWorkflow = "text" | "file";
-
 export default function HashGenerator() {
-  const [workflow, setWorkflow] = createSignal<HashWorkflow>("text");
+  const workflow = () => (loadedFileBytes() ? "file" : "text");
   const [input, setInput] = createSignal("");
   const [results, setResults] = createSignal<HashResult[]>([]);
   const [computing, setComputing] = createSignal(false);
@@ -52,14 +48,6 @@ export default function HashGenerator() {
     setComputing(false);
   }
 
-  const fileSummary = createMemo(() => {
-    const file = loadedFile();
-    if (!file) {
-      return "";
-    }
-
-    return formatImportedFileSummary(file);
-  });
   const readFileError = createMemo(() => {
     const error = fileError();
     return error?.code === "read-failed" ? error : null;
@@ -85,11 +73,6 @@ export default function HashGenerator() {
 
   async function computeBytes(bytes: Uint8Array) {
     const run = ++latestCompute;
-    if (bytes.length === 0) {
-      setResults([]);
-      setComputing(false);
-      return;
-    }
 
     setComputing(true);
 
@@ -110,19 +93,6 @@ export default function HashGenerator() {
     debounceTimer = setTimeout(() => void computeText(value), 300);
   }
 
-  function handleWorkflowChange(nextWorkflow: HashWorkflow) {
-    invalidateResults();
-    clearTimeout(debounceTimer);
-    setWorkflow(nextWorkflow);
-    setInput("");
-    setResults([]);
-    setComputing(false);
-    setFileError(null);
-    setLoadedFile(null);
-    setLoadedFileBytes(null);
-    setFileNotice(null);
-  }
-
   function handleClear() {
     invalidateResults();
     clearTimeout(debounceTimer);
@@ -133,7 +103,6 @@ export default function HashGenerator() {
     setLoadedFile(null);
     setLoadedFileBytes(null);
     setFileNotice(null);
-    setWorkflow("text");
   }
 
   async function handleFile(file: File) {
@@ -159,7 +128,6 @@ export default function HashGenerator() {
       setFileNotice(formatLargeFileNotice(result.file, "hash"));
     }
 
-    setWorkflow("file");
     setLoadedFile(result.file);
     setLoadedFileBytes(result.value);
     setInput("");
@@ -196,18 +164,7 @@ export default function HashGenerator() {
             </ToolActionButton>
           </>
         }
-      >
-        <ToolSegmentedControl
-          label="Input type"
-          hideLabel
-          value={workflow()}
-          onChange={handleWorkflowChange}
-          options={[
-            { value: "text", label: "Text" },
-            { value: "file", label: "File" },
-          ]}
-        />
-      </ToolToolbar>
+      ></ToolToolbar>
       <ToolDropZone onFile={(file) => void handleFile(file)}>
         <ToolInputPanel
           compact
@@ -215,12 +172,18 @@ export default function HashGenerator() {
           name="hash-input"
           autocomplete="off"
           spellcheck={false}
-          value={workflow() === "file" ? fileSummary() : input()}
+          value={input()}
           onInput={handleInput}
-          placeholder={workflow() === "text" ? EXAMPLE_TEXT : "Drop or open a file to hash it…"}
+          placeholder={EXAMPLE_TEXT}
           rows={5}
-          readonly={workflow() === "file"}
-          actions={<ToolFilePicker onFileChange={(file) => void handleFile(file)} />}
+          file={loadedFile()}
+          onRemoveFile={handleClear}
+          actions={
+            <ToolFilePicker
+              label={loadedFile() ? "Replace file" : "Open file"}
+              onFileChange={(file) => void handleFile(file)}
+            />
+          }
         />
       </ToolDropZone>
 
@@ -266,12 +229,6 @@ export default function HashGenerator() {
             )}
           </For>
         </div>
-      </Show>
-
-      <Show when={!isExample() && !input().trim() && !loadedFileBytes() && results().length === 0}>
-        <ToolStatusMessage tone="muted">
-          SHA-1 · SHA-256 · SHA-384 · SHA-512 computed locally for text and file workflows
-        </ToolStatusMessage>
       </Show>
     </ToolContainer>
   );

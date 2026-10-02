@@ -1,5 +1,6 @@
 import { createMemo, createSignal, Show } from "solid-js";
 
+import CopyButton from "@/components/CopyButton";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
@@ -12,7 +13,7 @@ import ToolToolbar from "@/components/tool/ToolToolbar";
 import {
   type Base64Mode,
   type Base64Variant,
-  type Base64Workflow,
+  decodeBase64Input,
   encodeBytesToBase64,
   formatBase64FileNotice,
   processBase64Input,
@@ -21,7 +22,6 @@ import { EXAMPLE_TEXT } from "@/lib/exampleData";
 import {
   DEFAULT_IMPORT_MAX_BYTES,
   type FileImportError,
-  formatImportedFileSummary,
   formatImportSizeLimitMessage,
   type ImportedFileMeta,
   readImportedFile,
@@ -34,24 +34,22 @@ import {
 export default function Base64Tool() {
   const [mode, setMode] = createSignal<Base64Mode>("encode");
   const [variant, setVariant] = createSignal<Base64Variant>("standard");
-  const [workflow, setWorkflow] = createSignal<Base64Workflow>("text");
   const [input, setInput] = createSignal("");
   const [fileError, setFileError] = createSignal<FileImportError | null>(null);
   const [loadedFile, setLoadedFile] = createSignal<ImportedFileMeta | null>(null);
   const [loadedFileBytes, setLoadedFileBytes] = createSignal<Uint8Array | null>(null);
   const [fileNotice, setFileNotice] = createSignal<string | null>(null);
 
-  const isExample = () => workflow() === "text" && input() === "" && !loadedFile() && !fileError();
+  let latestFileLoad = 0;
+  const isExample = () => input() === "" && !loadedFile() && !fileError();
   const exampleInput = createMemo(() =>
     mode() === "encode"
       ? EXAMPLE_TEXT
       : encodeBytesToBase64(new TextEncoder().encode(EXAMPLE_TEXT), variant())
   );
-  const textInput = createMemo(() =>
-    isExample() ? exampleInput() : mode() === "encode" && workflow() === "file" ? "" : input()
-  );
+  const textInput = createMemo(() => (isExample() ? exampleInput() : input()));
   const result = createMemo(() => {
-    if (mode() === "encode" && workflow() === "file" && loadedFileBytes()) {
+    if (mode() === "encode" && loadedFileBytes()) {
       return {
         ok: true as const,
         value: encodeBytesToBase64(loadedFileBytes() ?? new Uint8Array(), variant()),
@@ -59,9 +57,9 @@ export default function Base64Tool() {
       };
     }
 
-    return processBase64Input(textInput(), mode(), variant(), workflow(), {
-      sourceName: loadedFile()?.name,
-    });
+    return mode() === "decode"
+      ? decodeBase64Input(textInput(), variant(), loadedFile()?.name)
+      : processBase64Input(textInput(), "encode", variant(), "text");
   });
   const outputValue = createMemo(() => {
     const current = result();
@@ -75,22 +73,24 @@ export default function Base64Tool() {
     const current = result();
     return current.ok && current.outputKind === "bytes" ? current : null;
   });
-  const fileSummary = createMemo(() => {
-    const file = loadedFile();
-    if (!file) {
-      return "";
-    }
-
-    return formatImportedFileSummary(file);
+  const decodedOutput = createMemo(() => {
+    const current = result();
+    return mode() === "decode" && current.ok && "bytes" in current ? current : null;
   });
+  const canSwap = () => !isExample() && !!outputValue() && !binaryOutput();
 
-  function swap() {
-    if (isExample()) return;
-    const current = outputValue();
+  function clearFile() {
+    latestFileLoad++;
     setFileError(null);
     setFileNotice(null);
     setLoadedFile(null);
     setLoadedFileBytes(null);
+  }
+
+  function swap() {
+    if (!canSwap()) return;
+    const current = outputValue();
+    clearFile();
     setMode((m) => (m === "encode" ? "decode" : "encode"));
     setInput(current);
   }
@@ -98,31 +98,20 @@ export default function Base64Tool() {
   function reset() {
     setMode("encode");
     setVariant("standard");
-    setWorkflow("text");
     setInput("");
-    setFileError(null);
-    setLoadedFile(null);
-    setLoadedFileBytes(null);
-    setFileNotice(null);
+    clearFile();
   }
 
   function handleModeChange(nextMode: Base64Mode) {
+    if (mode() === nextMode) return;
+    const encodedFile = mode() === "encode" && loadedFileBytes() ? outputValue() : null;
+    clearFile();
     setMode(nextMode);
-    setLoadedFile(null);
-    setLoadedFileBytes(null);
-    setFileError(null);
-    setFileNotice(null);
-  }
-
-  function handleWorkflowChange(nextWorkflow: Base64Workflow) {
-    setWorkflow(nextWorkflow);
-    setLoadedFile(null);
-    setLoadedFileBytes(null);
-    setFileError(null);
-    setFileNotice(null);
+    if (encodedFile !== null) setInput(encodedFile);
   }
 
   async function handleFile(file: File) {
+    const request = ++latestFileLoad;
     setFileError(null);
     setFileNotice(null);
 
@@ -132,18 +121,18 @@ export default function Base64Tool() {
         policy: { maxBytes: DEFAULT_IMPORT_MAX_BYTES },
       });
 
+      if (request !== latestFileLoad) return;
       if (!result.ok) {
         setFileError(result.error);
         return;
       }
 
       if (result.decision.status === "warn") {
-        setFileNotice(formatBase64FileNotice(result.file, mode(), workflow()));
+        setFileNotice(formatBase64FileNotice(result.file, "encode", "file"));
       }
 
       setLoadedFile(result.file);
       setLoadedFileBytes(result.value);
-      setWorkflow("file");
       setInput("");
       return;
     }
@@ -152,6 +141,7 @@ export default function Base64Tool() {
       as: "text",
       policy: { maxBytes: DEFAULT_IMPORT_MAX_BYTES },
     });
+    if (request !== latestFileLoad) return;
 
     if (!result.ok) {
       setFileError(result.error);
@@ -159,7 +149,7 @@ export default function Base64Tool() {
     }
 
     if (result.decision.status === "warn") {
-      setFileNotice(formatBase64FileNotice(result.file, mode(), workflow()));
+      setFileNotice(formatBase64FileNotice(result.file, "decode", "text"));
     }
 
     setLoadedFile(result.file);
@@ -168,8 +158,8 @@ export default function Base64Tool() {
   }
 
   function downloadDecodedBytes() {
-    const current = result();
-    if (!current.ok || current.outputKind !== "bytes" || current.bytes.length === 0) {
+    const current = decodedOutput();
+    if (!current || current.bytes.length === 0) {
       return;
     }
 
@@ -199,7 +189,7 @@ export default function Base64Tool() {
         label="Base64 options"
         actions={
           <>
-            <ToolActionButton onClick={swap} title="Swap input/output" disabled={isExample()}>
+            <ToolActionButton onClick={swap} title="Swap input/output" disabled={!canSwap()}>
               ⇅ Swap
             </ToolActionButton>
             <ToolActionButton onClick={reset} variant="ghost">
@@ -228,25 +218,15 @@ export default function Base64Tool() {
             { value: "url", label: "Base64url" },
           ]}
         />
-        <ToolSegmentedControl
-          label="Input type"
-          hideLabel
-          value={workflow()}
-          onChange={handleWorkflowChange}
-          options={[
-            { value: "text", label: "Text" },
-            { value: "file", label: "File / binary" },
-          ]}
-        />
       </ToolToolbar>
       <ToolDropZone onFile={(file) => void handleFile(file)}>
         <ToolInputPanel
           compact
           label={
             mode() === "encode"
-              ? workflow() === "text"
-                ? "Plain text"
-                : "Binary file"
+              ? loadedFileBytes()
+                ? "Input file"
+                : "Plain text"
               : variant() === "url"
                 ? "Base64url"
                 : "Base64"
@@ -254,24 +234,23 @@ export default function Base64Tool() {
           name="base64-input"
           autocomplete="off"
           spellcheck={false}
-          value={mode() === "encode" && workflow() === "file" ? fileSummary() : input()}
+          value={input()}
           onInput={(value) => {
-            setFileError(null);
-            setFileNotice(null);
-            setLoadedFile(null);
-            setLoadedFileBytes(null);
+            clearFile();
             setInput(value);
           }}
-          placeholder={
-            mode() === "encode" && workflow() === "file"
-              ? "Drop or open a file to encode it as Base64…"
-              : exampleInput()
-          }
+          placeholder={exampleInput()}
+          file={mode() === "encode" && loadedFileBytes() ? loadedFile() : null}
+          onRemoveFile={clearFile}
           rows={8}
-          readonly={mode() === "encode" && workflow() === "file"}
           error={!!transformError()}
           describedBy={transformError() ? "base64-error" : undefined}
-          actions={<ToolFilePicker onFileChange={(file) => void handleFile(file)} />}
+          actions={
+            <ToolFilePicker
+              label={loadedFile() ? "Replace file" : "Open file"}
+              onFileChange={(file) => void handleFile(file)}
+            />
+          }
         />
       </ToolDropZone>
 
@@ -303,7 +282,7 @@ export default function Base64Tool() {
               ? variant() === "url"
                 ? "Base64url"
                 : "Base64"
-              : workflow() === "file"
+              : binaryOutput()
                 ? "Decoded bytes"
                 : "Decoded text"
           }
@@ -311,8 +290,13 @@ export default function Base64Tool() {
           isExample={isExample()}
           copyLabel="Copy"
           actions={
-            binaryOutput() ? (
-              <ToolActionButton onClick={downloadDecodedBytes}>Download file</ToolActionButton>
+            decodedOutput() ? (
+              <>
+                <Show when={!binaryOutput()}>
+                  <CopyButton text={outputValue()} />
+                </Show>
+                <ToolActionButton onClick={downloadDecodedBytes}>Download file</ToolActionButton>
+              </>
             ) : undefined
           }
         />
