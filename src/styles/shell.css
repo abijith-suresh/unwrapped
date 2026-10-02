@@ -1,3 +1,8 @@
+/* One content width for every tool header, workspace, loading state and footer. */
+:root {
+  --tool-width: 70rem;
+}
+
 /* Shared site chrome: skip link, header, brand, footer.
    Both ToolShell (.ts-*) and LandingShell (.ls-*) reuse these rules. */
 
