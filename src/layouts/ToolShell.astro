@@ -1,7 +1,6 @@
 ---
 import GlobalToolSearch from "@/components/GlobalToolSearch";
 import ToolHelp from "@/components/tool/ToolHelp.astro";
-import { TOOL_WIDTHS, type ToolWidth } from "@/lib/toolLayout";
 import Base from "@/layouts/Base.astro";
 import { ClientRouter } from "astro:transitions";
 import type { ToolAccent } from "@/tools/registry";
@@ -11,11 +10,10 @@ interface Props {
   description?: string;
   ogImage?: string;
   accent?: ToolAccent;
-  width?: ToolWidth;
   help?: readonly string[];
 }
 
-const { title, description, ogImage, accent, help, width = "standard" } = Astro.props;
+const { title, description, ogImage, accent, help } = Astro.props;
 
 const FOOTER_LINKS = [
   { href: "/about", label: "About" },
@@ -36,7 +34,7 @@ const FOOTER_LINKS = [
 
   <a class="ts-skip-link" href="#main-content">Skip to content</a>
 
-  <div class="ts-page" style={{ "--tool-width": TOOL_WIDTHS[width] }} {...(accent ? { "data-tool-accent": accent } : {})}>
+  <div class="ts-page" {...(accent ? { "data-tool-accent": accent } : {})}>
     <main id="main-content" class="ts-main" tabindex="-1">
       <header class="ts-tool-heading">
         <div class="ts-tool-identity">
@@ -140,7 +138,9 @@ const FOOTER_LINKS = [
   }
 
   .ts-footer {
-    padding: 2rem 0 2.5rem;
+    width: min(100%, var(--tool-width));
+    margin-inline: auto;
+    padding: 2rem var(--tool-padding) 2.5rem;
   }
 
   .ts-footer-nav {

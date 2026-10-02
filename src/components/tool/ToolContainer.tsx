@@ -13,7 +13,7 @@ export default function ToolContainer(props: ToolContainerProps) {
     <div
       {...rest}
       class={cn(
-        "mx-auto flex w-full min-w-0 max-w-[var(--tool-width,56rem)] flex-col gap-5 p-[var(--tool-padding,1rem)]",
+        "mx-auto flex w-full min-w-0 max-w-[var(--tool-width)] flex-col gap-5 p-[var(--tool-padding,1rem)]",
         local.class
       )}
     >

@@ -27,12 +27,14 @@ Use `bun run format` to format files.
 ## Adding a tool
 
 1. Add the component under `src/tools/<slug>/`.
-2. Add one complete entry to `src/tools/registry.ts`, including `width`, `icon` (a lucide name present in
+2. Add one complete entry to `src/tools/registry.ts`, including `icon` (a lucide name present in
    `src/lib/iconMap.tsx`) and `accent` (one of the hues from `ToolAccent`).
 3. Keep parsing, conversion, and other business logic in `src/lib/` or a tool-local module.
 4. Build the tool UI on the shared layout kit:
-   - Root: `<ToolContainer>` inherits the page width from the registry. Choose
-     `narrow|standard|wide|full` in the registry; never hand-roll padding, gap, or max-width.
+   - Root: `<ToolContainer>` shares the header and footer width through the `--tool-width`
+     token in `src/styles/shell.css`. Every tool uses the same 70rem maximum and responsive
+     padding. Keep tool-specific layouts inside that rail; never hand-roll page padding, gap,
+     or max-width.
    - Panels: `ToolPanel` (with `TOOL_EDITOR_PANEL_CLASSES`/`TOOL_EDITOR_BODY_CLASSES` for
      code-editor panels), inputs via `ToolCodeEditor`, output via `ToolCodeBlock`.
    - Side-by-side panes: `ToolWorkspace` with `views`.
