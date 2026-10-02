@@ -6,6 +6,7 @@ type ToolPanelTone = "default" | "error";
 
 export interface ToolPanelProps extends JSX.HTMLAttributes<HTMLElement> {
   title: string;
+  titleAddon?: JSX.Element;
   description?: string;
   actions?: JSX.Element;
   tone?: ToolPanelTone;
@@ -27,6 +28,7 @@ export default function ToolPanel(props: ToolPanelProps) {
     "class",
     "description",
     "title",
+    "titleAddon",
     "tone",
   ]);
   const tone = local.tone ?? "default";
@@ -34,7 +36,7 @@ export default function ToolPanel(props: ToolPanelProps) {
   return (
     <section
       {...rest}
-      aria-label={local.title}
+      aria-label={rest["aria-label"] ?? local.title}
       class={cn(
         "min-w-0 overflow-hidden rounded-[var(--radius-panel)] border",
         TONE_CLASSES[tone],
@@ -43,14 +45,17 @@ export default function ToolPanel(props: ToolPanelProps) {
     >
       <header class="flex min-h-[3.75rem] min-w-0 shrink-0 flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] px-4 py-3">
         <div class="min-w-0">
-          <h2
-            class={cn(
-              "m-0 text-xs font-semibold uppercase tracking-[0.12em]",
-              tone === "error" ? "text-[var(--accent-error)]" : "text-[var(--text-secondary)]"
-            )}
-          >
-            {local.title}
-          </h2>
+          <div class="flex min-w-0 flex-wrap items-center gap-2">
+            <h2
+              class={cn(
+                "m-0 text-xs font-semibold uppercase tracking-[0.12em]",
+                tone === "error" ? "text-[var(--accent-error)]" : "text-[var(--text-secondary)]"
+              )}
+            >
+              {local.title}
+            </h2>
+            {local.titleAddon}
+          </div>
           <Show when={local.description}>
             {(description) => (
               <p class="m-0 mt-1 text-xs leading-relaxed text-[var(--text-muted)]">

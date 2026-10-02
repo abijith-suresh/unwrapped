@@ -1,14 +1,9 @@
-import { createMemo, createSignal, Show } from "solid-js";
+import { createMemo, createSignal } from "solid-js";
 
-import CopyButton from "@/components/CopyButton";
-import Card from "@/components/primitives/solid/Card";
 import Input from "@/components/primitives/solid/Input";
-import Label from "@/components/primitives/solid/Label";
-import Textarea from "@/components/primitives/solid/Textarea";
 import ToolActionButton from "@/components/ToolActionButton";
-import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
-import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import ToolTransformWorkspace from "@/components/tool/ToolTransformWorkspace";
 import { EXAMPLE_YAML_FORMAT } from "@/lib/exampleData";
 import { formatYaml } from "@/lib/yamlFormatter";
 
@@ -51,44 +46,18 @@ export default function YamlFormatterTool() {
             Sort keys
           </ToolActionButton>
         </div>
-
-        <Textarea
-          label="YAML input"
-          value={input()}
-          onInput={(value) => setInput(value)}
-          placeholder={EXAMPLE_YAML_FORMAT}
-          rows={14}
-          spellcheck={false}
-          name="yaml-input"
-          autocomplete="off"
-          describedBy={error() ? "yaml-input-error" : undefined}
-          error={!!error()}
-        />
       </div>
-
-      <ToolExampleNotice when={isExample()} />
-
-      <Card class="flex flex-col gap-3">
-        <div class="flex items-center justify-between">
-          <Label>Formatted YAML</Label>
-          <Show when={!isExample()}>
-            <CopyButton text={output()} label="Copy YAML" />
-          </Show>
-        </div>
-
-        <Show
-          when={!error()}
-          fallback={
-            <ToolStatusMessage id="yaml-input-error" tone="error">
-              {error()}
-            </ToolStatusMessage>
-          }
-        >
-          <pre class="m-0 p-4 rounded-lg border border-[var(--border)] bg-[var(--bg-primary)] text-[var(--text-primary)] font-mono text-sm leading-relaxed whitespace-pre-wrap break-words min-h-[20rem]">
-            {output() || "—"}
-          </pre>
-        </Show>
-      </Card>
+      <ToolTransformWorkspace
+        inputLabel="YAML input"
+        value={input()}
+        onInput={setInput}
+        placeholder={EXAMPLE_YAML_FORMAT}
+        output={output()}
+        outputLabel="Formatted YAML"
+        isExample={isExample()}
+        error={error()}
+        copyLabel="Copy YAML"
+      />
     </ToolContainer>
   );
 }

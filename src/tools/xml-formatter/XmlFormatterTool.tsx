@@ -1,13 +1,8 @@
-import { createMemo, createSignal, Show } from "solid-js";
+import { createMemo, createSignal } from "solid-js";
 
-import CopyButton from "@/components/CopyButton";
-import Card from "@/components/primitives/solid/Card";
 import Input from "@/components/primitives/solid/Input";
-import Label from "@/components/primitives/solid/Label";
-import Textarea from "@/components/primitives/solid/Textarea";
-import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
-import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import ToolTransformWorkspace from "@/components/tool/ToolTransformWorkspace";
 import { EXAMPLE_XML } from "@/lib/exampleData";
 import { formatXml } from "@/lib/xmlFormatter";
 
@@ -41,44 +36,18 @@ export default function XmlFormatterTool() {
           class="flex-row items-center gap-3"
           controlClass="!w-20 rounded-lg !px-3 !py-2"
         />
-
-        <Textarea
-          label="XML input"
-          value={input()}
-          onInput={(value) => setInput(value)}
-          placeholder={EXAMPLE_XML}
-          rows={14}
-          spellcheck={false}
-          name="xml-input"
-          autocomplete="off"
-          describedBy={error() ? "xml-input-error" : undefined}
-          error={!!error()}
-        />
       </div>
-
-      <ToolExampleNotice when={isExample()} />
-
-      <Card class="flex flex-col gap-3">
-        <div class="flex items-center justify-between">
-          <Label>Formatted XML</Label>
-          <Show when={!isExample()}>
-            <CopyButton text={output()} label="Copy XML" />
-          </Show>
-        </div>
-
-        <Show
-          when={!error()}
-          fallback={
-            <ToolStatusMessage id="xml-input-error" tone="error">
-              {error()}
-            </ToolStatusMessage>
-          }
-        >
-          <pre class="m-0 p-4 rounded-lg border border-[var(--border)] bg-[var(--bg-primary)] text-[var(--text-primary)] font-mono text-sm leading-relaxed whitespace-pre-wrap break-words min-h-[20rem]">
-            {output() || "—"}
-          </pre>
-        </Show>
-      </Card>
+      <ToolTransformWorkspace
+        inputLabel="XML input"
+        value={input()}
+        onInput={setInput}
+        placeholder={EXAMPLE_XML}
+        output={output()}
+        outputLabel="Formatted XML"
+        isExample={isExample()}
+        error={error()}
+        copyLabel="Copy XML"
+      />
     </ToolContainer>
   );
 }

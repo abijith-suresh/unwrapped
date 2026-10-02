@@ -1,12 +1,6 @@
-import { createMemo, createSignal, Show } from "solid-js";
-
-import CopyButton from "@/components/CopyButton";
-import Card from "@/components/primitives/solid/Card";
-import Label from "@/components/primitives/solid/Label";
-import Textarea from "@/components/primitives/solid/Textarea";
-import ToolStatusMessage from "@/components/ToolStatusMessage";
+import { createMemo, createSignal } from "solid-js";
 import ToolContainer from "@/components/tool/ToolContainer";
-import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import ToolTransformWorkspace from "@/components/tool/ToolTransformWorkspace";
 import { EXAMPLE_JSON_ARRAY } from "@/lib/exampleData";
 import { convertJsonToCsv } from "@/lib/jsonToCsv";
 
@@ -25,35 +19,17 @@ export default function JsonToCsvTool() {
 
   return (
     <ToolContainer>
-      <Textarea
-        label="JSON array input"
+      <ToolTransformWorkspace
+        inputLabel="JSON array input"
         value={input()}
-        onInput={(value) => setInput(value)}
+        onInput={setInput}
         placeholder={EXAMPLE_JSON_ARRAY}
-        rows={14}
-        spellcheck={false}
-        error={!!error()}
+        output={output()}
+        outputLabel="CSV output"
+        isExample={isExample()}
+        error={error()}
+        copyLabel="Copy CSV"
       />
-
-      <ToolExampleNotice when={isExample()} />
-
-      <Card class="flex flex-col gap-3">
-        <div class="flex items-center justify-between">
-          <Label>CSV output</Label>
-          <Show when={!isExample()}>
-            <CopyButton text={output()} label="Copy CSV" />
-          </Show>
-        </div>
-
-        <Show
-          when={!error()}
-          fallback={<ToolStatusMessage tone="error">{error()}</ToolStatusMessage>}
-        >
-          <pre class="m-0 p-4 rounded-lg border border-[var(--border)] bg-[var(--bg-primary)] text-[var(--text-primary)] font-mono text-sm leading-relaxed whitespace-pre-wrap break-words min-h-[20rem]">
-            {output() || "—"}
-          </pre>
-        </Show>
-      </Card>
     </ToolContainer>
   );
 }

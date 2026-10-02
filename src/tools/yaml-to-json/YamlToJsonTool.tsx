@@ -1,16 +1,6 @@
-import { createMemo, createSignal, Show } from "solid-js";
-
-import CopyButton from "@/components/CopyButton";
-import ToolStatusMessage from "@/components/ToolStatusMessage";
-import ToolCodeBlock from "@/components/tool/ToolCodeBlock";
-import ToolCodeEditor from "@/components/tool/ToolCodeEditor";
+import { createMemo, createSignal } from "solid-js";
 import ToolContainer from "@/components/tool/ToolContainer";
-import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
-import ToolPanel, {
-  TOOL_EDITOR_BODY_CLASSES,
-  TOOL_EDITOR_PANEL_CLASSES,
-} from "@/components/tool/ToolPanel";
-import ToolWorkspace from "@/components/tool/ToolWorkspace";
+import ToolTransformWorkspace from "@/components/tool/ToolTransformWorkspace";
 import { EXAMPLE_YAML } from "@/lib/exampleData";
 import { convertYamlToJson } from "@/lib/yamlToJson";
 
@@ -29,73 +19,15 @@ export default function YamlToJsonTool() {
 
   return (
     <ToolContainer>
-      <Show when={error()}>
-        <p id="yaml-to-json-input-error" class="sr-only">
-          {error()}
-        </p>
-      </Show>
-
-      <ToolExampleNotice when={isExample()} />
-
-      <ToolWorkspace
-        switcherLabel="YAML to JSON views"
-        views={[
-          {
-            id: "input",
-            label: "Input",
-            content: (
-              <ToolPanel
-                title="Input"
-                class={TOOL_EDITOR_PANEL_CLASSES}
-                bodyClass={TOOL_EDITOR_BODY_CLASSES}
-              >
-                <ToolCodeEditor
-                  id="yaml-to-json-input"
-                  name="yaml-to-json-input"
-                  label="YAML document"
-                  labelClass="sr-only"
-                  value={input()}
-                  onInput={(value) => setInput(value)}
-                  placeholder={EXAMPLE_YAML}
-                  rows={12}
-                  spellcheck={false}
-                  autocomplete="off"
-                  describedBy={error() ? "yaml-to-json-input-error" : undefined}
-                  error={!!error()}
-                />
-              </ToolPanel>
-            ),
-          },
-          {
-            id: "output",
-            label: "Output",
-            content: (
-              <ToolPanel
-                title="Output"
-                class={TOOL_EDITOR_PANEL_CLASSES}
-                bodyClass={TOOL_EDITOR_BODY_CLASSES}
-                actions={
-                  <Show when={!isExample() && output()}>
-                    <CopyButton text={output()} label="Copy JSON" />
-                  </Show>
-                }
-              >
-                <Show
-                  when={!error()}
-                  fallback={
-                    <div class="flex min-h-0 flex-1 items-start">
-                      <ToolStatusMessage tone="error">{error()}</ToolStatusMessage>
-                    </div>
-                  }
-                >
-                  <ToolCodeBlock fill aria-label="JSON output">
-                    {output() || "—"}
-                  </ToolCodeBlock>
-                </Show>
-              </ToolPanel>
-            ),
-          },
-        ]}
+      <ToolTransformWorkspace
+        inputLabel="YAML document"
+        value={input()}
+        onInput={setInput}
+        placeholder={EXAMPLE_YAML}
+        output={output()}
+        isExample={isExample()}
+        error={error()}
+        copyLabel="Copy JSON"
       />
     </ToolContainer>
   );
