@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getToolErrorMessage } from "./ToolErrorFallback";
+import { getToolErrorMessage } from "./toolError";
 
 describe("tool error fallback helpers", () => {
   it("hides error details in production mode", () => {

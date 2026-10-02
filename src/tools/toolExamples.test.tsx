@@ -4,12 +4,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import * as hash from "@/lib/hash";
 import Base64Tool from "@/tools/base64/Base64Tool";
-import CaseConverter from "@/tools/case-converter/CaseConverter";
 import DiffTool from "@/tools/diff/DiffTool";
 import HashGenerator from "@/tools/hash-generator/HashGenerator";
 import HmacGeneratorTool from "@/tools/hmac-generator/HmacGeneratorTool";
-import JsonFormatter from "@/tools/json-formatter/JsonFormatter";
-import JwtDecoder from "@/tools/jwt-decoder/JwtDecoder";
 import RegexTester from "@/tools/regex-tester/RegexTester";
 import TextStatisticsTool from "@/tools/text-statistics/TextStatisticsTool";
 import TimestampTool from "@/tools/timestamp/TimestampTool";
@@ -21,63 +18,6 @@ afterEach(() => {
 });
 
 describe("Example output", () => {
-  it.each([
-    {
-      name: "JSON formatter",
-      Tool: JsonFormatter,
-      label: "JSON document",
-      example: '"name": "Alice"',
-      input: '{"user":"Ada"}',
-      output: '"user": "Ada"',
-    },
-    {
-      name: "Base64",
-      Tool: Base64Tool,
-      label: "Plain text",
-      example: "SGVsbG8sIHdvcmxkIQ==",
-      input: "Ada",
-      output: "QWRh",
-    },
-    {
-      name: "Case converter",
-      Tool: CaseConverter,
-      label: "Source text",
-      example: "helloWorld",
-      input: "user_name",
-      output: "userName",
-    },
-    {
-      name: "JWT decoder",
-      Tool: JwtDecoder,
-      label: "JWT token",
-      example: '"name": "Alice"',
-      input: "e30.eyJzdWIiOiJhZGEifQ.c2ln",
-      output: '"sub": "ada"',
-    },
-  ])(
-    "$name replaces and restores examples without filling the input",
-    async ({ Tool, label, example, input, output }) => {
-      const { container, getByRole, queryByRole, queryAllByRole } = render(() => <Tool />);
-      const editor = getByRole("textbox", { name: label });
-      expect(editor).toHaveValue("");
-      await waitFor(() => expect(container).toHaveTextContent(example));
-      expect(getByRole("note", { name: "Example output" })).toBeInTheDocument();
-      expect(queryAllByRole("button", { name: /^Copy/ })).toHaveLength(0);
-
-      fireEvent.input(editor, { target: { value: input } });
-      await waitFor(() => expect(container).toHaveTextContent(output));
-      expect(container).not.toHaveTextContent(example);
-      expect(queryByRole("note")).not.toBeInTheDocument();
-      expect(queryAllByRole("button", { name: /^Copy/ }).length).toBeGreaterThan(0);
-
-      fireEvent.input(editor, { target: { value: "" } });
-      await waitFor(() => expect(container).toHaveTextContent(example));
-      expect(editor).toHaveValue("");
-      expect(getByRole("note", { name: "Example output" })).toBeInTheDocument();
-      expect(queryAllByRole("button", { name: /^Copy/ })).toHaveLength(0);
-    }
-  );
-
   it("updates Base64 decode examples without exposing file actions", () => {
     const { container, getByRole, queryByRole } = render(() => <Base64Tool />);
     expect(getByRole("button", { name: /Swap/ })).toBeDisabled();

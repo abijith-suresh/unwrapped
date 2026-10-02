@@ -68,6 +68,25 @@ Use `bun run format` to format files.
 The dynamic route already handles registered tools. Do not add a separate page for each tool or a
 second tool list in documentation.
 
+## Test strategy
+
+`bun run test` runs two [Vitest projects](https://vitest.dev/guide/projects):
+
+- `logic` runs parsers, conversions, generators, validation and execution policies in Node.
+- `components` uses jsdom for shared component behavior and tool integrations. XML, theme bootstrap
+  and browser preference tests also use this environment because they need browser APIs.
+
+Keep most cases around observable behavior in libraries: exact results, malformed input, numeric
+precision, preservation of user data, round trips, format limits and asynchronous failure handling.
+Test shared workspace examples, errors, copy visibility and control keyboard behavior once in the
+component tests. Keep tool integration tests when they cover behavior beyond those shared contracts:
+file reads/downloads, mode transitions, stale asynchronous results, secret handling, or safe rendering
+of untrusted markup. Do not repeat heading, panel and placeholder assertions for every transform.
+
+jsdom cannot verify layout or browser hydration. For changes to shared UI, inspect the built app in
+real browsers at phone and desktop widths and exercise the affected user flows. Record the browsers,
+flows and limitations in the PR. Avoid DOM snapshots and tests that assert utility class names.
+
 ## Privacy and storage
 
 - Tool inputs and outputs stay in the browser and must not be uploaded or server-processed.
