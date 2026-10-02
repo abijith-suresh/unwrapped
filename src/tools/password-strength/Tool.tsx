@@ -28,7 +28,7 @@ export default function Tool() {
     }
   }
   return (
-    <ToolContainer width="standard">
+    <ToolContainer>
       <ToolPanel
         title="Password"
         description="Check common words, repeated patterns, keyboard sequences, and predictable substitutions."

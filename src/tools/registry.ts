@@ -1,3 +1,5 @@
+import type { ToolWidth } from "@/lib/toolLayout";
+
 export type ToolCategory =
   | "encoding"
   | "security"
@@ -34,11 +36,13 @@ export interface Tool {
   slug: string; // matches folder name, used in URL
   componentPath: string;
   accent: ToolAccent;
+  width: ToolWidth;
 }
 
 export const tools: Tool[] = [
   {
     id: "jwt-decoder",
+    width: "standard",
     name: "JWT Decoder",
     description: "Decode and inspect JSON Web Tokens. View header, payload, expiry.",
     category: "security",
@@ -50,6 +54,7 @@ export const tools: Tool[] = [
   },
   {
     id: "diff",
+    width: "full",
     name: "Text Diff",
     description: "Compare two texts or configs side by side with highlighted differences.",
     category: "text",
@@ -61,6 +66,7 @@ export const tools: Tool[] = [
   },
   {
     id: "html-entities",
+    width: "wide",
     name: "HTML Entities",
     description: "Encode HTML special characters or decode named and numeric character references.",
     category: "encoding",
@@ -72,6 +78,7 @@ export const tools: Tool[] = [
   },
   {
     id: "base64",
+    width: "standard",
     name: "Base64",
     description: "Encode and decode Base64 strings. Supports file drag-and-drop.",
     category: "encoding",
@@ -83,6 +90,7 @@ export const tools: Tool[] = [
   },
   {
     id: "json-schema-validator",
+    width: "wide",
     name: "JSON Schema Validator",
     description: "Validate JSON against draft-07 schemas and inspect errors by document path.",
     category: "data",
@@ -94,6 +102,7 @@ export const tools: Tool[] = [
   },
   {
     id: "json-formatter",
+    width: "wide",
     name: "JSON Formatter",
     description: "Format and minify JSON with syntax highlighting.",
     category: "data",
@@ -105,6 +114,7 @@ export const tools: Tool[] = [
   },
   {
     id: "hash-generator",
+    width: "standard",
     name: "Hash Generator",
     description: "Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes from text.",
     category: "security",
@@ -116,6 +126,7 @@ export const tools: Tool[] = [
   },
   {
     id: "uuid-generator",
+    width: "standard",
     name: "UUID Generator",
     description: "Generate cryptographically secure UUIDs (v4) in bulk.",
     category: "generators",
@@ -127,6 +138,7 @@ export const tools: Tool[] = [
   },
   {
     id: "timestamp",
+    width: "narrow",
     name: "Timestamp Converter",
     description: "Convert Unix timestamps to human-readable dates across timezones.",
     category: "time",
@@ -138,6 +150,7 @@ export const tools: Tool[] = [
   },
   {
     id: "regex-tester",
+    width: "full",
     name: "Regex Tester",
     description: "Test regular expressions with real-time match highlighting.",
     category: "text",
@@ -149,6 +162,7 @@ export const tools: Tool[] = [
   },
   {
     id: "case-converter",
+    width: "standard",
     name: "Case Converter",
     description: "Fan out one input into common case styles for code, paths, and titles.",
     category: "text",
@@ -160,6 +174,7 @@ export const tools: Tool[] = [
   },
   {
     id: "css-minifier",
+    width: "wide",
     name: "CSS Minifier",
     description: "Minify CSS locally while preserving rule order and displaying parser errors.",
     category: "text",
@@ -171,6 +186,7 @@ export const tools: Tool[] = [
   },
   {
     id: "text-statistics",
+    width: "standard",
     name: "Text Statistics",
     description: "Inspect character, word, line, and byte counts for local text input.",
     category: "text",
@@ -182,6 +198,7 @@ export const tools: Tool[] = [
   },
   {
     id: "password-strength",
+    width: "standard",
     name: "Password Strength Meter",
     description: "Estimate password guessability using bundled dictionaries and pattern matching.",
     category: "security",
@@ -193,6 +210,7 @@ export const tools: Tool[] = [
   },
   {
     id: "token-generator",
+    width: "standard",
     name: "Token Generator",
     description: "Generate configurable random tokens with browser-local cryptography.",
     category: "generators",
@@ -204,6 +222,7 @@ export const tools: Tool[] = [
   },
   {
     id: "url-encoder",
+    width: "wide",
     name: "URL Encoder / Decoder",
     description: "Percent-encode or decode text locally with clear invalid-input feedback.",
     category: "encoding",
@@ -215,6 +234,7 @@ export const tools: Tool[] = [
   },
   {
     id: "network-reference",
+    width: "wide",
     name: "DNS & HTTP Headers Reference",
     description: "Search bundled DNS record types and HTTP headers with copyable examples.",
     category: "network",
@@ -226,6 +246,7 @@ export const tools: Tool[] = [
   },
   {
     id: "http-status-codes",
+    width: "standard",
     name: "HTTP Status Codes",
     description: "Search a bundled local reference of common HTTP response codes.",
     category: "network",
@@ -237,6 +258,7 @@ export const tools: Tool[] = [
   },
   {
     id: "json-to-yaml",
+    width: "wide",
     name: "JSON to YAML",
     description: "Convert JSON documents into YAML locally with stable nested key ordering.",
     category: "data",
@@ -248,6 +270,7 @@ export const tools: Tool[] = [
   },
   {
     id: "yaml-to-json",
+    width: "wide",
     name: "YAML to JSON",
     description: "Convert YAML documents into formatted JSON locally.",
     category: "data",
@@ -259,6 +282,7 @@ export const tools: Tool[] = [
   },
   {
     id: "toml-formatter",
+    width: "wide",
     name: "TOML Formatter",
     description: "Parse and format TOML tables, arrays, and configuration values locally.",
     category: "data",
@@ -270,6 +294,7 @@ export const tools: Tool[] = [
   },
   {
     id: "yaml-formatter",
+    width: "wide",
     name: "YAML Formatter",
     description: "Format YAML locally with indent controls and optional key sorting.",
     category: "data",
@@ -281,6 +306,7 @@ export const tools: Tool[] = [
   },
   {
     id: "xml-formatter",
+    width: "wide",
     name: "XML Formatter",
     description: "Format XML locally with indentation control and clear invalid-input feedback.",
     category: "data",
@@ -292,6 +318,7 @@ export const tools: Tool[] = [
   },
   {
     id: "markdown-table",
+    width: "wide",
     name: "Markdown Table Converter",
     description: "Convert CSV and TSV into Markdown tables, or export Markdown tables as CSV.",
     category: "text",
@@ -303,6 +330,7 @@ export const tools: Tool[] = [
   },
   {
     id: "json-to-csv",
+    width: "wide",
     name: "JSON to CSV",
     description: "Convert arrays of JSON objects into CSV locally.",
     category: "data",
@@ -314,6 +342,7 @@ export const tools: Tool[] = [
   },
   {
     id: "chmod-calculator",
+    width: "standard",
     name: "chmod Calculator",
     description: "Derive octal, symbolic, and command output for Unix file permissions.",
     category: "security",
@@ -325,6 +354,7 @@ export const tools: Tool[] = [
   },
   {
     id: "hmac-generator",
+    width: "standard",
     name: "HMAC Generator",
     description: "Generate SHA-based HMAC signatures locally with the browser Web Crypto API.",
     category: "security",
@@ -336,6 +366,7 @@ export const tools: Tool[] = [
   },
   {
     id: "query-string-editor",
+    width: "wide",
     name: "Query String Editor",
     description: "Edit URL query parameters while preserving duplicate keys, order, and fragments.",
     category: "network",
@@ -347,6 +378,7 @@ export const tools: Tool[] = [
   },
   {
     id: "url-inspector",
+    width: "wide",
     name: "URL Inspector",
     description: "Parse full URLs or raw query strings locally and inspect decoded sections.",
     category: "network",
@@ -358,6 +390,7 @@ export const tools: Tool[] = [
   },
   {
     id: "cron",
+    width: "standard",
     name: "Cron Schedule",
     description: "Build cron expressions, humanize schedules, and preview upcoming runs locally.",
     category: "time",

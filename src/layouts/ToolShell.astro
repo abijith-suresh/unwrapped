@@ -1,4 +1,6 @@
 ---
+import ToolHelp from "@/components/tool/ToolHelp.astro";
+import { TOOL_WIDTHS, type ToolWidth } from "@/lib/toolLayout";
 import Base from "@/layouts/Base.astro";
 import { ClientRouter } from "astro:transitions";
 import type { ToolAccent } from "@/tools/registry";
@@ -7,11 +9,11 @@ interface Props {
   title: string;
   description?: string;
   ogImage?: string;
-  category?: string;
   accent?: ToolAccent;
+  width?: ToolWidth;
 }
 
-const { title, description, ogImage, category, accent } = Astro.props;
+const { title, description, ogImage, accent, width = "standard" } = Astro.props;
 
 const FOOTER_LINKS = [
   { href: "/about", label: "About" },
@@ -32,26 +34,18 @@ const FOOTER_LINKS = [
 
   <a class="ts-skip-link" href="#main-content">Skip to content</a>
 
-  <div class="ts-page" {...(accent ? { "data-tool-accent": accent } : {})}>
-    <header class="ts-header">
-      <a href="/" class="ts-brand" translate="no">
-        unwrapped<span class="ts-brand-tld">.tools</span>
-      </a>
-    </header>
-
+  <div class="ts-page" style={{ "--tool-width": TOOL_WIDTHS[width] }} {...(accent ? { "data-tool-accent": accent } : {})}>
     <main id="main-content" class="ts-main" tabindex="-1">
-      <section class="ts-tool-heading" aria-labelledby="tool-title">
+      <header class="ts-tool-heading">
         <div class="ts-tool-identity">
-          <p class="ts-tool-category" translate="no">
-            {category ?? "tool"}
-          </p>
-          <h1 id="tool-title">
-            {title}
-            <span class="ts-tool-mark" aria-hidden="true">.</span>
-          </h1>
-          {description ? <p class="ts-tool-description">{description}</p> : null}
+          <a href="/" class="ts-back-link" aria-label="All tools">
+            <span aria-hidden="true">←</span><span class="ts-back-label">All tools</span>
+          </a>
+          <span class="ts-tool-separator" aria-hidden="true">/</span>
+          <h1 id="tool-title">{title}</h1>
         </div>
-      </section>
+        {description ? <ToolHelp title={title} description={description} /> : null}
+      </header>
       <slot />
     </main>
     <footer class="ts-footer">
@@ -77,74 +71,69 @@ const FOOTER_LINKS = [
     display: flex;
     flex-direction: column;
     min-height: 100dvh;
-    padding-inline: clamp(1.25rem, 6vw, 7rem);
-  }
-
-  .ts-header {
-    width: min(100%, 1120px);
-    margin-inline: auto;
-    gap: 0.5rem;
-    padding: 1rem 0;
+    --tool-padding: 1rem;
+    padding-inline: clamp(1rem, 3vw, 2rem);
   }
 
   .ts-main {
     flex: 1;
     min-width: 0;
-    padding-top: clamp(2rem, 5vh, 3.5rem);
+    padding-top: clamp(1rem, 2vh, 1.5rem);
   }
 
   .ts-tool-heading {
-    width: min(100%, 1120px);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: min(100%, var(--tool-width));
     margin: 0 auto;
-    padding: 0 0 1.5rem;
+    padding: 0  var(--tool-padding) 0.75rem;
     border-bottom: 1px solid var(--border);
   }
 
   .ts-tool-identity {
-    position: relative;
-    padding-left: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 2.75rem;
+    flex: 1;
+    min-width: 0;
   }
 
-  .ts-tool-identity::before {
-    position: absolute;
-    top: 0.2rem;
-    bottom: 0.2rem;
-    left: 0;
-    width: 2px;
-    background: var(--accent-primary);
-    content: "";
+  .ts-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+    min-height: 2.75rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    text-decoration: none;
   }
 
-  .ts-tool-category {
-    margin: 0 0 0.55rem;
-    color: var(--accent-primary);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+  .ts-back-link:hover {
+    color: var(--text-primary);
+  }
+
+  .ts-tool-separator {
+    color: var(--text-secondary);
   }
 
   .ts-tool-heading h1 {
     margin: 0;
+    min-width: 0;
     color: var(--text-primary);
-    font-size: clamp(1.75rem, 4vw, 2.75rem);
-    font-weight: 700;
-    letter-spacing: -0.06em;
-    line-height: 1;
-    text-wrap: balance;
+    font-size: 1.15rem;
+    font-weight: 650;
+    letter-spacing: -0.03em;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
   }
 
-  .ts-tool-mark {
-    color: var(--accent-primary);
-  }
-
-  .ts-tool-description {
-    max-width: 58rem;
-    margin: 0.8rem 0 0;
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.6;
+  .ts-back-link:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 3px;
+    border-radius: 0.2rem;
   }
 
   .ts-footer {
@@ -155,14 +144,24 @@ const FOOTER_LINKS = [
     justify-content: center;
   }
 
-  @media (max-width: 600px) {
-    .ts-header {
-      min-height: 3.75rem;
-      padding-block: 0.8rem;
+  @media (min-width: 640px) {
+    .ts-page { --tool-padding: 1.5rem; }
+  }
+
+  @media (max-width: 480px) {
+    .ts-tool-identity {
+      gap: 0.5rem;
+
     }
 
-    .ts-tool-heading {
-      padding-bottom: 1.25rem;
+    .ts-back-link {
+      justify-content: center;
+      min-width: 2.75rem;
+    }
+
+    .ts-back-label,
+    .ts-tool-separator {
+      display: none;
     }
   }
 </style>

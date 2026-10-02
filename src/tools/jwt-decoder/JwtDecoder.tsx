@@ -74,7 +74,7 @@ export default function JwtDecoder() {
   });
 
   return (
-    <ToolContainer width="standard">
+    <ToolContainer>
       {/* ------------------------------------------------------------------ */}
       {/* Input area                                                          */}
       {/* ------------------------------------------------------------------ */}

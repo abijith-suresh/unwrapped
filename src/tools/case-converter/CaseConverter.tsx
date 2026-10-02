@@ -30,7 +30,7 @@ export default function CaseConverter() {
   const hasInput = createMemo(() => input().trim().length > 0);
 
   return (
-    <ToolContainer width="standard">
+    <ToolContainer>
       <Textarea
         label="Source text"
         value={input()}

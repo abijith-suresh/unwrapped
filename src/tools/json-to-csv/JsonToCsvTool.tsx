@@ -24,7 +24,7 @@ export default function JsonToCsvTool() {
   });
 
   return (
-    <ToolContainer width="wide">
+    <ToolContainer>
       <Textarea
         label="JSON array input"
         value={input()}

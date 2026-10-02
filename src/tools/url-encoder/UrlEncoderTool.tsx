@@ -29,7 +29,7 @@ export default function UrlEncoderTool() {
   });
 
   return (
-    <ToolContainer width="wide">
+    <ToolContainer>
       <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] gap-5">
         <Card class="flex flex-col gap-4">
           <Textarea

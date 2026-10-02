@@ -82,7 +82,7 @@ export default function TimestampTool() {
   }
 
   return (
-    <ToolContainer width="narrow">
+    <ToolContainer>
       {/* ------------------------------------------------------------------ */}
       {/* Input row                                                           */}
       {/* ------------------------------------------------------------------ */}

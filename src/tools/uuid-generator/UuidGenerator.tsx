@@ -48,7 +48,7 @@ export default function UuidGenerator() {
   }
 
   return (
-    <ToolContainer width="standard">
+    <ToolContainer>
       {/* ------------------------------------------------------------------ */}
       {/* Controls                                                            */}
       {/* ------------------------------------------------------------------ */}

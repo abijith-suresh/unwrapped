@@ -31,7 +31,7 @@ export default function YamlFormatterTool() {
   });
 
   return (
-    <ToolContainer width="wide">
+    <ToolContainer>
       <div class="flex flex-col gap-3">
         <div class="flex items-center gap-3 flex-wrap">
           <Input

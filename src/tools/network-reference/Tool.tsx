@@ -13,7 +13,7 @@ export default function Tool() {
   const [kind, setKind] = createSignal<ReferenceKind>("all");
   const entries = createMemo(() => searchNetworkReference(query(), kind()));
   return (
-    <ToolContainer width="wide">
+    <ToolContainer>
       <Input
         label="Search record types or headers"
         value={query()}

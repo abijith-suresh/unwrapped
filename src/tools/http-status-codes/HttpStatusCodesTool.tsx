@@ -12,7 +12,7 @@ export default function HttpStatusCodesTool() {
   const results = createMemo(() => searchHttpStatusCodes(query()));
 
   return (
-    <ToolContainer width="standard">
+    <ToolContainer>
       <Input
         label="Search by code or name"
         value={query()}

@@ -37,7 +37,7 @@ export default function UrlInspectorTool() {
   });
 
   return (
-    <ToolContainer width="wide">
+    <ToolContainer>
       <Textarea
         label="URL or raw query string"
         value={input()}

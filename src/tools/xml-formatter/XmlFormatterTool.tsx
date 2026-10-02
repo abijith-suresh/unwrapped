@@ -26,7 +26,7 @@ export default function XmlFormatterTool() {
   });
 
   return (
-    <ToolContainer width="wide">
+    <ToolContainer>
       <div class="flex flex-col gap-3">
         <Input
           label="Indent"

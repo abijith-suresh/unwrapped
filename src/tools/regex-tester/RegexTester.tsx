@@ -90,7 +90,7 @@ export default function RegexTester() {
   const hasCaptures = createMemo(() => result().matches.some((match) => match.groups.length > 0));
 
   return (
-    <ToolContainer width="full">
+    <ToolContainer>
       <div class="flex flex-col gap-2">
         <div class="flex gap-2 flex-wrap">
           <ToolActionButton

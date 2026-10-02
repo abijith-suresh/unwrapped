@@ -31,7 +31,7 @@ export default function Tool() {
     }));
   }
   return (
-    <ToolContainer width="wide">
+    <ToolContainer>
       <ToolPanel
         title="Import query"
         description="Paste a full URL, relative URL with ?, or raw query string."
