@@ -3,7 +3,6 @@ import CopyButton from "@/components/CopyButton";
 import Input from "@/components/primitives/solid/Input";
 import Label from "@/components/primitives/solid/Label";
 import ToolActionButton from "@/components/ToolActionButton";
-import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolCodeBlock from "@/components/tool/ToolCodeBlock";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
@@ -33,8 +32,8 @@ export default function Tool() {
   return (
     <ToolContainer>
       <ToolPanel
-        title="Import query"
-        description="Paste a full URL, relative URL with ?, or raw query string."
+        title="Input"
+        actions={<ToolActionButton onClick={clear}>Clear inputs</ToolActionButton>}
       >
         <Input
           label="URL or query string"
@@ -43,20 +42,10 @@ export default function Tool() {
           autocomplete="off"
           onInput={(value) => {
             setSource(value);
-            setDocument(parseQuery(""));
+            setDocument(parseQuery(value));
             setEditing(false);
           }}
         />
-        <ToolActionButton
-          disabled={source() === ""}
-          onClick={() => {
-            setDocument(parseQuery(source()));
-            setEditing(true);
-          }}
-        >
-          Load parameters
-        </ToolActionButton>
-        <ToolActionButton onClick={clear}>Clear inputs</ToolActionButton>
       </ToolPanel>
       <ToolExampleNotice when={isExample()} />
       <ToolPanel title="Parameters" description="Duplicate keys and parameter order are preserved.">
@@ -135,10 +124,6 @@ export default function Tool() {
       >
         <ToolCodeBlock>{output()}</ToolCodeBlock>
       </ToolPanel>
-      <ToolStatusMessage tone="muted">
-        Spaces encode as +. A literal + encodes as %2B. The path and fragment stay intact. Editing
-        does not open the URL.
-      </ToolStatusMessage>
     </ToolContainer>
   );
 }

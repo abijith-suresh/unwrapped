@@ -2,10 +2,9 @@ import { createMemo, createSignal, For } from "solid-js";
 
 import Card from "@/components/primitives/solid/Card";
 import Label from "@/components/primitives/solid/Label";
-import Textarea from "@/components/primitives/solid/Textarea";
-import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import ToolInputPanel from "@/components/tool/ToolInputPanel";
 import { EXAMPLE_STATS_TEXT } from "@/lib/exampleData";
 import { analyzeText } from "@/lib/textStatistics";
 
@@ -23,7 +22,8 @@ export default function TextStatisticsTool() {
 
   return (
     <ToolContainer>
-      <Textarea
+      <ToolInputPanel
+        compact
         label="Text input"
         value={input()}
         onInput={setInput}
@@ -45,10 +45,6 @@ export default function TextStatisticsTool() {
           )}
         </For>
       </div>
-
-      <ToolStatusMessage tone="muted">
-        Counts update locally as you type. Byte size is measured from the encoded UTF-8 text.
-      </ToolStatusMessage>
     </ToolContainer>
   );
 }

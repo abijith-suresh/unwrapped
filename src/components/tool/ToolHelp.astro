@@ -2,8 +2,9 @@
 interface Props {
   title: string;
   description: string;
+  notes?: readonly string[];
 }
-const { title, description } = Astro.props;
+const { title, description, notes = [] } = Astro.props;
 ---
 
 <button type="button" class="tool-help-trigger" popovertarget="tool-help" aria-label="About this tool" title="About this tool">
@@ -19,6 +20,7 @@ const { title, description } = Astro.props;
     </button>
   </header>
   <p>{description}</p>
+  {notes.length ? <ul>{notes.map((note) => <li>{note}</li>)}</ul> : null}
 </aside>
 
 <script>
@@ -121,6 +123,14 @@ const { title, description } = Astro.props;
     font-size: 0.875rem;
     line-height: 1.6;
   }
+  aside ul {
+    margin: 0.75rem 0 0;
+    padding-left: 1.1rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+  aside li + li { margin-top: 0.5rem; }
   @media (prefers-reduced-motion: reduce) {
     aside {
       transition: none;

@@ -37,11 +37,13 @@ export interface Tool {
   componentPath: string;
   accent: ToolAccent;
   width: ToolWidth;
+  help?: readonly string[];
 }
 
 export const tools: Tool[] = [
   {
     id: "jwt-decoder",
+    help: ["Decoding shows token contents. It does not verify the signature."],
     width: "standard",
     name: "JWT Decoder",
     description: "Decode and inspect JSON Web Tokens. View header, payload, expiry.",
@@ -66,6 +68,9 @@ export const tools: Tool[] = [
   },
   {
     id: "html-entities",
+    help: [
+      "Decoding requires a terminating semicolon. Output is displayed as text, never rendered as HTML.",
+    ],
     width: "wide",
     name: "HTML Entities",
     description: "Encode HTML special characters or decode named and numeric character references.",
@@ -90,6 +95,10 @@ export const tools: Tool[] = [
   },
   {
     id: "json-schema-validator",
+    help: [
+      "Supports JSON Schema draft-07, standard formats, strict schema checks and local references. External schemas are never fetched.",
+      "Data is not coerced or changed. Each input is limited to 100,000 characters.",
+    ],
     width: "wide",
     name: "JSON Schema Validator",
     description: "Validate JSON against draft-07 schemas and inspect errors by document path.",
@@ -126,6 +135,7 @@ export const tools: Tool[] = [
   },
   {
     id: "uuid-generator",
+    help: ["Generates UUID v4. Up to 100 UUIDs at once."],
     width: "standard",
     name: "UUID Generator",
     description: "Generate cryptographically secure UUIDs (v4) in bulk.",
@@ -138,6 +148,7 @@ export const tools: Tool[] = [
   },
   {
     id: "timestamp",
+    help: ["Unix timestamp units are detected as seconds or milliseconds."],
     width: "narrow",
     name: "Timestamp Converter",
     description: "Convert Unix timestamps to human-readable dates across timezones.",
@@ -174,6 +185,7 @@ export const tools: Tool[] = [
   },
   {
     id: "css-minifier",
+    help: ["Rule order and custom property values are preserved. Input limit: 100,000 characters."],
     width: "wide",
     name: "CSS Minifier",
     description: "Minify CSS locally while preserving rule order and displaying parser errors.",
@@ -186,6 +198,7 @@ export const tools: Tool[] = [
   },
   {
     id: "text-statistics",
+    help: ["Byte size is measured as UTF-8."],
     width: "standard",
     name: "Text Statistics",
     description: "Inspect character, word, line, and byte counts for local text input.",
@@ -198,6 +211,9 @@ export const tools: Tool[] = [
   },
   {
     id: "password-strength",
+    help: [
+      "Estimates guessability using English word lists and common patterns. It is not a guarantee of security or a breach check. Limit: 256 characters.",
+    ],
     width: "standard",
     name: "Password Strength Meter",
     description: "Estimate password guessability using bundled dictionaries and pattern matching.",
@@ -210,6 +226,7 @@ export const tools: Tool[] = [
   },
   {
     id: "token-generator",
+    help: ["Generates tokens with browser cryptography using the selected character sets."],
     width: "standard",
     name: "Token Generator",
     description: "Generate configurable random tokens with browser-local cryptography.",
@@ -234,6 +251,9 @@ export const tools: Tool[] = [
   },
   {
     id: "network-reference",
+    help: [
+      "Bundled reference checked on October 1, 2026. No DNS queries or HTTP requests are made. Source links open external documentation.",
+    ],
     width: "wide",
     name: "DNS & HTTP Headers Reference",
     description: "Search bundled DNS record types and HTTP headers with copyable examples.",
@@ -282,6 +302,10 @@ export const tools: Tool[] = [
   },
   {
     id: "toml-formatter",
+    help: [
+      "Formats TOML 1.0. Comments and original whitespace are removed.",
+      "Numeric literals and timestamp precision are preserved. Leap-second timestamps are rejected. Input limit: 100,000 characters.",
+    ],
     width: "wide",
     name: "TOML Formatter",
     description: "Parse and format TOML tables, arrays, and configuration values locally.",
@@ -318,6 +342,11 @@ export const tools: Tool[] = [
   },
   {
     id: "markdown-table",
+    help: [
+      "The first CSV or TSV row is the header. Markdown converts to CSV.",
+      "Cell newlines use <br>. Literal HTML and entities are escaped to preserve cell text; inline formatting stays as text.",
+      "Leading and trailing cell whitespace must be trimmed first. Input limit: 100,000 characters.",
+    ],
     width: "wide",
     name: "Markdown Table Converter",
     description: "Convert CSV and TSV into Markdown tables, or export Markdown tables as CSV.",
@@ -366,6 +395,9 @@ export const tools: Tool[] = [
   },
   {
     id: "query-string-editor",
+    help: [
+      "Duplicate keys and parameter order are preserved. Spaces encode as +; a literal + encodes as %2B. The path and fragment stay intact.",
+    ],
     width: "wide",
     name: "Query String Editor",
     description: "Edit URL query parameters while preserving duplicate keys, order, and fragments.",
@@ -390,6 +422,10 @@ export const tools: Tool[] = [
   },
   {
     id: "cron",
+    help: [
+      "Five numeric fields. Sunday is 0. Restricted day-of-month and day-of-week fields use OR semantics.",
+      "Supports minute, hour, day-of-month, month and day-of-week with *, lists, ranges and steps.",
+    ],
     width: "standard",
     name: "Cron Schedule",
     description: "Build cron expressions, humanize schedules, and preview upcoming runs locally.",

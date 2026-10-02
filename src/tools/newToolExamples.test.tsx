@@ -8,22 +8,19 @@ import PasswordStrengthTool from "@/tools/password-strength/Tool";
 import QueryStringTool from "@/tools/query-string-editor/Tool";
 
 describe("Examples in added tools", () => {
-  it("shows a password estimate without prefilling or evaluating any partial user input", () => {
+  it("evaluates typed passwords without inserting example input", () => {
     const view = render(() => <PasswordStrengthTool />);
     const input = view.getByLabelText("Password to evaluate");
-    const evaluate = view.getByRole("button", { name: "Evaluate strength" });
+    expect(view.queryByRole("button", { name: "Evaluate strength" })).toBeNull();
     expect(input).toHaveValue("");
     expect(input.getAttribute("placeholder")).toBeTruthy();
-    expect(evaluate).toBeDisabled();
     expect(view.getByRole("note", { name: "Example output" })).toBeInTheDocument();
     expect(view.getByRole("meter")).toBeInTheDocument();
     fireEvent.input(input, { target: { value: "password" } });
     expect(view.queryByRole("note", { name: "Example output" })).toBeNull();
-    expect(view.queryByRole("meter")).toBeNull();
-    fireEvent.click(evaluate);
+
     expect(view.getByRole("meter")).toHaveAttribute("value", "0");
     fireEvent.input(input, { target: { value: "a".repeat(257) } });
-    fireEvent.click(evaluate);
     expect(view.getByRole("alert")).toHaveTextContent("Use at most 256 characters");
     expect(view.queryByRole("meter")).toBeNull();
     expect(view.queryByRole("note", { name: "Example output" })).toBeNull();
@@ -39,7 +36,7 @@ describe("Examples in added tools", () => {
     expect(source).toHaveAttribute("placeholder", '<p title="Hello">Tom & Jerry ©</p>');
     expect(view.container.querySelector("pre")).toHaveTextContent("&lt;p");
     expect(view.queryByRole("button", { name: "Copy output" })).toBeNull();
-    fireEvent.click(view.getByRole("button", { name: "Decode" }));
+    fireEvent.click(view.getByRole("radio", { name: "Decode" }));
     expect(source.getAttribute("placeholder")).toContain("&lt;p");
     expect(view.container.querySelector("pre")).toHaveTextContent(
       '<p title="Hello">Tom & Jerry ©</p>'
@@ -97,9 +94,9 @@ describe("Examples in added tools", () => {
     fireEvent.click(view.getByRole("button", { name: "Clear inputs" }));
     expect(view.getByRole("note", { name: "Example output" })).toBeInTheDocument();
     fireEvent.input(source, { target: { value: "/path?tag=one&tag=two#frag" } });
-    expect(view.container.querySelector("pre")).toHaveTextContent("");
+    expect(view.container.querySelector("pre")).toHaveTextContent("/path?tag=one&tag=two#frag");
     expect(view.container).not.toHaveTextContent("hello world");
-    fireEvent.click(view.getByRole("button", { name: "Load parameters" }));
+    expect(view.queryByRole("button", { name: "Load parameters" })).toBeNull();
     expect(view.getByLabelText("Key 1")).toHaveValue("tag");
     expect(view.getByLabelText("Value 2")).toHaveValue("two");
     fireEvent.input(view.getByLabelText("Value 2"), { target: { value: "three" } });

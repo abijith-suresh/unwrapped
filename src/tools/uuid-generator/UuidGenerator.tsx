@@ -76,7 +76,7 @@ export default function UuidGenerator() {
 
         {/* Uppercase toggle */}
         <ToolActionButton active={uppercase()} onClick={() => setUppercase((v) => !v)}>
-          UPPER
+          Uppercase
         </ToolActionButton>
 
         {/* Copy all */}
@@ -112,10 +112,6 @@ export default function UuidGenerator() {
           )}
         </For>
       </div>
-
-      <ToolStatusMessage tone="muted">
-        UUID v4 generated via <code>crypto.randomUUID()</code> · max 100 at once
-      </ToolStatusMessage>
     </ToolContainer>
   );
 }

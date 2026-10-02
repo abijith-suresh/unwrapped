@@ -147,7 +147,7 @@ describe("Example output", () => {
 
   it("switches regex replacement previews to actual inputs and back", async () => {
     const { container, getByRole, queryByRole } = render(() => <RegexTester />);
-    fireEvent.click(getByRole("button", { name: "Replace" }));
+    fireEvent.click(getByRole("radio", { name: "Replace" }));
     expect(container).toHaveTextContent("[Hello], [world]!");
     expect(queryByRole("button", { name: "Copy replaced output" })).not.toBeInTheDocument();
     fireEvent.input(getByRole("textbox", { name: "Test string" }), { target: { value: "Ada" } });
@@ -213,7 +213,7 @@ describe("Example output", () => {
     });
     hashInput.mockReturnValueOnce(hashing);
     fireEvent.input(getByRole("textbox", { name: "Input text" }), { target: { value: "Ada" } });
-    fireEvent.click(getByRole("button", { name: "Hash input" }));
+    await waitFor(() => expect(hashInput).toHaveBeenCalledTimes(2));
     fireEvent.click(getByRole("button", { name: "Clear" }));
     await waitFor(() => expect(hashInput).toHaveBeenCalledTimes(3));
     complete([{ algorithm: "SHA-256", hex: "old-user-hash" }]);

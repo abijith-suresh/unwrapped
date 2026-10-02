@@ -1,6 +1,5 @@
 import { createMemo, createSignal } from "solid-js";
 import ToolActionButton from "@/components/ToolActionButton";
-import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolToolbar from "@/components/tool/ToolToolbar";
 import ToolTransformWorkspace from "@/components/tool/ToolTransformWorkspace";
@@ -36,11 +35,6 @@ export default function Tool() {
         error={error()}
         copyLabel="Copy output"
       />
-      <ToolStatusMessage tone="muted">
-        Formats TOML 1.0. Numeric literals and timestamp precision are preserved. Comments and
-        original whitespace are removed. Leap-second timestamps are rejected. Input limit: 100,000
-        characters.
-      </ToolStatusMessage>
     </ToolContainer>
   );
 }

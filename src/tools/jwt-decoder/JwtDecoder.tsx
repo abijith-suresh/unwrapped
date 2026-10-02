@@ -3,10 +3,10 @@ import { createMemo, createSignal, Show } from "solid-js";
 import CopyButton from "@/components/CopyButton";
 import Card from "@/components/primitives/solid/Card";
 import Label from "@/components/primitives/solid/Label";
-import Textarea from "@/components/primitives/solid/Textarea";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import ToolInputPanel from "@/components/tool/ToolInputPanel";
 import { EXAMPLE_JWT } from "@/lib/exampleData";
 import { getJwtClaimsSummary, getJwtExpiryStatus, parseJwt, prettyJson } from "@/lib/jwt";
 
@@ -79,7 +79,8 @@ export default function JwtDecoder() {
       {/* Input area                                                          */}
       {/* ------------------------------------------------------------------ */}
       <div class="flex flex-col gap-2">
-        <Textarea
+        <ToolInputPanel
+          compact
           label="JWT token"
           name="jwt-token"
           autocomplete="off"
@@ -89,12 +90,6 @@ export default function JwtDecoder() {
           rows={5}
           spellcheck={false}
         />
-        {/* Hint — only when input is empty */}
-        <Show when={!input().trim()}>
-          <p class="text-xs text-[var(--text-muted)] m-0">
-            Supports RS256, HS256, and all standard JWT algorithms
-          </p>
-        </Show>
       </div>
 
       {/* ------------------------------------------------------------------ */}

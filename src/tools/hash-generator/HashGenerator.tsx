@@ -9,7 +9,6 @@ import ToolDropZone from "@/components/tool/ToolDropZone";
 import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolFilePicker from "@/components/tool/ToolFilePicker";
 import ToolInputPanel from "@/components/tool/ToolInputPanel";
-import ToolToolbar from "@/components/tool/ToolToolbar";
 import { EXAMPLE_TEXT } from "@/lib/exampleData";
 import {
   DEFAULT_IMPORT_MAX_BYTES,
@@ -141,30 +140,6 @@ export default function HashGenerator() {
 
   return (
     <ToolContainer>
-      <ToolToolbar
-        label="Hash options"
-        actions={
-          <>
-            <ToolActionButton
-              onClick={() =>
-                workflow() === "file"
-                  ? loadedFileBytes() && void computeBytes(loadedFileBytes() ?? new Uint8Array())
-                  : void computeText(input())
-              }
-              variant="primary"
-              disabled={workflow() === "file" ? !loadedFileBytes() : !input().trim()}
-            >
-              Hash input
-            </ToolActionButton>
-            <ToolActionButton
-              onClick={handleClear}
-              disabled={!input().trim() && !loadedFileBytes() && results().length === 0}
-            >
-              Clear
-            </ToolActionButton>
-          </>
-        }
-      ></ToolToolbar>
       <ToolDropZone onFile={(file) => void handleFile(file)}>
         <ToolInputPanel
           compact
@@ -179,10 +154,17 @@ export default function HashGenerator() {
           file={loadedFile()}
           onRemoveFile={handleClear}
           actions={
-            <ToolFilePicker
-              label={loadedFile() ? "Replace file" : "Open file"}
-              onFileChange={(file) => void handleFile(file)}
-            />
+            <>
+              <Show when={!loadedFile()}>
+                <ToolActionButton onClick={handleClear} disabled={!input()}>
+                  Clear
+                </ToolActionButton>
+              </Show>
+              <ToolFilePicker
+                label={loadedFile() ? "Replace file" : "Open file"}
+                onFileChange={(file) => void handleFile(file)}
+              />
+            </>
           }
         />
       </ToolDropZone>

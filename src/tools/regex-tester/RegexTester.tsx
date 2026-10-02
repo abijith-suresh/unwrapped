@@ -1,5 +1,4 @@
 import { createMemo, createSignal, For, onCleanup, Show } from "solid-js";
-
 import CopyButton from "@/components/CopyButton";
 import Card from "@/components/primitives/solid/Card";
 import Input from "@/components/primitives/solid/Input";
@@ -9,6 +8,7 @@ import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
 import { EXAMPLE_REGEX_PATTERN, EXAMPLE_REGEX_REPLACEMENT, EXAMPLE_TEXT } from "@/lib/exampleData";
 import {
   buildRegexReplaceResult,
@@ -92,22 +92,16 @@ export default function RegexTester() {
   return (
     <ToolContainer>
       <div class="flex flex-col gap-2">
-        <div class="flex gap-2 flex-wrap">
-          <ToolActionButton
-            active={mode() === "match"}
-            variant={mode() === "match" ? "primary" : "ghost"}
-            onClick={() => setMode("match")}
-          >
-            Match
-          </ToolActionButton>
-          <ToolActionButton
-            active={mode() === "replace"}
-            variant={mode() === "replace" ? "primary" : "ghost"}
-            onClick={() => setMode("replace")}
-          >
-            Replace
-          </ToolActionButton>
-        </div>
+        <ToolSegmentedControl
+          label="Operation"
+          hideLabel
+          value={mode()}
+          onChange={setMode}
+          options={[
+            { value: "match", label: "Match" },
+            { value: "replace", label: "Replace" },
+          ]}
+        />
 
         <Label for="regex-pattern">Pattern</Label>
         <div
@@ -128,31 +122,30 @@ export default function RegexTester() {
             placeholder={EXAMPLE_REGEX_PATTERN}
             spellcheck={false}
             autocomplete="off"
-            class="flex-1 py-2.5 bg-transparent border-none outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] font-mono text-[0.9375rem]"
+            class="min-w-0 flex-1 py-2.5 bg-transparent border-none outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] font-mono text-[0.9375rem]"
           />
 
-          <span class="text-[var(--text-muted)] font-mono text-lg select-none">/</span>
-
-          <div class="flex items-center gap-0.5 px-3">
-            <For each={ALL_FLAGS}>
-              {(flag) => (
-                <button
-                  type="button"
-                  title={flag.title}
-                  aria-pressed={flags().has(flag.key)}
-                  onClick={() => toggleFlag(flag.key)}
-                  class="px-1.5 py-0.5 rounded border-none font-mono text-sm font-bold cursor-pointer transition-[background,color] duration-100"
-                  classList={{
-                    "bg-[var(--accent-primary)] text-[var(--bg-primary)]": flags().has(flag.key),
-                    "bg-transparent text-[var(--text-muted)]": !flags().has(flag.key),
-                  }}
-                >
-                  {flag.label}
-                </button>
-              )}
-            </For>
-          </div>
+          <span class="pr-3 text-[var(--text-muted)] font-mono text-lg select-none">/</span>
         </div>
+        <fieldset
+          aria-label="Regex flags"
+          class="m-0 flex min-w-0 flex-wrap items-center gap-2 border-0 p-0"
+        >
+          <For each={ALL_FLAGS}>
+            {(flag) => (
+              <ToolActionButton
+                title={flag.title}
+                aria-label={flag.title}
+                active={flags().has(flag.key)}
+                variant="toggle"
+                onClick={() => toggleFlag(flag.key)}
+                class="min-w-11 font-mono"
+              >
+                {flag.label}
+              </ToolActionButton>
+            )}
+          </For>
+        </fieldset>
       </div>
 
       <Show when={result().error}>
@@ -368,12 +361,6 @@ export default function RegexTester() {
             </table>
           </div>
         </Card>
-      </Show>
-
-      <Show when={!isExample() && !pattern() && !input().trim()}>
-        <ToolStatusMessage tone="muted">
-          Enter a regex pattern and test string to inspect matches or preview replacements locally.
-        </ToolStatusMessage>
       </Show>
     </ToolContainer>
   );

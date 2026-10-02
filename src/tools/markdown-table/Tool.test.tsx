@@ -6,7 +6,7 @@ it("switches conversion directions and reports invalid rows", () => {
   const { container } = render(() => <Tool />);
   fireEvent.input(screen.getByLabelText("Source"), { target: { value: "a,b\n1,2,3" } });
   expect(screen.getByText("Every row must have the same number of columns.")).toBeInTheDocument();
-  fireEvent.click(screen.getByRole("button", { name: "Markdown to CSV" }));
+  fireEvent.click(screen.getByRole("radio", { name: "Markdown" }));
   fireEvent.input(screen.getByLabelText("Source"), {
     target: { value: "| a | b |\n| --- | --- |\n| 1 | 2 |" },
   });

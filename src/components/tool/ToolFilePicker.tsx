@@ -41,9 +41,9 @@ export default function ToolFilePicker(props: ToolFilePickerProps) {
           inputElement = element;
         }}
         type="file"
+        hidden
         aria-label={local.label ?? "Open file"}
         tabindex={-1}
-        class="sr-only"
         onChange={handleChange}
       />
     </>

@@ -49,6 +49,9 @@ Use `bun run format` to format files.
      `ToolActionButton`.
    Keep workspace copy specific to the task: errors, limits, and instructions needed to use it.
    Put implementation explanations in docs or Help. Example output needs only the shared label.
+   Add tool limits and format notes to the registry's `help` field; the shared header renders them
+   in Help. Use `ToolActionButton` for tool actions and keep CopyButton's contextual accessible
+   label even when its visible label is short.
 5. Add focused tests for new behavior and edge cases.
 6. Run `bun run verify`.
 

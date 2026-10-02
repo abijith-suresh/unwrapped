@@ -1,4 +1,4 @@
-import { createMemo, createSignal, Show } from "solid-js";
+import { createSignal, Show } from "solid-js";
 
 import CopyButton from "@/components/CopyButton";
 import Card from "@/components/primitives/solid/Card";
@@ -28,16 +28,6 @@ export default function TokenGenerator() {
   const [token, setToken] = createSignal(initial.token);
   const [error, setError] = createSignal(initial.error);
 
-  const activeGroups = createMemo(() => {
-    const current = options();
-    return [
-      current.uppercase && "uppercase",
-      current.lowercase && "lowercase",
-      current.digits && "digits",
-      current.symbols && "symbols",
-    ].filter(Boolean);
-  });
-
   function regenerate(nextOptions: TokenGeneratorOptions = options()) {
     const result = generateToken(nextOptions);
     if (result.ok) {
@@ -61,7 +51,7 @@ export default function TokenGenerator() {
 
   return (
     <ToolContainer>
-      <div class="grid grid-cols-[2fr_1fr] gap-4">
+      <div class="grid min-w-0 gap-4 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <Card class="flex flex-col gap-1.5">
           <div class="flex justify-between gap-3">
             <Label>Generated token</Label>
@@ -124,11 +114,6 @@ export default function TokenGenerator() {
       <Show when={error()}>
         {(message) => <ToolStatusMessage tone="error">{message()}</ToolStatusMessage>}
       </Show>
-
-      <ToolStatusMessage tone="muted">
-        Uses <code>crypto.getRandomValues()</code> locally with {activeGroups().length || "no"}{" "}
-        character set{activeGroups().length === 1 ? "" : "s"} enabled.
-      </ToolStatusMessage>
     </ToolContainer>
   );
 }

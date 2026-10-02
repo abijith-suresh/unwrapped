@@ -9,7 +9,7 @@ it("masks the secret, evaluates locally and clears the secret and result", () =>
   const input = screen.getByLabelText("Password to evaluate");
   expect(input).toHaveAttribute("type", "password");
   fireEvent.input(input, { target: { value: "password" } });
-  fireEvent.click(screen.getByRole("button", { name: "Evaluate strength" }));
+  expect(screen.queryByRole("button", { name: "Evaluate strength" })).toBeNull();
   expect(screen.getByText("Very weak · 0/4")).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Show password" }));
   expect(input).toHaveAttribute("type", "text");

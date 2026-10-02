@@ -8,6 +8,7 @@ import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolPanel from "@/components/tool/ToolPanel";
+import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
 import { CRON_FIELD_SPECS, SUPPORTED_CRON_SYNTAX } from "@/lib/cron";
 import { buildCron, CRON_PRESETS, type CronBuilderFields, cronFields } from "@/lib/cronBuilder";
 import { buildCronScheduleSummary, type CronTimeZoneMode } from "@/lib/cronSchedule";
@@ -142,37 +143,22 @@ export default function CronTool() {
         />
       </div>
 
-      <div class="flex gap-2 flex-wrap items-center">
-        <Label>Timezone</Label>
-        <ToolActionButton
-          active={timeZone() === "local"}
-          variant={timeZone() === "local" ? "primary" : "secondary"}
-          onClick={() => setTimeZone("local")}
-        >
-          Local time
-        </ToolActionButton>
-        <ToolActionButton
-          active={timeZone() === "utc"}
-          variant={timeZone() === "utc" ? "primary" : "secondary"}
-          onClick={() => setTimeZone("utc")}
-        >
-          UTC
-        </ToolActionButton>
-      </div>
+      <ToolSegmentedControl
+        label="Timezone"
+        value={timeZone()}
+        onChange={setTimeZone}
+        options={[
+          { value: "local", label: "Local time" },
+          { value: "utc", label: "UTC" },
+        ]}
+      />
 
       <ToolExampleNotice when={isExample()} />
 
       <Show
         when={(isExample() || input().trim()) && !error()}
         fallback={
-          <Show
-            when={error()}
-            fallback={
-              <ToolStatusMessage tone="muted">
-                Enter a cron expression to see its schedule and next runs.
-              </ToolStatusMessage>
-            }
-          >
+          <Show when={error()}>
             {(message) => (
               <ToolStatusMessage id="cron-expression-error" tone="error">
                 {message()}
@@ -202,7 +188,7 @@ export default function CronTool() {
 
       <ToolStatusMessage tone="muted">
         Supported subset: {SUPPORTED_CRON_SYNTAX.fieldOrder.join(" ")} · operators{" "}
-        {SUPPORTED_CRON_SYNTAX.operators.join(" ")} · preview computation stays local-only.
+        {SUPPORTED_CRON_SYNTAX.operators.join(" ")}.
       </ToolStatusMessage>
     </ToolContainer>
   );
