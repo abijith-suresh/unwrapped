@@ -6,7 +6,6 @@ import Input from "@/components/primitives/solid/Input";
 import Label from "@/components/primitives/solid/Label";
 import Select from "@/components/primitives/solid/Select";
 import ToolActionButton from "@/components/ToolActionButton";
-import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import { EXAMPLE_EPOCH } from "@/lib/exampleData";
@@ -252,13 +251,6 @@ export default function TimestampTool() {
             </div>
           </Card>
         )}
-      </Show>
-
-      {/* Empty hint */}
-      <Show when={!epochInput().trim() && !datetimeInput()}>
-        <ToolStatusMessage tone="muted">
-          Enter a Unix timestamp (seconds or ms auto-detected) or pick a date above
-        </ToolStatusMessage>
       </Show>
     </ToolContainer>
   );

@@ -32,7 +32,7 @@ export default function CopyButton(props: CopyButtonProps) {
       case "error":
         return "Copy failed";
       default:
-        return actionLabel();
+        return "Copy";
     }
   };
   const announcement = () => {
@@ -80,7 +80,7 @@ export default function CopyButton(props: CopyButtonProps) {
         disabled={status() === "copying" || !props.text}
         aria-label={actionLabel()}
         aria-busy={status() === "copying"}
-        class={cn("min-w-[7rem]", props.class)}
+        class={cn("min-w-[5.25rem]", props.class)}
         style={{
           color:
             status() === "copied"

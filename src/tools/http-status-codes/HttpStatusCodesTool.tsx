@@ -22,17 +22,16 @@ export default function HttpStatusCodesTool() {
       />
 
       <ToolStatusMessage tone="muted">
-        {results().length.toLocaleString()} status code{results().length === 1 ? "" : "s"} shown
-        from a bundled local reference.
+        {results().length.toLocaleString()} status code{results().length === 1 ? "" : "s"} shown.
       </ToolStatusMessage>
 
       <div class="flex flex-col gap-3">
         <For each={results()}>
           {(entry) => (
             <Card class="flex flex-col gap-2 p-4">
-              <div class="flex justify-between gap-4">
-                <div class="flex flex-col gap-1">
-                  <div class="flex gap-2.5 items-baseline">
+              <div class="flex min-w-0 flex-wrap items-start justify-between gap-3">
+                <div class="flex min-w-0 flex-1 flex-col gap-1">
+                  <div class="flex min-w-0 flex-wrap gap-2.5 items-baseline">
                     <strong class="text-[var(--text-primary)] text-[1.375rem]">{entry.code}</strong>
                     <span class="text-[var(--text-primary)] text-base">{entry.name}</span>
                   </div>

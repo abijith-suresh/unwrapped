@@ -11,9 +11,10 @@ interface Props {
   ogImage?: string;
   accent?: ToolAccent;
   width?: ToolWidth;
+  help?: readonly string[];
 }
 
-const { title, description, ogImage, accent, width = "standard" } = Astro.props;
+const { title, description, ogImage, accent, help, width = "standard" } = Astro.props;
 
 const FOOTER_LINKS = [
   { href: "/about", label: "About" },
@@ -44,7 +45,7 @@ const FOOTER_LINKS = [
           <span class="ts-tool-separator" aria-hidden="true">/</span>
           <h1 id="tool-title">{title}</h1>
         </div>
-        {description ? <ToolHelp title={title} description={description} /> : null}
+        {description ? <ToolHelp title={title} description={description} notes={help} /> : null}
       </header>
       <slot />
     </main>

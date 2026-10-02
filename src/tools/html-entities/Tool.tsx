@@ -1,7 +1,7 @@
 import { createMemo, createSignal } from "solid-js";
 import ToolActionButton from "@/components/ToolActionButton";
-import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
 import ToolToolbar from "@/components/tool/ToolToolbar";
 import ToolTransformWorkspace from "@/components/tool/ToolTransformWorkspace";
 import { EXAMPLE_HTML } from "@/lib/exampleData";
@@ -27,17 +27,27 @@ export default function Tool() {
   };
   return (
     <ToolContainer>
-      <ToolToolbar label="Options">
-        <ToolActionButton active={mode() === "encode"} onClick={() => setMode("encode")}>
-          Encode
-        </ToolActionButton>
-        <ToolActionButton active={mode() === "decode"} onClick={() => setMode("decode")}>
-          Decode
-        </ToolActionButton>
-        <ToolActionButton active={nonAscii()} onClick={() => setNonAscii((value) => !value)}>
-          Encode non-ASCII
-        </ToolActionButton>
-        <ToolActionButton onClick={() => setInput("")}>Clear input</ToolActionButton>
+      <ToolToolbar
+        label="Options"
+        actions={
+          <>
+            <ToolActionButton active={nonAscii()} onClick={() => setNonAscii((value) => !value)}>
+              Encode non-ASCII
+            </ToolActionButton>
+            <ToolActionButton onClick={() => setInput("")}>Clear input</ToolActionButton>
+          </>
+        }
+      >
+        <ToolSegmentedControl
+          label="Operation"
+          hideLabel
+          value={mode()}
+          onChange={setMode}
+          options={[
+            { value: "encode", label: "Encode" },
+            { value: "decode", label: "Decode" },
+          ]}
+        />
       </ToolToolbar>
 
       <ToolTransformWorkspace
@@ -50,10 +60,6 @@ export default function Tool() {
         error={error()}
         copyLabel="Copy output"
       />
-      <ToolStatusMessage tone="muted">
-        Decode requires a terminating semicolon. Output is displayed as text and is never rendered
-        as HTML.
-      </ToolStatusMessage>
     </ToolContainer>
   );
 }

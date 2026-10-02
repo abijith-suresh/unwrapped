@@ -11,6 +11,7 @@ import {
 import Card from "@/components/primitives/solid/Card";
 import Label from "@/components/primitives/solid/Label";
 import Select from "@/components/primitives/solid/Select";
+import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolDropZone from "@/components/tool/ToolDropZone";
@@ -564,26 +565,20 @@ export default function DiffTool() {
 
           {/* Next change button */}
           <Show when={!pending() && analysis() !== null && changeIndices().length > 0}>
-            <button
+            <ToolActionButton
               type="button"
               onClick={handleNextChange}
               disabled={pending() || analysis() === null}
-              class="bg-[var(--bg-tertiary)] text-[var(--text-secondary)] border border-[var(--border)] rounded px-2.5 py-1 text-xs cursor-pointer whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50"
               title="Jump to next change"
             >
               ↓ Next change
-            </button>
+            </ToolActionButton>
           </Show>
 
           {/* Swap button */}
-          <button
-            type="button"
-            onClick={handleSwap}
-            class="bg-[var(--bg-tertiary)] text-[var(--text-secondary)] border border-[var(--border)] rounded px-2.5 py-1 text-xs cursor-pointer whitespace-nowrap"
-            title="Swap left and right"
-          >
+          <ToolActionButton type="button" onClick={handleSwap} title="Swap left and right">
             ⇅ Swap
-          </button>
+          </ToolActionButton>
 
           <span class="text-xs text-[var(--text-muted)]">
             File limit {formatBytes(DEFAULT_IMPORT_MAX_BYTES)}

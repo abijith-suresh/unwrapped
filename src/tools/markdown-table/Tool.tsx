@@ -1,7 +1,7 @@
 import { createMemo, createSignal } from "solid-js";
 import ToolActionButton from "@/components/ToolActionButton";
-import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
 import ToolToolbar from "@/components/tool/ToolToolbar";
 import ToolTransformWorkspace from "@/components/tool/ToolTransformWorkspace";
 import { EXAMPLE_CSV } from "@/lib/exampleData";
@@ -30,17 +30,20 @@ export default function Tool() {
   };
   return (
     <ToolContainer>
-      <ToolToolbar label="Options">
-        <ToolActionButton active={mode() === "csv"} onClick={() => setMode("csv")}>
-          CSV to Markdown
-        </ToolActionButton>
-        <ToolActionButton active={mode() === "tsv"} onClick={() => setMode("tsv")}>
-          TSV to Markdown
-        </ToolActionButton>
-        <ToolActionButton active={mode() === "markdown"} onClick={() => setMode("markdown")}>
-          Markdown to CSV
-        </ToolActionButton>
-        <ToolActionButton onClick={() => setInput("")}>Clear input</ToolActionButton>
+      <ToolToolbar
+        label="Options"
+        actions={<ToolActionButton onClick={() => setInput("")}>Clear input</ToolActionButton>}
+      >
+        <ToolSegmentedControl
+          label="Input format"
+          value={mode()}
+          onChange={setMode}
+          options={[
+            { value: "csv", label: "CSV" },
+            { value: "tsv", label: "TSV" },
+            { value: "markdown", label: "Markdown" },
+          ]}
+        />
       </ToolToolbar>
 
       <ToolTransformWorkspace
@@ -49,16 +52,11 @@ export default function Tool() {
         onInput={setInput}
         placeholder={examples[mode()]}
         output={output()}
+        outputLabel={mode() === "markdown" ? "CSV" : "Markdown"}
         isExample={isExample()}
         error={error()}
         copyLabel="Copy output"
       />
-      <ToolStatusMessage tone="muted">
-        The first CSV or TSV row is the header. Newlines become {"<br>"}. Markdown converts to CSV;
-        literal HTML and entities are escaped to preserve cell text. Inline formatting stays as
-        text. Leading or trailing cell whitespace must be trimmed first. Input limit: 100,000
-        characters.
-      </ToolStatusMessage>
     </ToolContainer>
   );
 }

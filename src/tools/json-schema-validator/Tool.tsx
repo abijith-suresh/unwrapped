@@ -118,11 +118,6 @@ export default function Tool() {
           </ToolCodeBlock>
         </Show>
       </ToolPanel>
-      <ToolStatusMessage tone="muted">
-        JSON Schema draft-07 with standard formats and strict schema checks. Local references work;
-        external schemas are never fetched. Data is not coerced or changed. Each input is limited to
-        100,000 characters.
-      </ToolStatusMessage>
     </ToolContainer>
   );
 }

@@ -18,9 +18,9 @@ export default function Tool() {
   const displayedResult = createMemo(() =>
     isExample() ? estimatePassword(EXAMPLE_PASSWORD) : result()
   );
-  function evaluate() {
+  function evaluate(value: string) {
     try {
-      setResult(estimatePassword(password()));
+      setResult(estimatePassword(value));
       setError("");
     } catch (error) {
       setResult(null);
@@ -29,10 +29,7 @@ export default function Tool() {
   }
   return (
     <ToolContainer>
-      <ToolPanel
-        title="Password"
-        description="Check common words, repeated patterns, keyboard sequences, and predictable substitutions."
-      >
+      <ToolPanel title="Password">
         <Input
           label="Password to evaluate"
           type={visible() ? "text" : "password"}
@@ -43,16 +40,16 @@ export default function Tool() {
           autocapitalize="off"
           onInput={(value) => {
             setPassword(value);
-            setResult(null);
-            setError("");
+            if (value) evaluate(value);
+            else {
+              setResult(null);
+              setError("");
+            }
           }}
           error={!!error()}
           describedBy={error() ? "password-error" : undefined}
         />
         <div class="flex flex-wrap gap-2 mt-3">
-          <ToolActionButton variant="primary" onClick={evaluate} disabled={!password()}>
-            Evaluate strength
-          </ToolActionButton>
           <ToolActionButton active={visible()} onClick={() => setVisible((value) => !value)}>
             {visible() ? "Hide password" : "Show password"}
           </ToolActionButton>
@@ -101,11 +98,6 @@ export default function Tool() {
           </ToolPanel>
         )}
       </Show>
-      <ToolStatusMessage tone="muted">
-        Uses bundled zxcvbn-ts dictionaries in English. This is a guessability estimate, not a
-        guarantee of security or a breach check. Passwords stay in memory and are never sent or
-        saved. Limit: 256 characters.
-      </ToolStatusMessage>
     </ToolContainer>
   );
 }

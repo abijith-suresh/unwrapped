@@ -5,13 +5,13 @@ import Tool from "./Tool";
 it("filters bundled entries and shows an empty state without requests", () => {
   const request = vi.spyOn(globalThis, "fetch");
   render(() => <Tool />);
-  fireEvent.click(screen.getByRole("button", { name: "DNS records" }));
+  fireEvent.click(screen.getByRole("radio", { name: "DNS records" }));
   fireEvent.input(screen.getByLabelText("Search record types or headers"), {
     target: { value: "IPv6" },
   });
   expect(screen.getByRole("region", { name: "AAAA" })).toBeInTheDocument();
   expect(screen.queryByRole("region", { name: "Content-Type" })).toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: "HTTP headers" }));
+  fireEvent.click(screen.getByRole("radio", { name: "HTTP headers" }));
   expect(screen.getByText("No matching entries.")).toBeInTheDocument();
   expect(request).not.toHaveBeenCalled();
   request.mockRestore();

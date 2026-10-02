@@ -2,10 +2,9 @@ import { createMemo, createSignal, For, Show } from "solid-js";
 import CopyButton from "@/components/CopyButton";
 import Card from "@/components/primitives/solid/Card";
 import Label from "@/components/primitives/solid/Label";
-import Textarea from "@/components/primitives/solid/Textarea";
-import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import ToolInputPanel from "@/components/tool/ToolInputPanel";
 import { convertCaseVariants } from "@/lib/caseConverter";
 import { EXAMPLE_CASE_TEXT } from "@/lib/exampleData";
 
@@ -31,7 +30,8 @@ export default function CaseConverter() {
 
   return (
     <ToolContainer>
-      <Textarea
+      <ToolInputPanel
+        compact
         label="Source text"
         value={input()}
         onInput={setInput}
@@ -41,14 +41,7 @@ export default function CaseConverter() {
 
       <ToolExampleNotice when={isExample()} />
 
-      <Show
-        when={isExample() || hasInput()}
-        fallback={
-          <ToolStatusMessage tone="muted">
-            Enter text once to generate copyable case variants locally.
-          </ToolStatusMessage>
-        }
-      >
+      <Show when={isExample() || hasInput()}>
         <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] gap-3">
           <For each={VARIANT_LABELS}>
             {([key, label]) => (
