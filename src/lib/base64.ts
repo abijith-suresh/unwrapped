@@ -29,6 +29,41 @@ export interface Base64TransformFailure {
 
 export type Base64TransformResult = Base64TransformSuccess | Base64TransformFailure;
 
+export type Base64DecodedResult =
+  | (Base64TransformSuccess & { bytes: Uint8Array; downloadName: string })
+  | Base64TransformFailure;
+
+/** Decode once, keeping the original bytes available even when the preview is text. */
+export function decodeBase64Input(
+  input: string,
+  variant: Base64Variant,
+  sourceName?: string
+): Base64DecodedResult {
+  try {
+    const bytes = decodeBase64ToBytes(input, variant);
+    let text: string | undefined;
+    try {
+      const decoded = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+      const hasBinaryControls = [...decoded].some((char) => {
+        const code = char.charCodeAt(0);
+        return (code < 32 && code !== 9 && code !== 10 && code !== 13) || code === 127;
+      });
+      if (!hasBinaryControls) text = decoded;
+    } catch {
+      // Arbitrary binary data still decodes successfully and can be downloaded.
+    }
+    return {
+      ok: true,
+      value: bytes.length === 0 ? "" : (text ?? formatByteSummary(bytes)),
+      outputKind: text === undefined ? "bytes" : "text",
+      bytes,
+      downloadName: deriveDecodedFileName(sourceName),
+    };
+  } catch {
+    return { ok: false, error: "Invalid input for the selected Base64 variant." };
+  }
+}
+
 export function encodeTextToBase64(input: string, variant: Base64Variant): string {
   return encodeBytesToBase64(new TextEncoder().encode(input), variant);
 }

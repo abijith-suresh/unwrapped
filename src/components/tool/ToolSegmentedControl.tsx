@@ -42,6 +42,7 @@ export interface ToolSegmentedControlOption<Value extends string = string> {
 export interface ToolSegmentedControlProps<Value extends string = string>
   extends Omit<JSX.FieldsetHTMLAttributes<HTMLFieldSetElement>, "children" | "onChange"> {
   label: string;
+  hideLabel?: boolean;
   value: Value;
   options: readonly ToolSegmentedControlOption<Value>[];
   onChange: (value: Value) => void;
@@ -50,14 +51,27 @@ export interface ToolSegmentedControlProps<Value extends string = string>
 export default function ToolSegmentedControl<Value extends string = string>(
   props: ToolSegmentedControlProps<Value>
 ) {
-  const [local, rest] = splitProps(props, ["class", "label", "onChange", "options", "value"]);
+  const [local, rest] = splitProps(props, [
+    "class",
+    "hideLabel",
+    "label",
+    "onChange",
+    "options",
+    "value",
+  ]);
 
   return (
     <fieldset
       {...rest}
       class={cn("m-0 flex min-w-0 flex-col items-stretch gap-1.5 border-0 p-0", local.class)}
     >
-      <legend class="shrink-0 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+      <legend
+        class={
+          local.hideLabel
+            ? "sr-only"
+            : "shrink-0 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]"
+        }
+      >
         {local.label}
       </legend>
       <div
@@ -65,7 +79,7 @@ export default function ToolSegmentedControl<Value extends string = string>(
         aria-label={local.label}
         aria-orientation="horizontal"
         onKeyDown={handleRadioKeyDown}
-        class="flex h-[2.625rem] min-w-0 w-full items-stretch gap-0.5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-primary)] p-0.5 sm:w-auto"
+        class="flex min-h-11 min-w-0 w-full items-stretch gap-0.5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-primary)] p-0.5 sm:w-auto"
       >
         {local.options.map((option) => (
           <ToolActionButton
@@ -74,7 +88,7 @@ export default function ToolSegmentedControl<Value extends string = string>(
             role="radio"
             disabled={option.disabled}
             onClick={() => local.onChange(option.value)}
-            class="min-w-0 flex-1 sm:flex-none"
+            class="min-h-10 min-w-0 flex-1 sm:flex-none"
           >
             {option.label}
           </ToolActionButton>

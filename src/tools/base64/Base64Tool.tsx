@@ -1,19 +1,19 @@
 import { createMemo, createSignal, Show } from "solid-js";
 
 import CopyButton from "@/components/CopyButton";
-import Card from "@/components/primitives/solid/Card";
-import Label from "@/components/primitives/solid/Label";
-import Textarea from "@/components/primitives/solid/Textarea";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolDropZone from "@/components/tool/ToolDropZone";
-import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolFilePicker from "@/components/tool/ToolFilePicker";
+import ToolInputPanel from "@/components/tool/ToolInputPanel";
+import ToolOutputPanel from "@/components/tool/ToolOutputPanel";
+import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
+import ToolToolbar from "@/components/tool/ToolToolbar";
 import {
   type Base64Mode,
   type Base64Variant,
-  type Base64Workflow,
+  decodeBase64Input,
   encodeBytesToBase64,
   formatBase64FileNotice,
   processBase64Input,
@@ -22,7 +22,6 @@ import { EXAMPLE_TEXT } from "@/lib/exampleData";
 import {
   DEFAULT_IMPORT_MAX_BYTES,
   type FileImportError,
-  formatImportedFileSummary,
   formatImportSizeLimitMessage,
   type ImportedFileMeta,
   readImportedFile,
@@ -35,24 +34,22 @@ import {
 export default function Base64Tool() {
   const [mode, setMode] = createSignal<Base64Mode>("encode");
   const [variant, setVariant] = createSignal<Base64Variant>("standard");
-  const [workflow, setWorkflow] = createSignal<Base64Workflow>("text");
   const [input, setInput] = createSignal("");
   const [fileError, setFileError] = createSignal<FileImportError | null>(null);
   const [loadedFile, setLoadedFile] = createSignal<ImportedFileMeta | null>(null);
   const [loadedFileBytes, setLoadedFileBytes] = createSignal<Uint8Array | null>(null);
   const [fileNotice, setFileNotice] = createSignal<string | null>(null);
 
-  const isExample = () => workflow() === "text" && input() === "" && !loadedFile() && !fileError();
+  let latestFileLoad = 0;
+  const isExample = () => input() === "" && !loadedFile() && !fileError();
   const exampleInput = createMemo(() =>
     mode() === "encode"
       ? EXAMPLE_TEXT
       : encodeBytesToBase64(new TextEncoder().encode(EXAMPLE_TEXT), variant())
   );
-  const textInput = createMemo(() =>
-    isExample() ? exampleInput() : mode() === "encode" && workflow() === "file" ? "" : input()
-  );
+  const textInput = createMemo(() => (isExample() ? exampleInput() : input()));
   const result = createMemo(() => {
-    if (mode() === "encode" && workflow() === "file" && loadedFileBytes()) {
+    if (mode() === "encode" && loadedFileBytes()) {
       return {
         ok: true as const,
         value: encodeBytesToBase64(loadedFileBytes() ?? new Uint8Array(), variant()),
@@ -60,9 +57,9 @@ export default function Base64Tool() {
       };
     }
 
-    return processBase64Input(textInput(), mode(), variant(), workflow(), {
-      sourceName: loadedFile()?.name,
-    });
+    return mode() === "decode"
+      ? decodeBase64Input(textInput(), variant(), loadedFile()?.name)
+      : processBase64Input(textInput(), "encode", variant(), "text");
   });
   const outputValue = createMemo(() => {
     const current = result();
@@ -76,22 +73,24 @@ export default function Base64Tool() {
     const current = result();
     return current.ok && current.outputKind === "bytes" ? current : null;
   });
-  const fileSummary = createMemo(() => {
-    const file = loadedFile();
-    if (!file) {
-      return "";
-    }
-
-    return formatImportedFileSummary(file);
+  const decodedOutput = createMemo(() => {
+    const current = result();
+    return mode() === "decode" && current.ok && "bytes" in current ? current : null;
   });
+  const canSwap = () => !isExample() && !!outputValue() && !binaryOutput();
 
-  function swap() {
-    if (isExample()) return;
-    const current = outputValue();
+  function clearFile() {
+    latestFileLoad++;
     setFileError(null);
     setFileNotice(null);
     setLoadedFile(null);
     setLoadedFileBytes(null);
+  }
+
+  function swap() {
+    if (!canSwap()) return;
+    const current = outputValue();
+    clearFile();
     setMode((m) => (m === "encode" ? "decode" : "encode"));
     setInput(current);
   }
@@ -99,31 +98,20 @@ export default function Base64Tool() {
   function reset() {
     setMode("encode");
     setVariant("standard");
-    setWorkflow("text");
     setInput("");
-    setFileError(null);
-    setLoadedFile(null);
-    setLoadedFileBytes(null);
-    setFileNotice(null);
+    clearFile();
   }
 
   function handleModeChange(nextMode: Base64Mode) {
+    if (mode() === nextMode) return;
+    const encodedFile = mode() === "encode" && loadedFileBytes() ? outputValue() : null;
+    clearFile();
     setMode(nextMode);
-    setLoadedFile(null);
-    setLoadedFileBytes(null);
-    setFileError(null);
-    setFileNotice(null);
-  }
-
-  function handleWorkflowChange(nextWorkflow: Base64Workflow) {
-    setWorkflow(nextWorkflow);
-    setLoadedFile(null);
-    setLoadedFileBytes(null);
-    setFileError(null);
-    setFileNotice(null);
+    if (encodedFile !== null) setInput(encodedFile);
   }
 
   async function handleFile(file: File) {
+    const request = ++latestFileLoad;
     setFileError(null);
     setFileNotice(null);
 
@@ -133,18 +121,18 @@ export default function Base64Tool() {
         policy: { maxBytes: DEFAULT_IMPORT_MAX_BYTES },
       });
 
+      if (request !== latestFileLoad) return;
       if (!result.ok) {
         setFileError(result.error);
         return;
       }
 
       if (result.decision.status === "warn") {
-        setFileNotice(formatBase64FileNotice(result.file, mode(), workflow()));
+        setFileNotice(formatBase64FileNotice(result.file, "encode", "file"));
       }
 
       setLoadedFile(result.file);
       setLoadedFileBytes(result.value);
-      setWorkflow("file");
       setInput("");
       return;
     }
@@ -153,6 +141,7 @@ export default function Base64Tool() {
       as: "text",
       policy: { maxBytes: DEFAULT_IMPORT_MAX_BYTES },
     });
+    if (request !== latestFileLoad) return;
 
     if (!result.ok) {
       setFileError(result.error);
@@ -160,7 +149,7 @@ export default function Base64Tool() {
     }
 
     if (result.decision.status === "warn") {
-      setFileNotice(formatBase64FileNotice(result.file, mode(), workflow()));
+      setFileNotice(formatBase64FileNotice(result.file, "decode", "text"));
     }
 
     setLoadedFile(result.file);
@@ -169,8 +158,8 @@ export default function Base64Tool() {
   }
 
   function downloadDecodedBytes() {
-    const current = result();
-    if (!current.ok || current.outputKind !== "bytes" || current.bytes.length === 0) {
+    const current = decodedOutput();
+    if (!current || current.bytes.length === 0) {
       return;
     }
 
@@ -196,117 +185,74 @@ export default function Base64Tool() {
 
   return (
     <ToolContainer>
-      {/* ------------------------------------------------------------------ */}
-      {/* Mode toggle + swap                                                  */}
-      {/* ------------------------------------------------------------------ */}
-      <div class="flex flex-wrap gap-2 items-center">
-        <div class="flex items-center gap-1 p-1 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg">
-          <ToolActionButton
-            active={mode() === "encode"}
-            variant={mode() === "encode" ? "primary" : "ghost"}
-            onClick={() => handleModeChange("encode")}
-          >
-            Encode
-          </ToolActionButton>
-          <ToolActionButton
-            active={mode() === "decode"}
-            variant={mode() === "decode" ? "primary" : "ghost"}
-            onClick={() => handleModeChange("decode")}
-          >
-            Decode
-          </ToolActionButton>
-        </div>
-
-        <div class="flex gap-1 items-center">
-          <ToolActionButton
-            active={variant() === "standard"}
-            variant={variant() === "standard" ? "primary" : "ghost"}
-            onClick={() => setVariant("standard")}
-          >
-            Base64
-          </ToolActionButton>
-          <ToolActionButton
-            active={variant() === "url"}
-            variant={variant() === "url" ? "primary" : "ghost"}
-            onClick={() => setVariant("url")}
-          >
-            Base64url
-          </ToolActionButton>
-        </div>
-
-        <div class="flex gap-1 items-center">
-          <ToolActionButton
-            active={workflow() === "text"}
-            variant={workflow() === "text" ? "primary" : "ghost"}
-            onClick={() => handleWorkflowChange("text")}
-          >
-            Text
-          </ToolActionButton>
-          <ToolActionButton
-            active={workflow() === "file"}
-            variant={workflow() === "file" ? "primary" : "ghost"}
-            onClick={() => handleWorkflowChange("file")}
-          >
-            File / binary
-          </ToolActionButton>
-        </div>
-
-        <div class="flex gap-2 items-center ml-auto">
-          <ToolActionButton onClick={swap} title="Swap input/output" disabled={isExample()}>
-            ⇅ Swap
-          </ToolActionButton>
-          <ToolActionButton onClick={reset} variant="ghost">
-            Reset
-          </ToolActionButton>
-        </div>
-      </div>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Input                                                               */}
-      {/* ------------------------------------------------------------------ */}
-      <div class="flex flex-col gap-2">
-        <ToolDropZone onFile={(file) => void handleFile(file)}>
-          <Textarea
-            label={
-              mode() === "encode"
-                ? workflow() === "text"
-                  ? "Plain text"
-                  : "Binary file"
-                : variant() === "url"
-                  ? "Base64url"
-                  : "Base64"
-            }
-            name="base64-input"
-            autocomplete="off"
-            value={mode() === "encode" && workflow() === "file" ? fileSummary() : input()}
-            onInput={(e) => {
-              setFileError(null);
-              setFileNotice(null);
-              setLoadedFile(null);
-              setLoadedFileBytes(null);
-              setInput(e);
-            }}
-            placeholder={
-              mode() === "encode"
-                ? workflow() === "text"
-                  ? exampleInput()
-                  : "Drop or open a file to encode it as Base64…"
-                : exampleInput()
-            }
-            rows={8}
-            spellcheck={false}
-            readonly={mode() === "encode" && workflow() === "file"}
-          />
-        </ToolDropZone>
-
-        {/* File open button */}
-        <div class="flex items-center gap-2">
-          <ToolFilePicker onFileChange={(file) => void handleFile(file)} />
-          <span class="text-sm text-[var(--text-muted)]">
-            Local-only input handling with explicit text and file workflows
-          </span>
-        </div>
-      </div>
+      <ToolToolbar
+        label="Base64 options"
+        actions={
+          <>
+            <ToolActionButton onClick={swap} title="Swap input/output" disabled={!canSwap()}>
+              ⇅ Swap
+            </ToolActionButton>
+            <ToolActionButton onClick={reset} variant="ghost">
+              Reset
+            </ToolActionButton>
+          </>
+        }
+      >
+        <ToolSegmentedControl
+          label="Operation"
+          hideLabel
+          value={mode()}
+          onChange={handleModeChange}
+          options={[
+            { value: "encode", label: "Encode" },
+            { value: "decode", label: "Decode" },
+          ]}
+        />
+        <ToolSegmentedControl
+          label="Alphabet"
+          hideLabel
+          value={variant()}
+          onChange={setVariant}
+          options={[
+            { value: "standard", label: "Base64" },
+            { value: "url", label: "Base64url" },
+          ]}
+        />
+      </ToolToolbar>
+      <ToolDropZone onFile={(file) => void handleFile(file)}>
+        <ToolInputPanel
+          compact
+          label={
+            mode() === "encode"
+              ? loadedFileBytes()
+                ? "Input file"
+                : "Plain text"
+              : variant() === "url"
+                ? "Base64url"
+                : "Base64"
+          }
+          name="base64-input"
+          autocomplete="off"
+          spellcheck={false}
+          value={input()}
+          onInput={(value) => {
+            clearFile();
+            setInput(value);
+          }}
+          placeholder={exampleInput()}
+          file={mode() === "encode" && loadedFileBytes() ? loadedFile() : null}
+          onRemoveFile={clearFile}
+          rows={8}
+          error={!!transformError()}
+          describedBy={transformError() ? "base64-error" : undefined}
+          actions={
+            <ToolFilePicker
+              label={loadedFile() ? "Replace file" : "Open file"}
+              onFileChange={(file) => void handleFile(file)}
+            />
+          }
+        />
+      </ToolDropZone>
 
       {/* ------------------------------------------------------------------ */}
       {/* Error banner                                                        */}
@@ -323,49 +269,37 @@ export default function Base64Tool() {
         <ToolStatusMessage tone="error">{fileReadErrorMessage()}</ToolStatusMessage>
       </Show>
       <Show when={transformError()}>
-        <ToolStatusMessage tone="error">{transformError()}</ToolStatusMessage>
-      </Show>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Output                                                              */}
-      {/* ------------------------------------------------------------------ */}
-      <ToolExampleNotice when={isExample()} />
-      <Show when={outputValue()}>
-        {(value) => (
-          <Card class="overflow-hidden p-0">
-            {/* Output header */}
-            <div class="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border)]">
-              <Label>
-                {mode() === "encode"
-                  ? variant() === "url"
-                    ? "Base64url"
-                    : "Base64"
-                  : workflow() === "file"
-                    ? "Decoded bytes · binary output"
-                    : "Decoded text"}
-              </Label>
-              <Show when={!isExample()}>
-                <Show when={binaryOutput()} fallback={<CopyButton text={value()} />}>
-                  <ToolActionButton onClick={downloadDecodedBytes}>Download file</ToolActionButton>
-                </Show>
-              </Show>
-            </div>
-
-            {/* Output body */}
-            <pre class="m-0 p-4 overflow-x-auto text-xs leading-relaxed text-[var(--text-primary)] font-mono whitespace-pre-wrap break-all">
-              <code>{value()}</code>
-            </pre>
-          </Card>
-        )}
-      </Show>
-
-      <Show
-        when={!input().trim() && !fileSummary() && !fileNotice() && !fileError() && !outputValue()}
-      >
-        <ToolStatusMessage tone="muted">
-          Standard Base64 and Base64url are both supported. File workflows stay local and surface
-          large-input warnings instead of failing silently.
+        <ToolStatusMessage id="base64-error" tone="error">
+          {transformError()}
         </ToolStatusMessage>
+      </Show>
+
+      <Show when={outputValue()}>
+        <ToolOutputPanel
+          compact
+          title={
+            mode() === "encode"
+              ? variant() === "url"
+                ? "Base64url"
+                : "Base64"
+              : binaryOutput()
+                ? "Decoded bytes"
+                : "Decoded text"
+          }
+          value={outputValue()}
+          isExample={isExample()}
+          copyLabel="Copy"
+          actions={
+            decodedOutput() ? (
+              <>
+                <Show when={!binaryOutput()}>
+                  <CopyButton text={outputValue()} />
+                </Show>
+                <ToolActionButton onClick={downloadDecodedBytes}>Download file</ToolActionButton>
+              </>
+            ) : undefined
+          }
+        />
       </Show>
     </ToolContainer>
   );

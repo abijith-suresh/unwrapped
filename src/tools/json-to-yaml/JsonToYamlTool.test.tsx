@@ -8,10 +8,10 @@ describe("JsonToYamlTool", () => {
     const { getByRole, queryByRole } = render(() => <JsonToYamlTool />);
 
     expect(getByRole("textbox", { name: "JSON document" })).toBeInTheDocument();
-    expect(getByRole("heading", { name: "Input" })).toBeInTheDocument();
+    expect(getByRole("heading", { name: "JSON document" })).toBeInTheDocument();
     expect(getByRole("heading", { name: "Output" })).toBeInTheDocument();
     expect(queryByRole("button", { name: "Copy YAML" })).not.toBeInTheDocument();
-    expect(getByRole("tab", { name: "Input" })).toHaveAttribute("aria-selected", "true");
+    expect(getByRole("region", { name: "JSON document input panel" })).toBeInTheDocument();
 
     fireEvent.input(getByRole("textbox", { name: "JSON document" }), {
       target: { value: '{"name":"Ada"}' },
@@ -27,7 +27,7 @@ describe("JsonToYamlTool", () => {
 
     await waitFor(() => expect(getByRole("alert")).toHaveTextContent("Invalid JSON input"));
     expect(editor).toHaveAttribute("aria-invalid", "true");
-    expect(editor).toHaveAttribute("aria-describedby", "json-to-yaml-input-error");
+    expect(editor).toHaveAccessibleDescription(getByRole("alert").textContent ?? "");
     expect(queryByRole("button", { name: "Copy YAML" })).not.toBeInTheDocument();
   });
 });

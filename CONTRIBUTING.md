@@ -37,8 +37,18 @@ Use `bun run format` to format files.
      code-editor panels), inputs via `ToolCodeEditor`, output via `ToolCodeBlock`.
    - Side-by-side panes: `ToolWorkspace` with `views`.
    - File input: `ToolFilePicker` + `ToolDropZone`, read files through `src/lib/fileImport.ts`.
+   - Text transforms: use `ToolTransformWorkspace` to compose the editor, result panel, responsive
+     panels, error relationships, example label, and copy action. Pass values and handlers; keep
+     parsing and tool state in the tool. Input and output stay visible on phones and sit side by
+     side on larger screens.
+   - Custom flows: compose `ToolInputPanel` and `ToolOutputPanel`. Use their action slots for file
+     pickers and downloads. `ToolOutputPanel` owns example labeling and copy visibility.
+   - Controls: use `ToolToolbar` with its `actions` slot and `ToolSegmentedControl` for mutually
+     exclusive choices. Keep the shared keyboard and selected-state behavior.
    - Feedback: `ToolStatusMessage` (or `ToolToast` for transient errors), actions via
      `ToolActionButton`.
+   Keep workspace copy specific to the task: errors, limits, and instructions needed to use it.
+   Put implementation explanations in docs or Help. Example output needs only the shared label.
 5. Add focused tests for new behavior and edge cases.
 6. Run `bun run verify`.
 

@@ -2,30 +2,28 @@ import { createMemo, createResource, createSignal, For, onCleanup, Show } from "
 
 import CopyButton from "@/components/CopyButton";
 import Card from "@/components/primitives/solid/Card";
-import Textarea from "@/components/primitives/solid/Textarea";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolDropZone from "@/components/tool/ToolDropZone";
 import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolFilePicker from "@/components/tool/ToolFilePicker";
+import ToolInputPanel from "@/components/tool/ToolInputPanel";
+import ToolToolbar from "@/components/tool/ToolToolbar";
 import { EXAMPLE_TEXT } from "@/lib/exampleData";
 import {
   DEFAULT_IMPORT_MAX_BYTES,
   type FileImportError,
   formatBytes,
   formatFileReadFailureMessage,
-  formatImportedFileSummary,
   formatLargeFileNotice,
   type ImportedFileMeta,
   readImportedFile,
 } from "@/lib/fileImport";
 import { type HashResult, hashBytesWithAlgorithms, hashTextWithAlgorithms } from "@/lib/hash";
 
-type HashWorkflow = "text" | "file";
-
 export default function HashGenerator() {
-  const [workflow, setWorkflow] = createSignal<HashWorkflow>("text");
+  const workflow = () => (loadedFileBytes() ? "file" : "text");
   const [input, setInput] = createSignal("");
   const [results, setResults] = createSignal<HashResult[]>([]);
   const [computing, setComputing] = createSignal(false);
@@ -50,14 +48,6 @@ export default function HashGenerator() {
     setComputing(false);
   }
 
-  const fileSummary = createMemo(() => {
-    const file = loadedFile();
-    if (!file) {
-      return "";
-    }
-
-    return formatImportedFileSummary(file);
-  });
   const readFileError = createMemo(() => {
     const error = fileError();
     return error?.code === "read-failed" ? error : null;
@@ -83,11 +73,6 @@ export default function HashGenerator() {
 
   async function computeBytes(bytes: Uint8Array) {
     const run = ++latestCompute;
-    if (bytes.length === 0) {
-      setResults([]);
-      setComputing(false);
-      return;
-    }
 
     setComputing(true);
 
@@ -108,19 +93,6 @@ export default function HashGenerator() {
     debounceTimer = setTimeout(() => void computeText(value), 300);
   }
 
-  function handleWorkflowChange(nextWorkflow: HashWorkflow) {
-    invalidateResults();
-    clearTimeout(debounceTimer);
-    setWorkflow(nextWorkflow);
-    setInput("");
-    setResults([]);
-    setComputing(false);
-    setFileError(null);
-    setLoadedFile(null);
-    setLoadedFileBytes(null);
-    setFileNotice(null);
-  }
-
   function handleClear() {
     invalidateResults();
     clearTimeout(debounceTimer);
@@ -131,7 +103,6 @@ export default function HashGenerator() {
     setLoadedFile(null);
     setLoadedFileBytes(null);
     setFileNotice(null);
-    setWorkflow("text");
   }
 
   async function handleFile(file: File) {
@@ -157,7 +128,6 @@ export default function HashGenerator() {
       setFileNotice(formatLargeFileNotice(result.file, "hash"));
     }
 
-    setWorkflow("file");
     setLoadedFile(result.file);
     setLoadedFileBytes(result.value);
     setInput("");
@@ -171,72 +141,51 @@ export default function HashGenerator() {
 
   return (
     <ToolContainer>
-      <div class="flex flex-wrap items-center gap-3">
-        <div class="flex gap-1 items-center">
-          <ToolActionButton
-            active={workflow() === "text"}
-            variant={workflow() === "text" ? "primary" : "ghost"}
-            onClick={() => handleWorkflowChange("text")}
-          >
-            Text
-          </ToolActionButton>
-          <ToolActionButton
-            active={workflow() === "file"}
-            variant={workflow() === "file" ? "primary" : "ghost"}
-            onClick={() => handleWorkflowChange("file")}
-          >
-            File
-          </ToolActionButton>
-        </div>
-
-        <ToolActionButton
-          onClick={() =>
-            workflow() === "file"
-              ? loadedFileBytes() && void computeBytes(loadedFileBytes() ?? new Uint8Array())
-              : void computeText(input())
+      <ToolToolbar
+        label="Hash options"
+        actions={
+          <>
+            <ToolActionButton
+              onClick={() =>
+                workflow() === "file"
+                  ? loadedFileBytes() && void computeBytes(loadedFileBytes() ?? new Uint8Array())
+                  : void computeText(input())
+              }
+              variant="primary"
+              disabled={workflow() === "file" ? !loadedFileBytes() : !input().trim()}
+            >
+              Hash input
+            </ToolActionButton>
+            <ToolActionButton
+              onClick={handleClear}
+              disabled={!input().trim() && !loadedFileBytes() && results().length === 0}
+            >
+              Clear
+            </ToolActionButton>
+          </>
+        }
+      ></ToolToolbar>
+      <ToolDropZone onFile={(file) => void handleFile(file)}>
+        <ToolInputPanel
+          compact
+          label={workflow() === "text" ? "Input text" : "Input file"}
+          name="hash-input"
+          autocomplete="off"
+          spellcheck={false}
+          value={input()}
+          onInput={handleInput}
+          placeholder={EXAMPLE_TEXT}
+          rows={5}
+          file={loadedFile()}
+          onRemoveFile={handleClear}
+          actions={
+            <ToolFilePicker
+              label={loadedFile() ? "Replace file" : "Open file"}
+              onFileChange={(file) => void handleFile(file)}
+            />
           }
-          variant="primary"
-          disabled={workflow() === "file" ? !loadedFileBytes() : !input().trim()}
-        >
-          Hash input
-        </ToolActionButton>
-        <ToolActionButton
-          onClick={handleClear}
-          disabled={!input().trim() && !loadedFileBytes() && results().length === 0}
-        >
-          Clear
-        </ToolActionButton>
-        <span class="text-xs text-[var(--text-muted)]">
-          Local-only hashing via the browser&apos;s Web Crypto API
-        </span>
-      </div>
-
-      <div class="flex flex-col gap-1.5">
-        <ToolDropZone onFile={(file) => void handleFile(file)}>
-          <Textarea
-            label={workflow() === "text" ? "Input text" : "Input file"}
-            name="hash-input"
-            autocomplete="off"
-            value={workflow() === "file" ? fileSummary() : input()}
-            onInput={(event) => handleInput(event)}
-            placeholder={
-              workflow() === "text"
-                ? EXAMPLE_TEXT
-                : "Drop a file here or use the file picker to hash it locally…"
-            }
-            rows={5}
-            spellcheck={false}
-            readonly={workflow() === "file"}
-          />
-        </ToolDropZone>
-
-        <div class="flex items-center gap-2">
-          <ToolFilePicker onFileChange={(file) => void handleFile(file)} />
-          <span class="text-sm text-[var(--text-muted)]">
-            Shared local file import flow with explicit read and size failures
-          </span>
-        </div>
-      </div>
+        />
+      </ToolDropZone>
 
       <Show when={fileNotice()}>
         <ToolStatusMessage tone="warning">{fileNotice()}</ToolStatusMessage>
@@ -280,12 +229,6 @@ export default function HashGenerator() {
             )}
           </For>
         </div>
-      </Show>
-
-      <Show when={!isExample() && !input().trim() && !loadedFileBytes() && results().length === 0}>
-        <ToolStatusMessage tone="muted">
-          SHA-1 · SHA-256 · SHA-384 · SHA-512 computed locally for text and file workflows
-        </ToolStatusMessage>
       </Show>
     </ToolContainer>
   );
