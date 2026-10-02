@@ -1,49 +1,16 @@
-import { createMemo, createSignal, Show } from "solid-js";
+import { createMemo, createSignal, createUniqueId, Show } from "solid-js";
 
-import CopyButton from "@/components/CopyButton";
 import Card from "@/components/primitives/solid/Card";
 import Label from "@/components/primitives/solid/Label";
-import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
-import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolInputPanel from "@/components/tool/ToolInputPanel";
+import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
+import ToolResultList from "@/components/tool/ToolResultList";
 import { EXAMPLE_JWT } from "@/lib/exampleData";
 import { getJwtClaimsSummary, getJwtExpiryStatus, parseJwt, prettyJson } from "@/lib/jwt";
 
-// ---------------------------------------------------------------------------
-// Sub-components
-// ---------------------------------------------------------------------------
-
-interface PanelProps {
-  title: string;
-  content: string;
-  example: boolean;
-}
-
-function Panel(props: PanelProps) {
-  return (
-    <Card class="overflow-hidden p-0">
-      {/* Panel header */}
-      <div class="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border)]">
-        <Label>{props.title}</Label>
-        <Show when={!props.example}>
-          <CopyButton text={props.content} label={`Copy ${props.title}`} />
-        </Show>
-      </div>
-
-      {/* Panel body */}
-      <pre class="m-0 p-4 overflow-x-auto font-mono text-xs leading-relaxed text-[var(--text-primary)] whitespace-pre-wrap break-all">
-        <code>{props.content}</code>
-      </pre>
-    </Card>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Main component
-// ---------------------------------------------------------------------------
-
 export default function JwtDecoder() {
+  const errorId = createUniqueId();
   const [input, setInput] = createSignal("");
   const isExample = () => input() === "";
 
@@ -75,91 +42,83 @@ export default function JwtDecoder() {
 
   return (
     <ToolContainer>
-      {/* ------------------------------------------------------------------ */}
-      {/* Input area                                                          */}
-      {/* ------------------------------------------------------------------ */}
-      <div class="flex flex-col gap-2">
-        <ToolInputPanel
-          compact
-          label="JWT token"
-          name="jwt-token"
-          autocomplete="off"
-          value={input()}
-          onInput={setInput}
-          placeholder={EXAMPLE_JWT}
-          rows={5}
-          spellcheck={false}
-        />
-      </div>
+      <ToolInspectorWorkspace
+        isExample={isExample()}
+        error={error()}
+        errorId={errorId}
+        input={
+          <ToolInputPanel
+            compact
+            label="JWT token"
+            name="jwt-token"
+            value={input()}
+            onInput={setInput}
+            placeholder={EXAMPLE_JWT}
+            rows={5}
+            error={!!error()}
+            describedBy={error() ? errorId : undefined}
+          />
+        }
+      >
+        <Show when={parsed()}>
+          {(result) => (
+            <>
+              {/* Expiry badge */}
+              <Show when={expiryStatus()}>
+                {(status) => (
+                  <div
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium self-start"
+                    classList={{
+                      "border border-[var(--accent-error)] bg-[color-mix(in_srgb,var(--accent-error)_12%,transparent)] text-[var(--accent-error)]":
+                        status().expired,
+                      "border border-[var(--accent-success)] bg-[color-mix(in_srgb,var(--accent-success)_12%,transparent)] text-[var(--accent-success)]":
+                        !status().expired,
+                    }}
+                  >
+                    <span class="w-1.5 h-1.5 rounded-full bg-current shrink-0" />
+                    {status().label}
+                  </div>
+                )}
+              </Show>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Error banner                                                        */}
-      {/* ------------------------------------------------------------------ */}
-      <Show when={error()}>
-        <ToolStatusMessage tone="error">{error()}</ToolStatusMessage>
-      </Show>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Output panels (only when valid JWT)                                */}
-      {/* ------------------------------------------------------------------ */}
-      <ToolExampleNotice when={isExample()} />
-      <Show when={parsed()}>
-        {(result) => (
-          <>
-            {/* Expiry badge */}
-            <Show when={expiryStatus()}>
-              {(status) => (
-                <div
-                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium self-start"
-                  classList={{
-                    "border border-[var(--accent-error)] bg-[color-mix(in_srgb,var(--accent-error)_12%,transparent)] text-[var(--accent-error)]":
-                      status().expired,
-                    "border border-[var(--accent-success)] bg-[color-mix(in_srgb,var(--accent-success)_12%,transparent)] text-[var(--accent-success)]":
-                      !status().expired,
-                  }}
-                >
-                  <span class="w-1.5 h-1.5 rounded-full bg-current shrink-0" />
-                  {status().label}
-                </div>
-              )}
-            </Show>
-
-            <Show when={claimsSummary().length > 0}>
-              <Card class="overflow-hidden p-0">
-                <div class="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border)]">
-                  <Label>Claims summary</Label>
-                </div>
-                <div class="p-4 grid grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] gap-3">
-                  {claimsSummary().map((item) => (
-                    <div class="flex flex-col gap-1 p-3 bg-[var(--bg-primary)] border border-[var(--border)] rounded">
-                      <span class="text-[0.6875rem] font-bold tracking-wider uppercase text-[var(--text-muted)]">
-                        {item.section} · {item.label}
-                      </span>
-                      <code class="text-[var(--text-primary)] text-xs font-mono break-words">
-                        {item.displayValue}
-                      </code>
-                      <Show when={item.displayValue !== item.rawValue}>
-                        <span class="text-[var(--text-secondary)] text-xs font-mono break-words">
-                          raw: {item.rawValue}
+              <Show when={claimsSummary().length > 0}>
+                <Card class="overflow-hidden p-0">
+                  <div class="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border)]">
+                    <Label>Claims summary</Label>
+                  </div>
+                  <div class="p-4 grid grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] gap-3">
+                    {claimsSummary().map((item) => (
+                      <div class="flex flex-col gap-1 p-3 bg-[var(--bg-primary)] border border-[var(--border)] rounded">
+                        <span class="text-[0.6875rem] font-bold tracking-wider uppercase text-[var(--text-muted)]">
+                          {item.section} · {item.label}
                         </span>
-                      </Show>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </Show>
+                        <code class="text-[var(--text-primary)] text-xs font-mono break-words">
+                          {item.displayValue}
+                        </code>
+                        <Show when={item.displayValue !== item.rawValue}>
+                          <span class="text-[var(--text-secondary)] text-xs font-mono break-words">
+                            raw: {item.rawValue}
+                          </span>
+                        </Show>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              </Show>
 
-            {/* Header panel */}
-            <Panel title="Header" content={prettyJson(result().header)} example={isExample()} />
-
-            {/* Payload panel */}
-            <Panel title="Payload" content={prettyJson(result().payload)} example={isExample()} />
-
-            {/* Signature panel */}
-            <Panel title="Signature" content={result().signature} example={isExample()} />
-          </>
-        )}
-      </Show>
+              <ToolResultList
+                layout="rows"
+                isExample={isExample()}
+                fields={[
+                  { label: "Header", value: prettyJson(result().header) },
+                  { label: "Payload", value: prettyJson(result().payload) },
+                  { label: "Signature", value: result().signature },
+                ]}
+              />
+            </>
+          )}
+        </Show>
+      </ToolInspectorWorkspace>
     </ToolContainer>
   );
 }

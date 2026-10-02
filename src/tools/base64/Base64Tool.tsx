@@ -6,10 +6,9 @@ import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolDropZone from "@/components/tool/ToolDropZone";
 import ToolFilePicker from "@/components/tool/ToolFilePicker";
-import ToolInputPanel from "@/components/tool/ToolInputPanel";
-import ToolOutputPanel from "@/components/tool/ToolOutputPanel";
 import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
 import ToolToolbar from "@/components/tool/ToolToolbar";
+import ToolTransformWorkspace from "@/components/tool/ToolTransformWorkspace";
 import {
   type Base64Mode,
   type Base64Variant,
@@ -219,44 +218,6 @@ export default function Base64Tool() {
           ]}
         />
       </ToolToolbar>
-      <ToolDropZone onFile={(file) => void handleFile(file)}>
-        <ToolInputPanel
-          compact
-          label={
-            mode() === "encode"
-              ? loadedFileBytes()
-                ? "Input file"
-                : "Plain text"
-              : variant() === "url"
-                ? "Base64url"
-                : "Base64"
-          }
-          name="base64-input"
-          autocomplete="off"
-          spellcheck={false}
-          value={input()}
-          onInput={(value) => {
-            clearFile();
-            setInput(value);
-          }}
-          placeholder={exampleInput()}
-          file={mode() === "encode" && loadedFileBytes() ? loadedFile() : null}
-          onRemoveFile={clearFile}
-          rows={8}
-          error={!!transformError()}
-          describedBy={transformError() ? "base64-error" : undefined}
-          actions={
-            <ToolFilePicker
-              label={loadedFile() ? "Replace file" : "Open file"}
-              onFileChange={(file) => void handleFile(file)}
-            />
-          }
-        />
-      </ToolDropZone>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Error banner                                                        */}
-      {/* ------------------------------------------------------------------ */}
       <Show when={fileNotice()}>
         <ToolStatusMessage tone="warning">{fileNotice()}</ToolStatusMessage>
       </Show>
@@ -268,39 +229,60 @@ export default function Base64Tool() {
       <Show when={fileError()?.code === "read-failed"}>
         <ToolStatusMessage tone="error">{fileReadErrorMessage()}</ToolStatusMessage>
       </Show>
-      <Show when={transformError()}>
-        <ToolStatusMessage id="base64-error" tone="error">
-          {transformError()}
-        </ToolStatusMessage>
-      </Show>
-
-      <Show when={outputValue()}>
-        <ToolOutputPanel
-          compact
-          title={
-            mode() === "encode"
-              ? variant() === "url"
-                ? "Base64url"
-                : "Base64"
-              : binaryOutput()
-                ? "Decoded bytes"
-                : "Decoded text"
-          }
-          value={outputValue()}
-          isExample={isExample()}
-          copyLabel="Copy"
-          actions={
-            decodedOutput() ? (
+      <ToolDropZone onFile={(file) => void handleFile(file)}>
+        <ToolTransformWorkspace
+          input={{
+            compact: true,
+            label:
+              mode() === "encode"
+                ? loadedFileBytes()
+                  ? "Input file"
+                  : "Plain text"
+                : variant() === "url"
+                  ? "Base64url"
+                  : "Base64",
+            name: "base64-input",
+            value: input(),
+            onInput: (value) => {
+              clearFile();
+              setInput(value);
+            },
+            placeholder: exampleInput(),
+            file: mode() === "encode" && loadedFileBytes() ? loadedFile() : null,
+            onRemoveFile: clearFile,
+            rows: 8,
+            actions: (
+              <ToolFilePicker
+                label={loadedFile() ? "Replace file" : "Open file"}
+                onFileChange={(file) => void handleFile(file)}
+              />
+            ),
+          }}
+          output={{
+            compact: true,
+            title:
+              mode() === "encode"
+                ? variant() === "url"
+                  ? "Base64url"
+                  : "Base64"
+                : binaryOutput()
+                  ? "Decoded bytes"
+                  : "Decoded text",
+            value: outputValue(),
+            error: transformError() ?? undefined,
+            isExample: isExample(),
+            copyLabel: "Copy",
+            actions: decodedOutput() ? (
               <>
                 <Show when={!binaryOutput()}>
                   <CopyButton text={outputValue()} />
                 </Show>
                 <ToolActionButton onClick={downloadDecodedBytes}>Download file</ToolActionButton>
               </>
-            ) : undefined
-          }
+            ) : undefined,
+          }}
         />
-      </Show>
+      </ToolDropZone>
     </ToolContainer>
   );
 }

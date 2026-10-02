@@ -38,15 +38,20 @@ export default function XmlFormatterTool() {
         />
       </div>
       <ToolTransformWorkspace
-        inputLabel="XML input"
-        value={input()}
-        onInput={setInput}
-        placeholder={EXAMPLE_XML}
-        output={output()}
-        outputLabel="Formatted XML"
-        isExample={isExample()}
-        error={error()}
-        copyLabel="Copy XML"
+        input={{
+          label: "XML input",
+          value: input(),
+          onInput: setInput,
+          placeholder: EXAMPLE_XML,
+          name: "source",
+        }}
+        output={{
+          title: "Formatted XML",
+          value: output(),
+          isExample: isExample(),
+          error: error(),
+          copyLabel: "Copy XML",
+        }}
       />
     </ToolContainer>
   );

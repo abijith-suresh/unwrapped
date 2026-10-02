@@ -1,12 +1,11 @@
-import { createMemo, createSignal, For, Show } from "solid-js";
+import { createMemo, createSignal, createUniqueId, For, Show } from "solid-js";
 
-import CopyButton from "@/components/CopyButton";
 import Card from "@/components/primitives/solid/Card";
 import Label from "@/components/primitives/solid/Label";
-import Textarea from "@/components/primitives/solid/Textarea";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
-import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import ToolInputPanel from "@/components/tool/ToolInputPanel";
+import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
 import { EXAMPLE_URL } from "@/lib/exampleData";
 import { inspectUrl } from "@/lib/urlInspector";
 
@@ -22,6 +21,7 @@ const SECTION_LABELS = [
 ] as const;
 
 export default function UrlInspectorTool() {
+  const errorId = createUniqueId();
   const [input, setInput] = createSignal("");
   const isExample = () => input() === "";
   const result = createMemo(() => inspectUrl(input() || EXAMPLE_URL));
@@ -38,48 +38,24 @@ export default function UrlInspectorTool() {
 
   return (
     <ToolContainer>
-      <Textarea
-        label="URL or raw query string"
-        value={input()}
-        onInput={(value) => setInput(value)}
-        placeholder={EXAMPLE_URL}
-        rows={5}
-        spellcheck={false}
-        error={!!error()}
-      />
-
-      <ToolExampleNotice when={isExample()} />
-
-      <Show
-        when={!error()}
-        fallback={<ToolStatusMessage tone="error">{error()}</ToolStatusMessage>}
+      <ToolInspectorWorkspace
+        isExample={isExample()}
+        error={error()}
+        errorId={errorId}
+        input={
+          <ToolInputPanel
+            compact
+            label="URL or raw query string"
+            value={input()}
+            onInput={setInput}
+            placeholder={EXAMPLE_URL}
+            rows={5}
+            error={!!error()}
+            describedBy={error() ? errorId : undefined}
+          />
+        }
+        fields={SECTION_LABELS.map(([key, label]) => ({ label, value: inspection()?.[key] ?? "" }))}
       >
-        <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] gap-3">
-          <For each={SECTION_LABELS}>
-            {([key, label]) => {
-              const value = () => {
-                const current = inspection();
-                if (!current) return "";
-                return key === "normalized" ? current.normalized : current[key];
-              };
-
-              return (
-                <Card class="flex flex-col gap-2">
-                  <div class="flex justify-between gap-3">
-                    <Label>{label}</Label>
-                    <Show when={!isExample()}>
-                      <CopyButton text={value()} label={`Copy ${label}`} />
-                    </Show>
-                  </div>
-                  <code class="text-[var(--text-primary)] text-sm leading-relaxed break-all">
-                    {value() || "—"}
-                  </code>
-                </Card>
-              );
-            }}
-          </For>
-        </div>
-
         <Card class="flex flex-col gap-3">
           <div class="flex justify-between gap-3">
             <Label>Decoded query params</Label>
@@ -131,7 +107,7 @@ export default function UrlInspectorTool() {
             </ToolStatusMessage>
           </Show>
         </Card>
-      </Show>
+      </ToolInspectorWorkspace>
     </ToolContainer>
   );
 }

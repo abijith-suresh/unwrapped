@@ -1,6 +1,6 @@
 import type { Component } from "solid-js";
-import { createResource, ErrorBoundary, Show } from "solid-js";
-import { Dynamic, isServer } from "solid-js/web";
+import { createResource, createSignal, ErrorBoundary, onMount, Show } from "solid-js";
+import { Dynamic } from "solid-js/web";
 import ToolErrorFallback from "@/components/ToolErrorFallback";
 import ToolContainer from "@/components/tool/ToolContainer";
 
@@ -38,12 +38,11 @@ function ToolSkeleton() {
 }
 
 export default function ToolHost(props: ToolHostProps) {
-  if (isServer) {
-    return <ToolSkeleton />;
-  }
+  const [mounted, setMounted] = createSignal(false);
+  onMount(() => setMounted(true));
 
   const [toolComponent, { refetch }] = createResource(
-    () => props.componentPath,
+    () => (mounted() ? props.componentPath : false),
     (path) => (props.loadModule ?? loadToolModule)(path)
   );
 

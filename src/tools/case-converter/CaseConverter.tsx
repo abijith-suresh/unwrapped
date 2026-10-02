@@ -1,10 +1,7 @@
-import { createMemo, createSignal, For, Show } from "solid-js";
-import CopyButton from "@/components/CopyButton";
-import Card from "@/components/primitives/solid/Card";
-import Label from "@/components/primitives/solid/Label";
+import { createMemo, createSignal } from "solid-js";
 import ToolContainer from "@/components/tool/ToolContainer";
-import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolInputPanel from "@/components/tool/ToolInputPanel";
+import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
 import { convertCaseVariants } from "@/lib/caseConverter";
 import { EXAMPLE_CASE_TEXT } from "@/lib/exampleData";
 
@@ -30,36 +27,24 @@ export default function CaseConverter() {
 
   return (
     <ToolContainer>
-      <ToolInputPanel
-        compact
-        label="Source text"
-        value={input()}
-        onInput={setInput}
-        placeholder={EXAMPLE_CASE_TEXT}
-        rows={6}
+      <ToolInspectorWorkspace
+        isExample={isExample()}
+        input={
+          <ToolInputPanel
+            compact
+            label="Source text"
+            value={input()}
+            onInput={setInput}
+            placeholder={EXAMPLE_CASE_TEXT}
+            rows={6}
+          />
+        }
+        fields={
+          isExample() || hasInput()
+            ? VARIANT_LABELS.map(([key, label]) => ({ label, value: variants()[key] }))
+            : []
+        }
       />
-
-      <ToolExampleNotice when={isExample()} />
-
-      <Show when={isExample() || hasInput()}>
-        <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,240px),1fr))] gap-3">
-          <For each={VARIANT_LABELS}>
-            {([key, label]) => (
-              <Card class="flex flex-col gap-2">
-                <div class="flex items-center justify-between gap-3">
-                  <Label>{label}</Label>
-                  <Show when={!isExample()}>
-                    <CopyButton text={variants()[key]} label={`Copy ${label}`} />
-                  </Show>
-                </div>
-                <code class="m-0 text-[var(--text-primary)] text-sm leading-[1.7] font-mono whitespace-pre-wrap break-words">
-                  {variants()[key] || "—"}
-                </code>
-              </Card>
-            )}
-          </For>
-        </div>
-      </Show>
     </ToolContainer>
   );
 }

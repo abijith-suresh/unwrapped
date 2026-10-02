@@ -1,10 +1,7 @@
-import { createMemo, createSignal, For } from "solid-js";
-
-import Card from "@/components/primitives/solid/Card";
-import Label from "@/components/primitives/solid/Label";
+import { createMemo, createSignal } from "solid-js";
 import ToolContainer from "@/components/tool/ToolContainer";
-import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolInputPanel from "@/components/tool/ToolInputPanel";
+import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
 import { EXAMPLE_STATS_TEXT } from "@/lib/exampleData";
 import { analyzeText } from "@/lib/textStatistics";
 
@@ -22,29 +19,24 @@ export default function TextStatisticsTool() {
 
   return (
     <ToolContainer>
-      <ToolInputPanel
-        compact
-        label="Text input"
-        value={input()}
-        onInput={setInput}
-        placeholder={EXAMPLE_STATS_TEXT}
-        rows={10}
+      <ToolInspectorWorkspace
+        isExample={isExample()}
+        input={
+          <ToolInputPanel
+            compact
+            label="Text input"
+            value={input()}
+            onInput={setInput}
+            placeholder={EXAMPLE_STATS_TEXT}
+            rows={10}
+          />
+        }
+        fields={METRIC_LABELS.map(([key, label]) => ({
+          label,
+          value: statistics()[key].toLocaleString(),
+          metric: true,
+        }))}
       />
-
-      <ToolExampleNotice when={isExample()} />
-
-      <div class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,180px),1fr))] gap-3">
-        <For each={METRIC_LABELS}>
-          {([key, label]) => (
-            <Card class="flex flex-col gap-1.5">
-              <Label>{label}</Label>
-              <strong class="text-[var(--text-primary)] text-[1.625rem] leading-[1.2]">
-                {statistics()[key].toLocaleString()}
-              </strong>
-            </Card>
-          )}
-        </For>
-      </div>
     </ToolContainer>
   );
 }

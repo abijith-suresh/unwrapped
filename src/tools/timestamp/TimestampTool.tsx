@@ -7,7 +7,7 @@ import Label from "@/components/primitives/solid/Label";
 import Select from "@/components/primitives/solid/Select";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolContainer from "@/components/tool/ToolContainer";
-import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
 import { EXAMPLE_EPOCH } from "@/lib/exampleData";
 import {
   DEFAULT_ZONES,
@@ -80,178 +80,113 @@ export default function TimestampTool() {
     );
   }
 
+  const fields = createMemo(() => {
+    const current = date();
+    if (!current) return [];
+    return [
+      {
+        label: "Epoch (seconds)",
+        value: String(Math.floor(current.getTime() / 1000)),
+        copyLabel: "Copy epoch seconds",
+      },
+      {
+        label: "Epoch (milliseconds)",
+        value: String(current.getTime()),
+        copyLabel: "Copy epoch milliseconds",
+      },
+      { label: "ISO 8601", value: current.toISOString() },
+      ...getDerivedTimestampFormats(current),
+    ];
+  });
   return (
     <ToolContainer>
-      {/* ------------------------------------------------------------------ */}
-      {/* Input row                                                           */}
-      {/* ------------------------------------------------------------------ */}
-      <div class="grid grid-cols-1 gap-4 items-end sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
-        {/* Epoch input */}
-        <div class="flex flex-col gap-1.5">
-          <Input
-            label="Unix timestamp"
-            name="unix-timestamp"
-            autocomplete="off"
-            inputmode="numeric"
-            type="text"
-            value={epochInput()}
-            onInput={handleEpochInput}
-            placeholder={EXAMPLE_EPOCH}
-          />
-          <Show when={!isExample() && parsed()}>
-            {(p) => (
-              <span class="text-xs text-[var(--text-muted)]">
-                Detected: {p().unit === "s" ? "seconds" : "milliseconds"}
-              </span>
-            )}
-          </Show>
-        </div>
-
-        <div class="flex gap-2 items-center">
-          <ToolActionButton onClick={useNow} variant="primary">
-            Use now
-          </ToolActionButton>
-          <ToolActionButton onClick={reset} variant="ghost">
-            Reset
-          </ToolActionButton>
-        </div>
-
-        {/* Datetime-local input */}
-        <div class="flex flex-col gap-1.5">
-          <Input
-            label="Date & time (local)"
-            name="local-datetime"
-            autocomplete="off"
-            type="datetime-local"
-            value={datetimeInput()}
-            onInput={handleDatetimeInput}
-          />
-        </div>
-      </div>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Derived epoch values                                                */}
-      {/* ------------------------------------------------------------------ */}
-      <ToolExampleNotice when={isExample()} />
-      <Show when={date()}>
-        {(d) => (
-          <div class="flex gap-3 flex-wrap">
-            {/* Seconds */}
-            <Card class="flex-1 min-w-[160px]">
-              <Label>Epoch (seconds)</Label>
-              <div class="flex items-center gap-2 mt-1.5">
-                <code class="text-[0.9375rem] text-[var(--accent-primary)] font-mono flex-1 break-all">
-                  {String(Math.floor(d().getTime() / 1000))}
-                </code>
-                <Show when={!isExample()}>
-                  <CopyButton
-                    text={String(Math.floor(d().getTime() / 1000))}
-                    label="Copy epoch seconds"
-                  />
-                </Show>
-              </div>
-            </Card>
-
-            {/* Milliseconds */}
-            <Card class="flex-1 min-w-[160px]">
-              <Label>Epoch (milliseconds)</Label>
-              <div class="flex items-center gap-2 mt-1.5">
-                <code class="text-[0.9375rem] text-[var(--accent-primary)] font-mono flex-1 break-all">
-                  {String(d().getTime())}
-                </code>
-                <Show when={!isExample()}>
-                  <CopyButton text={String(d().getTime())} label="Copy epoch milliseconds" />
-                </Show>
-              </div>
-            </Card>
-
-            {/* ISO 8601 */}
-            <Card class="flex-[2] min-w-[220px]">
-              <Label>ISO 8601</Label>
-              <div class="flex items-center gap-2 mt-1.5">
-                <code class="text-sm text-[var(--accent-success)] font-mono flex-1 break-all">
-                  {d().toISOString()}
-                </code>
-                <Show when={!isExample()}>
-                  <CopyButton text={d().toISOString()} label="Copy ISO 8601" />
-                </Show>
-              </div>
-            </Card>
-          </div>
-        )}
-      </Show>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Derived formats                                                     */}
-      {/* ------------------------------------------------------------------ */}
-      <Show when={date()}>
-        {(d) => (
-          <Card class="overflow-hidden p-0">
-            <div class="px-4 py-2.5 border-b border-[var(--border)]">
-              <Label>Derived formats</Label>
+      <ToolInspectorWorkspace
+        isExample={isExample()}
+        input={
+          <div class="grid grid-cols-1 gap-4 items-end sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
+            {/* Epoch input */}
+            <div class="flex flex-col gap-1.5">
+              <Input
+                label="Unix timestamp"
+                name="unix-timestamp"
+                autocomplete="off"
+                inputmode="numeric"
+                type="text"
+                value={epochInput()}
+                onInput={handleEpochInput}
+                placeholder={EXAMPLE_EPOCH}
+              />
+              <Show when={!isExample() && parsed()}>
+                {(p) => (
+                  <span class="text-xs text-[var(--text-muted)]">
+                    Detected: {p().unit === "s" ? "seconds" : "milliseconds"}
+                  </span>
+                )}
+              </Show>
             </div>
 
-            <div class="p-3 grid grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] gap-3">
-              <For each={getDerivedTimestampFormats(d())}>
-                {(item) => (
-                  <div class="flex flex-col gap-1.5 p-3 bg-[var(--bg-primary)] border border-[var(--border)] rounded">
-                    <Label>{item.label}</Label>
-                    <code class="text-[0.8125rem] text-[var(--text-primary)] font-mono break-all">
-                      {item.value}
-                    </code>
-                    <div class="flex justify-end">
+            <div class="flex gap-2 items-center">
+              <ToolActionButton onClick={useNow} variant="primary">
+                Use now
+              </ToolActionButton>
+              <ToolActionButton onClick={reset} variant="ghost">
+                Reset
+              </ToolActionButton>
+            </div>
+
+            {/* Datetime-local input */}
+            <div class="flex flex-col gap-1.5">
+              <Input
+                label="Date & time (local)"
+                name="local-datetime"
+                autocomplete="off"
+                type="datetime-local"
+                value={datetimeInput()}
+                onInput={handleDatetimeInput}
+              />
+            </div>
+          </div>
+        }
+        fields={fields()}
+      >
+        <Show when={date()}>
+          {(d) => (
+            <Card class="overflow-hidden p-0">
+              <div class="px-4 py-2.5 border-b border-[var(--border)]">
+                <Label>Timezone conversions</Label>
+              </div>
+
+              <div class="p-3 flex flex-col gap-3">
+                <For each={zones()}>
+                  {(zone, i) => (
+                    <div class="grid grid-cols-1 gap-3 items-center sm:grid-cols-[minmax(0,180px)_minmax(0,1fr)_auto]">
+                      <Select
+                        aria-label={`Timezone ${i() + 1}`}
+                        name={`timezone-${i() + 1}`}
+                        autocomplete="off"
+                        value={zone.tz}
+                        onChange={(tz) => changeZone(i(), tz)}
+                        options={PRESET_ZONES.map((z) => ({ value: z.tz, label: z.label }))}
+                      />
+
+                      <code class="text-sm text-[var(--text-primary)] font-mono">
+                        {formatInZone(d(), zone.tz)}
+                      </code>
+
                       <Show when={!isExample()}>
-                        <CopyButton text={item.value} label={`Copy ${item.label}`} />
+                        <CopyButton
+                          text={formatInZone(d(), zone.tz)}
+                          label={`Copy ${zone.label} time`}
+                        />
                       </Show>
                     </div>
-                  </div>
-                )}
-              </For>
-            </div>
-          </Card>
-        )}
-      </Show>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Timezone panel                                                      */}
-      {/* ------------------------------------------------------------------ */}
-      <Show when={date()}>
-        {(d) => (
-          <Card class="overflow-hidden p-0">
-            <div class="px-4 py-2.5 border-b border-[var(--border)]">
-              <Label>Timezone conversions</Label>
-            </div>
-
-            <div class="p-3 flex flex-col gap-3">
-              <For each={zones()}>
-                {(zone, i) => (
-                  <div class="grid grid-cols-1 gap-3 items-center sm:grid-cols-[minmax(0,180px)_minmax(0,1fr)_auto]">
-                    <Select
-                      aria-label={`Timezone ${i() + 1}`}
-                      name={`timezone-${i() + 1}`}
-                      autocomplete="off"
-                      value={zone.tz}
-                      onChange={(tz) => changeZone(i(), tz)}
-                      options={PRESET_ZONES.map((z) => ({ value: z.tz, label: z.label }))}
-                    />
-
-                    <code class="text-sm text-[var(--text-primary)] font-mono">
-                      {formatInZone(d(), zone.tz)}
-                    </code>
-
-                    <Show when={!isExample()}>
-                      <CopyButton
-                        text={formatInZone(d(), zone.tz)}
-                        label={`Copy ${zone.label} time`}
-                      />
-                    </Show>
-                  </div>
-                )}
-              </For>
-            </div>
-          </Card>
-        )}
-      </Show>
+                  )}
+                </For>
+              </div>
+            </Card>
+          )}
+        </Show>
+      </ToolInspectorWorkspace>
     </ToolContainer>
   );
 }

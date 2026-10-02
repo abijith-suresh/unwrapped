@@ -113,6 +113,9 @@ export default function ToolCodeEditor(props: ToolCodeEditorProps) {
         ) : null}
 
         <textarea
+          spellcheck={false}
+          autocomplete="off"
+          autocapitalize="off"
           {...textareaProps}
           id={controlId}
           value={local.value ?? ""}

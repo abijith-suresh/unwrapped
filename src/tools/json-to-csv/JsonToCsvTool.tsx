@@ -20,15 +20,20 @@ export default function JsonToCsvTool() {
   return (
     <ToolContainer>
       <ToolTransformWorkspace
-        inputLabel="JSON array input"
-        value={input()}
-        onInput={setInput}
-        placeholder={EXAMPLE_JSON_ARRAY}
-        output={output()}
-        outputLabel="CSV output"
-        isExample={isExample()}
-        error={error()}
-        copyLabel="Copy CSV"
+        input={{
+          label: "JSON array input",
+          value: input(),
+          onInput: setInput,
+          placeholder: EXAMPLE_JSON_ARRAY,
+          name: "source",
+        }}
+        output={{
+          title: "CSV output",
+          value: output(),
+          isExample: isExample(),
+          error: error(),
+          copyLabel: "Copy CSV",
+        }}
       />
     </ToolContainer>
   );

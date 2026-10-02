@@ -48,15 +48,20 @@ export default function YamlFormatterTool() {
         </div>
       </div>
       <ToolTransformWorkspace
-        inputLabel="YAML input"
-        value={input()}
-        onInput={setInput}
-        placeholder={EXAMPLE_YAML_FORMAT}
-        output={output()}
-        outputLabel="Formatted YAML"
-        isExample={isExample()}
-        error={error()}
-        copyLabel="Copy YAML"
+        input={{
+          label: "YAML input",
+          value: input(),
+          onInput: setInput,
+          placeholder: EXAMPLE_YAML_FORMAT,
+          name: "source",
+        }}
+        output={{
+          title: "Formatted YAML",
+          value: output(),
+          isExample: isExample(),
+          error: error(),
+          copyLabel: "Copy YAML",
+        }}
       />
     </ToolContainer>
   );

@@ -5,6 +5,7 @@ import Label from "@/components/primitives/solid/Label";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolGeneratorWorkspace from "@/components/tool/ToolGeneratorWorkspace";
 import { copyToClipboard } from "@/lib/clipboard";
 
 // ---------------------------------------------------------------------------
@@ -49,69 +50,72 @@ export default function UuidGenerator() {
 
   return (
     <ToolContainer>
-      {/* ------------------------------------------------------------------ */}
-      {/* Controls                                                            */}
-      {/* ------------------------------------------------------------------ */}
-      <div class="flex items-center flex-wrap gap-3">
-        {/* Count input */}
-        <div class="flex items-center gap-2">
-          <Label for="uuid-count">Count</Label>
-          <input
-            id="uuid-count"
-            name="uuid-count"
-            autocomplete="off"
-            type="number"
-            min={1}
-            max={100}
-            inputmode="numeric"
-            value={count()}
-            onInput={(e) => setCount(parseInt(e.currentTarget.value, 10) || 1)}
-            class="w-20 rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-2 py-1 text-sm text-[var(--text-primary)] outline-none"
-          />
-        </div>
-
-        <ToolActionButton onClick={generate} variant="primary">
-          Generate
-        </ToolActionButton>
-
-        {/* Uppercase toggle */}
-        <ToolActionButton active={uppercase()} onClick={() => setUppercase((v) => !v)}>
-          Uppercase
-        </ToolActionButton>
-
-        {/* Copy all */}
-        <Show when={uuids().length > 1}>
-          <ToolActionButton onClick={() => void copyAll()}>Copy all</ToolActionButton>
-        </Show>
-
-        <ToolActionButton onClick={reset} variant="ghost">
-          Reset
-        </ToolActionButton>
-      </div>
-
-      <Show when={copyStatus() === "success"}>
-        <ToolStatusMessage tone="success">Copied all generated UUIDs.</ToolStatusMessage>
-      </Show>
-
-      <Show when={copyStatus() === "error"}>
-        <ToolStatusMessage tone="error">Could not copy the generated UUIDs.</ToolStatusMessage>
-      </Show>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* UUID list                                                           */}
-      {/* ------------------------------------------------------------------ */}
-      <div class="flex flex-col gap-1.5">
-        <For each={uuids()}>
-          {(uuid, index) => (
-            <div class="flex items-center justify-between px-4 py-2.5 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-md gap-4">
-              <code class="text-sm text-[var(--text-primary)] font-mono tracking-wide flex-1 break-all">
-                {display(uuid)}
-              </code>
-              <CopyButton text={display(uuid)} label={`Copy UUID ${index() + 1}`} />
+      <ToolGeneratorWorkspace
+        configuration={
+          <>
+            {/* Count input */}
+            <div class="flex items-center gap-2">
+              <Label for="uuid-count">Count</Label>
+              <input
+                id="uuid-count"
+                name="uuid-count"
+                autocomplete="off"
+                type="number"
+                min={1}
+                max={100}
+                inputmode="numeric"
+                value={count()}
+                onInput={(e) => setCount(parseInt(e.currentTarget.value, 10) || 1)}
+                class="w-20 rounded-md border border-[var(--border)] bg-[var(--bg-secondary)] px-2 py-1 text-sm text-[var(--text-primary)] outline-none"
+              />
             </div>
-          )}
-        </For>
-      </div>
+
+            <ToolActionButton onClick={generate} variant="primary">
+              Generate
+            </ToolActionButton>
+
+            {/* Uppercase toggle */}
+            <ToolActionButton active={uppercase()} onClick={() => setUppercase((v) => !v)}>
+              Uppercase
+            </ToolActionButton>
+
+            {/* Copy all */}
+            <Show when={uuids().length > 1}>
+              <ToolActionButton onClick={() => void copyAll()}>Copy all</ToolActionButton>
+            </Show>
+
+            <ToolActionButton onClick={reset} variant="ghost">
+              Reset
+            </ToolActionButton>
+          </>
+        }
+        status={
+          <>
+            <Show when={copyStatus() === "success"}>
+              <ToolStatusMessage tone="success">Copied all generated UUIDs.</ToolStatusMessage>
+            </Show>
+
+            <Show when={copyStatus() === "error"}>
+              <ToolStatusMessage tone="error">
+                Could not copy the generated UUIDs.
+              </ToolStatusMessage>
+            </Show>
+          </>
+        }
+      >
+        <div class="flex flex-col gap-1.5">
+          <For each={uuids()}>
+            {(uuid, index) => (
+              <div class="flex items-center justify-between px-4 py-2.5 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-md gap-4">
+                <code class="text-sm text-[var(--text-primary)] font-mono tracking-wide flex-1 break-all">
+                  {display(uuid)}
+                </code>
+                <CopyButton text={display(uuid)} label={`Copy UUID ${index() + 1}`} />
+              </div>
+            )}
+          </For>
+        </div>
+      </ToolGeneratorWorkspace>
     </ToolContainer>
   );
 }
