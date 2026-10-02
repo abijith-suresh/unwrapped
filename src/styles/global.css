@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "./themes.css";
 @import "./shell.css";
+@import "./toolSearch.css";
 
 @font-face {
   font-family: "Manrope Variable";

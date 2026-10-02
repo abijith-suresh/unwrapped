@@ -1,32 +1,8 @@
-import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, For, onMount, Show } from "solid-js";
 
 import { ICON_MAP } from "@/lib/iconMap";
-import type { Tool } from "@/tools/registry";
-import { getToolRoute, tools } from "@/tools/registry";
-
-/*
- * Relevance ordering for a developer audience.
- * Most frequently needed tools first, niche tools last.
- */
-const RELEVANCE_ORDER: readonly string[] = [
-  "json-formatter",
-  "base64",
-  "diff",
-  "regex-tester",
-  "jwt-decoder",
-  "hash-generator",
-  "uuid-generator",
-  "timestamp",
-];
-
-function relevanceRank(id: string): number {
-  const index = RELEVANCE_ORDER.indexOf(id);
-  return index === -1 ? RELEVANCE_ORDER.length : index;
-}
-
-const orderedTools: readonly Tool[] = [...tools].sort(
-  (a, b) => relevanceRank(a.id) - relevanceRank(b.id)
-);
+import { searchTools } from "@/lib/toolSearch";
+import { getToolRoute } from "@/tools/registry";
 
 export default function ToolSearch() {
   const [query, setQuery] = createSignal("");
@@ -36,16 +12,7 @@ export default function ToolSearch() {
 
   let inputRef: HTMLInputElement | undefined;
 
-  const filtered = createMemo((): readonly Tool[] => {
-    const q = query().toLowerCase().trim();
-    if (!q) return orderedTools;
-    return orderedTools.filter(
-      (t) =>
-        t.name.toLowerCase().includes(q) ||
-        t.description.toLowerCase().includes(q) ||
-        t.keywords.some((k) => k.toLowerCase().includes(q))
-    );
-  });
+  const filtered = createMemo(() => searchTools(query()));
   const resultAnnouncement = createMemo(() => {
     const results = filtered();
     const q = query().trim();
@@ -78,19 +45,6 @@ export default function ToolSearch() {
     if (window.matchMedia("(pointer: fine)").matches) {
       inputRef?.focus();
     }
-
-    /* Wire ⌘K / Ctrl+K to focus the inline search */
-    function onGlobalKey(e: KeyboardEvent) {
-      const mod = mac() ? e.metaKey : e.ctrlKey;
-      if (mod && e.key === "k") {
-        e.preventDefault();
-        inputRef?.focus();
-        inputRef?.select();
-      }
-    }
-
-    document.addEventListener("keydown", onGlobalKey);
-    onCleanup(() => document.removeEventListener("keydown", onGlobalKey));
   });
 
   function onKeyDown(e: KeyboardEvent) {
