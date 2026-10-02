@@ -61,7 +61,7 @@ export default function HmacGeneratorTool() {
   }
 
   return (
-    <ToolContainer width="standard">
+    <ToolContainer>
       <div class="grid gap-4 grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))]">
         <Textarea
           label="Message"

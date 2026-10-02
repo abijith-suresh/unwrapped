@@ -72,7 +72,7 @@ export default function JsonFormatter() {
   });
 
   return (
-    <ToolContainer width="wide">
+    <ToolContainer>
       <ToolToast open={toastOpen()} message="JSON could not be parsed." tone="error" />
 
       <ToolToolbar label="Formatting controls">

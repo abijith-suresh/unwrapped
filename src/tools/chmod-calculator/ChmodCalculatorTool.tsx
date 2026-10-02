@@ -42,7 +42,7 @@ export default function ChmodCalculatorTool() {
   }
 
   return (
-    <ToolContainer width="standard">
+    <ToolContainer>
       <Card class="overflow-auto">
         <table class="w-full border-collapse">
           <thead>

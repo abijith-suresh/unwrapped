@@ -195,7 +195,7 @@ export default function Base64Tool() {
   };
 
   return (
-    <ToolContainer width="standard">
+    <ToolContainer>
       {/* ------------------------------------------------------------------ */}
       {/* Mode toggle + swap                                                  */}
       {/* ------------------------------------------------------------------ */}

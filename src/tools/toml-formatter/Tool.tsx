@@ -29,7 +29,7 @@ export default function Tool() {
     return current.ok ? "" : current.error;
   };
   return (
-    <ToolContainer width="wide">
+    <ToolContainer>
       <ToolToolbar label="Options">
         <ToolActionButton onClick={() => setInput("")}>Clear input</ToolActionButton>
       </ToolToolbar>

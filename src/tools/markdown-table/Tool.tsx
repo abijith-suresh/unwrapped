@@ -37,7 +37,7 @@ export default function Tool() {
     return current.ok ? "" : current.error;
   };
   return (
-    <ToolContainer width="wide">
+    <ToolContainer>
       <ToolToolbar label="Options">
         <ToolActionButton active={mode() === "csv"} onClick={() => setMode("csv")}>
           CSV to Markdown

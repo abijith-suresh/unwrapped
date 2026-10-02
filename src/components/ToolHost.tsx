@@ -27,7 +27,7 @@ function loadToolModule(componentPath: string): Promise<Component> {
 
 function ToolSkeleton() {
   return (
-    <ToolContainer width="wide" role="status" aria-label="Loading tool">
+    <ToolContainer role="status" aria-label="Loading tool">
       <div class="h-12 w-full rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--bg-secondary)] animate-pulse" />
       <div class="grid min-w-0 gap-4 lg:grid-cols-2">
         <div class="h-[26rem] rounded-[var(--radius-panel)] border border-[var(--border)] bg-[var(--bg-secondary)] animate-pulse" />

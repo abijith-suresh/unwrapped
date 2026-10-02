@@ -60,7 +60,7 @@ export default function TokenGenerator() {
   }
 
   return (
-    <ToolContainer width="standard">
+    <ToolContainer>
       <div class="grid grid-cols-[2fr_1fr] gap-4">
         <Card class="flex flex-col gap-1.5">
           <div class="flex justify-between gap-3">

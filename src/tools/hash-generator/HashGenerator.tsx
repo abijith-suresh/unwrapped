@@ -170,7 +170,7 @@ export default function HashGenerator() {
   });
 
   return (
-    <ToolContainer width="standard">
+    <ToolContainer>
       <div class="flex flex-wrap items-center gap-3">
         <div class="flex gap-1 items-center">
           <ToolActionButton

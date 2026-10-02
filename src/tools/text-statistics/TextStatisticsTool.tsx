@@ -22,7 +22,7 @@ export default function TextStatisticsTool() {
   const statistics = createMemo(() => analyzeText(input() || EXAMPLE_STATS_TEXT));
 
   return (
-    <ToolContainer width="standard">
+    <ToolContainer>
       <Textarea
         label="Text input"
         value={input()}

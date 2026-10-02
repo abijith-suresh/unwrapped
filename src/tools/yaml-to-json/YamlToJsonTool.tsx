@@ -28,7 +28,7 @@ export default function YamlToJsonTool() {
   });
 
   return (
-    <ToolContainer width="wide">
+    <ToolContainer>
       <Show when={error()}>
         <p id="yaml-to-json-input-error" class="sr-only">
           {error()}

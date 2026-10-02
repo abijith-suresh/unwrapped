@@ -31,7 +31,7 @@ export default function Tool() {
     return current && !current.ok ? current.error : "";
   };
   return (
-    <ToolContainer width="wide">
+    <ToolContainer>
       <ToolWorkspace
         views={[
           {

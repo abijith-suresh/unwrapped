@@ -61,7 +61,7 @@ export default function CronTool() {
   });
 
   return (
-    <ToolContainer width="standard">
+    <ToolContainer>
       <ToolPanel
         title="Build a schedule"
         description="Five numeric fields. Sunday is 0. Restricted day-of-month and day-of-week fields use OR semantics."
