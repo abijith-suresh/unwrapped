@@ -1,15 +1,21 @@
 import { Search, X } from "lucide-solid";
 import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
-
+import CatalogFilter from "@/components/CatalogFilter";
+import FavoriteButton from "@/components/FavoriteButton";
+import { useFavorites } from "@/components/favorites";
 import { ICON_MAP } from "@/lib/iconMap";
 import { searchTools } from "@/lib/toolSearch";
 import { getToolRoute } from "@/tools/registry";
 
 export default function GlobalToolSearch() {
+  const favorites = useFavorites();
+  const [onlyFavorites, setOnlyFavorites] = createSignal(false);
   const [query, setQuery] = createSignal("");
   const [activeIndex, setActiveIndex] = createSignal(0);
   const [mac, setMac] = createSignal(false);
-  const results = createMemo(() => searchTools(query()));
+  const results = createMemo(() =>
+    searchTools(query()).filter((tool) => !onlyFavorites() || favorites.contains(tool.id))
+  );
   let dialog: HTMLDialogElement | undefined;
   let input: HTMLInputElement | undefined;
   let returnFocus: HTMLElement | undefined;
@@ -136,6 +142,11 @@ export default function GlobalToolSearch() {
               onKeyDown={onKeyDown}
             />
           </div>
+          <CatalogFilter
+            favorites={onlyFavorites()}
+            onChange={setOnlyFavorites}
+            count={favorites.ids().length}
+          />
           <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">
             {results().length} {results().length === 1 ? "tool" : "tools"} available.{" "}
             {results()[activeIndex()]?.name ? `${results()[activeIndex()].name} highlighted.` : ""}
@@ -145,7 +156,7 @@ export default function GlobalToolSearch() {
               {(tool, index) => {
                 const Icon = ICON_MAP[tool.icon];
                 return (
-                  <li>
+                  <li class="global-search-item">
                     <a
                       id={`global-tool-${tool.slug}`}
                       href={getToolRoute(tool.slug)}
@@ -168,17 +179,23 @@ export default function GlobalToolSearch() {
                         <span class="global-search-name">{tool.name}</span>
                         <span class="global-search-description">{tool.description}</span>
                       </span>
-                      <span class="global-search-arrow" aria-hidden="true">
-                        →
-                      </span>
                     </a>
+                    <FavoriteButton
+                      toolId={tool.id}
+                      toolName={tool.name}
+                      class="global-search-favorite"
+                    />
                   </li>
                 );
               }}
             </For>
           </ul>
           <Show when={!results().length}>
-            <p class="global-search-empty">No matching tools.</p>
+            <p class="global-search-empty">
+              {onlyFavorites() && !favorites.ids().length
+                ? "Star a tool to add it here."
+                : "No matching tools."}
+            </p>
           </Show>
         </div>
       </dialog>

@@ -1,10 +1,14 @@
 import { createEffect, createMemo, createSignal, For, onMount, Show } from "solid-js";
-
+import CatalogFilter from "@/components/CatalogFilter";
+import FavoriteButton from "@/components/FavoriteButton";
+import { useFavorites } from "@/components/favorites";
 import { ICON_MAP } from "@/lib/iconMap";
 import { searchTools } from "@/lib/toolSearch";
 import { getToolRoute } from "@/tools/registry";
 
 export default function ToolSearch() {
+  const favorites = useFavorites();
+  const [onlyFavorites, setOnlyFavorites] = createSignal(false);
   const [query, setQuery] = createSignal("");
   const [activeIndex, setActiveIndex] = createSignal(-1);
   const [focused, setFocused] = createSignal(false);
@@ -12,7 +16,9 @@ export default function ToolSearch() {
 
   let inputRef: HTMLInputElement | undefined;
 
-  const filtered = createMemo(() => searchTools(query()));
+  const filtered = createMemo(() =>
+    searchTools(query()).filter((tool) => !onlyFavorites() || favorites.contains(tool.id))
+  );
   const resultAnnouncement = createMemo(() => {
     const results = filtered();
     const q = query().trim();
@@ -147,7 +153,11 @@ export default function ToolSearch() {
         </Show>
       </div>
 
-      {/* ── Filtered results ── */}
+      <CatalogFilter
+        favorites={onlyFavorites()}
+        onChange={setOnlyFavorites}
+        count={favorites.ids().length}
+      />
       <p class="sr-only" id="lp-results-status" role="status" aria-live="polite" aria-atomic="true">
         {resultAnnouncement()}
       </p>
@@ -157,7 +167,7 @@ export default function ToolSearch() {
             {(tool, idx) => {
               const Icon = ICON_MAP[tool.icon];
               return (
-                <li>
+                <li class="lp-tool-card">
                   <a
                     href={getToolRoute(tool.slug)}
                     classList={{
@@ -176,9 +186,6 @@ export default function ToolSearch() {
                     }}
                     onMouseLeave={() => setActiveIndex(-1)}
                   >
-                    <span class="lp-row-index" aria-hidden="true">
-                      {String(idx() + 1).padStart(2, "0")}
-                    </span>
                     <span class="lp-row-icon" aria-hidden="true">
                       {Icon ? <Icon size={15} /> : null}
                     </span>
@@ -189,6 +196,7 @@ export default function ToolSearch() {
                       ↗
                     </span>
                   </a>
+                  <FavoriteButton toolId={tool.id} toolName={tool.name} class="lp-card-favorite" />
                 </li>
               );
             }}
@@ -196,7 +204,11 @@ export default function ToolSearch() {
         </ul>
       </Show>
       <Show when={filtered().length === 0}>
-        <p class="lp-empty">no tools match &ldquo;{query()}&rdquo;</p>
+        <p class="lp-empty">
+          {onlyFavorites() && !favorites.ids().length
+            ? "Star a tool to add it here."
+            : "No matching tools."}
+        </p>
       </Show>
     </search>
   );

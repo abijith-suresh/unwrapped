@@ -20,6 +20,24 @@ function createStorage() {
 }
 
 describe("session utilities", () => {
+  it("works when the browser denies access to the storage property", () => {
+    const descriptor = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
+    Object.defineProperty(globalThis, "localStorage", {
+      configurable: true,
+      get() {
+        throw new DOMException("Storage denied", "SecurityError");
+      },
+    });
+    try {
+      expect(
+        loadSessionState({ key: "demo", version: 1, isData: (value): value is unknown => true })
+      ).toBeNull();
+      expect(() => saveSessionState({ key: "demo", version: 1, data: [] })).not.toThrow();
+      expect(() => clearSessionState("demo")).not.toThrow();
+    } finally {
+      if (descriptor) Object.defineProperty(globalThis, "localStorage", descriptor);
+    }
+  });
   it("loads validated versioned session data", () => {
     const { storage, values } = createStorage();
     values.set("demo", JSON.stringify({ version: 1, data: { value: "ok" } }));

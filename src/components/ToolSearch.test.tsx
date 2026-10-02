@@ -33,7 +33,7 @@ describe("ToolSearch", () => {
 
     fireEvent.input(input, { target: { value: "blockchain" } });
 
-    expect(getByText(/no tools match/i)).toBeInTheDocument();
+    expect(getByText(/No matching tools/i)).toBeInTheDocument();
   });
 
   it("moves the keyboard selection with arrow keys", () => {
