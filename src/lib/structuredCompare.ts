@@ -1,8 +1,13 @@
 import { parse as parseToml, stringify as stringifyToml, type TomlTable } from "smol-toml";
 import { parseAllDocuments, stringify } from "yaml";
+import {
+  JSON_NUMBER_YAML_TAG,
+  parseJson,
+  readYamlValue,
+  sortObjectKeys,
+  stringifyJson,
+} from "./structuredData";
 import { normalizeNewlines, toErrorMessage } from "./text";
-
-type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
 
 export interface StructuredCompareError {
   side: "left" | "right";
@@ -61,7 +66,7 @@ function parseEnvKeyAndValue(line: string): { key: string; value: string } {
 
 function parseEnvRecord(input: string): Record<string, string> {
   const normalizedInput = normalizeNewlines(input);
-  const values: Record<string, string> = {};
+  const values: Record<string, string> = Object.create(null);
   const lines = normalizedInput.split("\n");
 
   for (let index = 0; index < lines.length; index++) {
@@ -147,53 +152,14 @@ function parseEnvRecord(input: string): Record<string, string> {
   return values;
 }
 
-function isPlainObject(value: JsonValue): value is { [key: string]: JsonValue } {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function sortJsonValue(value: JsonValue): JsonValue {
-  if (Array.isArray(value)) {
-    return value.map(sortJsonValue);
-  }
-
-  if (isPlainObject(value)) {
-    return Object.keys(value)
-      .sort((leftKey, rightKey) => leftKey.localeCompare(rightKey))
-      .reduce<{ [key: string]: JsonValue }>((acc, key) => {
-        acc[key] = sortJsonValue(value[key]);
-        return acc;
-      }, {});
-  }
-
-  return value;
-}
-
-function sortTomlUnknown(value: unknown): unknown {
-  if (Array.isArray(value)) {
-    return value.map(sortTomlUnknown);
-  }
-
-  if (typeof value === "object" && value !== null && !(value instanceof Date)) {
-    return Object.keys(value)
-      .sort((leftKey, rightKey) => leftKey.localeCompare(rightKey))
-      .reduce<Record<string, unknown>>((acc, key) => {
-        acc[key] = sortTomlUnknown((value as Record<string, unknown>)[key]);
-        return acc;
-      }, {});
-  }
-
-  return value;
-}
-
 export function normalizeJsonForDiff(input: string): NormalizeJsonResult {
   if (input.trim().length === 0) {
     return { ok: true, output: "" };
   }
 
   try {
-    const parsed = JSON.parse(input) as JsonValue;
-    const sorted = sortJsonValue(parsed);
-    return { ok: true, output: JSON.stringify(sorted, null, 2) };
+    const parsed = parseJson(input);
+    return { ok: true, output: stringifyJson(sortObjectKeys(parsed), 2) };
   } catch (error) {
     return {
       ok: false,
@@ -208,7 +174,7 @@ export function normalizeYamlForDiff(input: string): NormalizeYamlResult {
   }
 
   try {
-    const documents = parseAllDocuments(input);
+    const documents = parseAllDocuments(input, { intAsBigInt: true, stringKeys: true });
 
     for (const document of documents) {
       if (document.errors.length > 0) {
@@ -217,9 +183,9 @@ export function normalizeYamlForDiff(input: string): NormalizeYamlResult {
     }
 
     const normalizedDocuments = documents.map((document) => {
-      const parsed = document.toJS() as JsonValue;
-      const sorted = sortJsonValue(parsed);
+      const sorted = sortObjectKeys(readYamlValue(document));
       return stringify(sorted, {
+        customTags: [JSON_NUMBER_YAML_TAG],
         defaultStringType: "PLAIN",
         sortMapEntries: true,
       }).trimEnd();
@@ -244,7 +210,7 @@ export function normalizeTomlForDiff(input: string): NormalizeTomlResult {
 
   try {
     const parsed = parseToml(input) as TomlTable;
-    const sorted = sortTomlUnknown(parsed) as TomlTable;
+    const sorted = sortObjectKeys(parsed) as TomlTable;
 
     return {
       ok: true,
@@ -280,6 +246,13 @@ export function normalizeEnvForDiff(input: string): NormalizeEnvResult {
   }
 }
 
+const normalizers = {
+  json: normalizeJsonForDiff,
+  yaml: normalizeYamlForDiff,
+  toml: normalizeTomlForDiff,
+  env: normalizeEnvForDiff,
+};
+
 export function prepareStructuredCompare(input: {
   original: string;
   modified: string;
@@ -287,135 +260,15 @@ export function prepareStructuredCompare(input: {
   rightLanguage: string;
 }): StructuredCompareResult {
   const { original, modified, leftLanguage, rightLanguage } = input;
-
-  if (leftLanguage !== "json" || rightLanguage !== "json") {
-    if (leftLanguage === "env" && rightLanguage === "env") {
-      const left = normalizeEnvForDiff(original);
-      const right = normalizeEnvForDiff(modified);
-
-      if (left.ok && right.ok) {
-        return {
-          original: left.output,
-          modified: right.output,
-          strategy: "env",
-          errors: [],
-        };
-      }
-
-      const errors: StructuredCompareError[] = [];
-
-      if (!left.ok) {
-        errors.push({ side: "left", message: left.message });
-      }
-
-      if (!right.ok) {
-        errors.push({ side: "right", message: right.message });
-      }
-
-      return {
-        original,
-        modified,
-        strategy: "text",
-        errors,
-      };
-    }
-
-    if (leftLanguage === "yaml" && rightLanguage === "yaml") {
-      const left = normalizeYamlForDiff(original);
-      const right = normalizeYamlForDiff(modified);
-
-      if (left.ok && right.ok) {
-        return {
-          original: left.output,
-          modified: right.output,
-          strategy: "yaml",
-          errors: [],
-        };
-      }
-
-      const errors: StructuredCompareError[] = [];
-
-      if (!left.ok) {
-        errors.push({ side: "left", message: left.message });
-      }
-
-      if (!right.ok) {
-        errors.push({ side: "right", message: right.message });
-      }
-
-      return {
-        original,
-        modified,
-        strategy: "text",
-        errors,
-      };
-    }
-
-    if (leftLanguage === "toml" && rightLanguage === "toml") {
-      const left = normalizeTomlForDiff(original);
-      const right = normalizeTomlForDiff(modified);
-
-      if (left.ok && right.ok) {
-        return {
-          original: left.output,
-          modified: right.output,
-          strategy: "toml",
-          errors: [],
-        };
-      }
-
-      const errors: StructuredCompareError[] = [];
-
-      if (!left.ok) {
-        errors.push({ side: "left", message: left.message });
-      }
-
-      if (!right.ok) {
-        errors.push({ side: "right", message: right.message });
-      }
-
-      return {
-        original,
-        modified,
-        strategy: "text",
-        errors,
-      };
-    }
-
-    return {
-      original,
-      modified,
-      strategy: "text",
-      errors: [],
-    };
-  }
-
-  const left = normalizeJsonForDiff(original);
-  const right = normalizeJsonForDiff(modified);
-
+  const fallback: StructuredCompareResult = { original, modified, strategy: "text", errors: [] };
+  if (leftLanguage !== rightLanguage || !Object.hasOwn(normalizers, leftLanguage)) return fallback;
+  const strategy = leftLanguage as keyof typeof normalizers;
+  const left = normalizers[strategy](original);
+  const right = normalizers[strategy](modified);
   if (left.ok && right.ok) {
-    return {
-      original: left.output,
-      modified: right.output,
-      strategy: "json",
-      errors: [],
-    };
+    return { original: left.output, modified: right.output, strategy, errors: [] };
   }
-
-  const errors: StructuredCompareError[] = [];
-
-  if (!left.ok) {
-    errors.push({ side: "left", message: left.message });
-  }
-
-  if (!right.ok) {
-    errors.push({ side: "right", message: right.message });
-  }
-
-  return {
-    original,
-    modified,
-    strategy: "text",
-    errors,
-  };
+  if (!left.ok) fallback.errors.push({ side: "left", message: left.message });
+  if (!right.ok) fallback.errors.push({ side: "right", message: right.message });
+  return fallback;
 }

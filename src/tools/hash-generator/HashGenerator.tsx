@@ -54,7 +54,7 @@ export default function HashGenerator() {
 
   async function computeText(text: string) {
     const run = ++latestCompute;
-    if (!text.trim()) {
+    if (text.length === 0) {
       setResults([]);
       setComputing(false);
       return;

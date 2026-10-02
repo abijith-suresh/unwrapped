@@ -1,6 +1,7 @@
 import { parseDocument } from "yaml";
 
 import { sortJsonKeys } from "./jsonFormatter";
+import { readYamlValue, stringifyJson } from "./structuredData";
 import { type TextTransformResult, toErrorMessage } from "./text";
 
 export type YamlToJsonResult = TextTransformResult;
@@ -14,18 +15,18 @@ export function convertYamlToJson(input: string): YamlToJsonResult {
   }
 
   try {
-    const document = parseDocument(input);
+    const document = parseDocument(input, { intAsBigInt: true, stringKeys: true });
 
     if (document.errors.length > 0) {
       throw document.errors[0];
     }
 
-    const parsed = document.toJS() as unknown;
+    const parsed = readYamlValue(document, true);
     const sorted = sortJsonKeys(parsed);
 
     return {
       ok: true,
-      output: JSON.stringify(sorted, null, 2),
+      output: stringifyJson(sorted, 2),
     };
   } catch (error) {
     return {

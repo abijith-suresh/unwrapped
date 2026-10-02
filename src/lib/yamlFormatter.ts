@@ -1,6 +1,7 @@
 import { parseDocument, stringify } from "yaml";
 
 import { sortJsonKeys } from "./jsonFormatter";
+import { JSON_NUMBER_YAML_TAG, readYamlValue } from "./structuredData";
 import { clampIndentSize, type TextTransformResult, toErrorMessage } from "./text";
 
 export interface YamlFormatterOptions {
@@ -19,18 +20,19 @@ export function formatYaml(input: string, options: YamlFormatterOptions): YamlFo
   }
 
   try {
-    const document = parseDocument(input);
+    const document = parseDocument(input, { intAsBigInt: true });
 
     if (document.errors.length > 0) {
       throw document.errors[0];
     }
 
-    const parsed = document.toJS() as unknown;
+    const parsed = readYamlValue(document);
     const value = options.sortKeys ? sortJsonKeys(parsed) : parsed;
 
     return {
       ok: true,
       output: stringify(value, {
+        customTags: [JSON_NUMBER_YAML_TAG],
         indent: clampIndentSize(options.indent),
         defaultStringType: "PLAIN",
         sortMapEntries: options.sortKeys,
