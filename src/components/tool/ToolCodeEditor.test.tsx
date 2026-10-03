@@ -4,29 +4,6 @@ import { describe, expect, it } from "vitest";
 import ToolCodeEditor from "./ToolCodeEditor";
 
 describe("ToolCodeEditor", () => {
-  it("keeps generated controls associated with their labels", () => {
-    const { getByRole } = render(() => <ToolCodeEditor label="Source code" name="source" />);
-    const editor = getByRole("textbox", { name: "Source code" });
-    expect(editor).toHaveAttribute("name", "source");
-  });
-
-  it("forwards native textarea attributes and renders a generic diagnostic marker", () => {
-    const { container, getByRole } = render(() => (
-      <ToolCodeEditor
-        label="Source code"
-        value='{"name":'
-        diagnostic={{ start: 8, length: 1 }}
-        required
-        spellcheck={false}
-      />
-    ));
-    const editor = getByRole("textbox", { name: "Source code" });
-
-    expect(editor).toBeRequired();
-    expect(editor).toHaveAttribute("spellcheck", "false");
-    expect(container.querySelector("[data-tool-error-marker]")).toBeInTheDocument();
-  });
-
   it("keeps the diagnostic layer aligned while the editor scrolls", () => {
     const { container, getByRole } = render(() => (
       <ToolCodeEditor

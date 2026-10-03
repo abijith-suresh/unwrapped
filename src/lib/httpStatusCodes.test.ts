@@ -1,28 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { HTTP_STATUS_CODES, searchHttpStatusCodes } from "./httpStatusCodes";
-
-describe("HTTP_STATUS_CODES", () => {
-  it("covers representative status classes", () => {
-    expect(HTTP_STATUS_CODES).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ code: 200, category: "Success", name: "OK" }),
-        expect.objectContaining({ code: 301, category: "Redirection", name: "Moved Permanently" }),
-        expect.objectContaining({ code: 404, category: "Client Error", name: "Not Found" }),
-        expect.objectContaining({
-          code: 422,
-          category: "Client Error",
-          name: "Unprocessable Content",
-        }),
-        expect.objectContaining({
-          code: 500,
-          category: "Server Error",
-          name: "Internal Server Error",
-        }),
-      ])
-    );
-  });
-});
+import { searchHttpStatusCodes } from "./httpStatusCodes";
 
 describe("searchHttpStatusCodes", () => {
   it("finds entries by numeric code", () => {

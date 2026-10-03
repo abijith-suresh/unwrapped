@@ -13,7 +13,10 @@ it("masks the secret, evaluates locally and clears the secret and result", () =>
   fireEvent.input(input, { target: { value: "password" } });
   expect(screen.queryByRole("button", { name: "Evaluate strength" })).toBeNull();
   expect(screen.getByText("Very weak · 0/4")).toBeInTheDocument();
-  fireEvent.click(screen.getByRole("button", { name: "Show password" }));
+  const visibility = screen.getByRole("button", { name: "Show password" });
+  expect(visibility).toHaveAttribute("aria-pressed", "false");
+  fireEvent.click(visibility);
+  expect(visibility).toHaveAttribute("aria-pressed", "true");
   expect(input).toHaveAttribute("type", "text");
   fireEvent.input(input, { target: { value: "a".repeat(257) } });
   expect(screen.getByRole("alert")).toHaveTextContent("Use at most 256 characters");

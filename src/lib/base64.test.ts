@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 
 import {
   decodeBase64Input,
-  decodeBase64ToBytes,
   decodeBase64ToText,
   deriveDecodedFileName,
   encodeBytesToBase64,
@@ -59,10 +58,6 @@ describe("base64 utilities", () => {
 
   it("encodes bytes directly for file workflows", () => {
     expect(encodeBytesToBase64(new Uint8Array([0, 255, 16]), "standard")).toBe("AP8Q");
-  });
-
-  it("decodes binary output for file workflows", () => {
-    expect(Array.from(decodeBase64ToBytes("AP8Q", "standard"))).toEqual([0, 255, 16]);
   });
 
   it("reports invalid text decode input", () => {

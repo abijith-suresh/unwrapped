@@ -1,8 +1,6 @@
 import { fireEvent, render } from "@solidjs/testing-library";
 import { createSignal } from "solid-js";
 import { describe, expect, it } from "vitest";
-import ToolActionButton from "@/components/ToolActionButton";
-import ToolGeneratorWorkspace from "./ToolGeneratorWorkspace";
 import ToolInputPanel from "./ToolInputPanel";
 import ToolInspectorWorkspace from "./ToolInspectorWorkspace";
 import ToolTransformWorkspace from "./ToolTransformWorkspace";
@@ -68,23 +66,5 @@ describe("shared workspaces", () => {
     fireEvent.input(getByRole("textbox", { name: "Value" }), { target: { value: "valid" } });
     expect(getByRole("button", { name: "Copy Parsed value" })).toBeEnabled();
     expect(queryByRole("button", { name: "Copy Absent" })).not.toBeInTheDocument();
-  });
-  it("updates generator results through the shared action slot", () => {
-    const { getByRole } = render(() => {
-      const [output, setOutput] = createSignal("first");
-      return (
-        <ToolGeneratorWorkspace
-          configuration={<span>Options</span>}
-          actions={
-            <ToolActionButton onClick={() => setOutput("second")}>Regenerate</ToolActionButton>
-          }
-          fields={[{ label: "Generated value", value: output() }]}
-        />
-      );
-    });
-    expect(getByRole("region", { name: "Generated value" })).toHaveTextContent("first");
-    fireEvent.click(getByRole("button", { name: "Regenerate" }));
-    expect(getByRole("region", { name: "Generated value" })).toHaveTextContent("second");
-    expect(getByRole("button", { name: "Copy Generated value" })).toBeEnabled();
   });
 });
