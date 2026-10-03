@@ -55,6 +55,7 @@ export default function Tool() {
           name: "source",
         }}
         output={{
+          download: { format: mode() === "markdown" ? "csv" : "markdown" },
           title: mode() === "markdown" ? "CSV" : "Markdown",
           value: output(),
           isExample: isExample(),

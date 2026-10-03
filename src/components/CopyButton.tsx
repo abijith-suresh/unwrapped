@@ -11,6 +11,7 @@ interface CopyButtonProps {
   text: string;
   label?: string;
   class?: string;
+  compact?: boolean;
 }
 
 export default function CopyButton(props: CopyButtonProps) {
@@ -80,7 +81,10 @@ export default function CopyButton(props: CopyButtonProps) {
         disabled={status() === "copying" || !props.text}
         aria-label={actionLabel()}
         aria-busy={status() === "copying"}
-        class={cn("min-w-[5.25rem]", props.class)}
+        class={cn(
+          props.compact ? "min-w-11 px-3 sm:min-w-[5.25rem] sm:px-3.5" : "min-w-[5.25rem]",
+          props.class
+        )}
         style={{
           color:
             status() === "copied"
@@ -109,7 +113,7 @@ export default function CopyButton(props: CopyButtonProps) {
         ) : (
           <Clipboard size={13} aria-hidden="true" />
         )}
-        {statusLabel()}
+        <span class={props.compact ? "hidden sm:inline" : undefined}>{statusLabel()}</span>
       </ToolActionButton>
       <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">
         {announcement()}

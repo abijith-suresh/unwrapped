@@ -5,7 +5,8 @@ data.
 
 Tool inputs stay in the browser. The app does not upload them or process them on a server. It does
 not store tool inputs or outputs. Favorite tool IDs and Diff display preferences are stored in
-`localStorage`. There are no accounts, ads, analytics, or tracking.
+`localStorage`. Files you choose to download are saved by your browser. There are no accounts, ads,
+analytics, or tracking.
 
 ## Tools
 

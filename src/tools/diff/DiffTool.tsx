@@ -10,6 +10,7 @@ import {
 } from "solid-js";
 import Select from "@/components/primitives/solid/Select";
 import ToolActionButton from "@/components/ToolActionButton";
+import ToolDownloadButton from "@/components/ToolDownloadButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolComparerWorkspace from "@/components/tool/ToolComparerWorkspace";
 import ToolContainer from "@/components/tool/ToolContainer";
@@ -580,6 +581,22 @@ export default function DiffTool() {
               </ToolActionButton>
             </Show>
 
+            <Show when={!isExample() && !pending() && analysis() !== null}>
+              <ToolDownloadButton
+                value={JSON.stringify(
+                  {
+                    strategy: analysis()?.strategy,
+                    stats: analysis()?.stats,
+                    rows: analysis()?.rows,
+                  },
+                  null,
+                  2
+                )}
+                format="json"
+                fileName="comparison.json"
+                label="Download comparison"
+              />
+            </Show>
             {/* Swap button */}
             <ToolActionButton type="button" onClick={handleSwap} title="Swap left and right">
               ⇅ Swap

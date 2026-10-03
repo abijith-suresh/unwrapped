@@ -28,6 +28,7 @@ export default function YamlToJsonTool() {
           name: "source",
         }}
         output={{
+          download: { format: "json" },
           title: "Output",
           value: output(),
           isExample: isExample(),
