@@ -4,31 +4,9 @@ import { EXAMPLE_JSON_SCHEMA, EXAMPLE_SCHEMA_DOCUMENT } from "@/lib/exampleData"
 import CronTool from "@/tools/cron/CronTool";
 import HtmlEntitiesTool from "@/tools/html-entities/Tool";
 import JsonSchemaTool from "@/tools/json-schema-validator/Tool";
-import PasswordStrengthTool from "@/tools/password-strength/Tool";
 import QueryStringTool from "@/tools/query-string-editor/Tool";
 
-describe("Examples in added tools", () => {
-  it("evaluates typed passwords without inserting example input", () => {
-    const view = render(() => <PasswordStrengthTool />);
-    const input = view.getByLabelText("Password to evaluate");
-    expect(view.queryByRole("button", { name: "Evaluate strength" })).toBeNull();
-    expect(input).toHaveValue("");
-    expect(input.getAttribute("placeholder")).toBeTruthy();
-    expect(view.getByRole("note", { name: "Example output" })).toBeInTheDocument();
-    expect(view.getByRole("meter")).toBeInTheDocument();
-    fireEvent.input(input, { target: { value: "password" } });
-    expect(view.queryByRole("note", { name: "Example output" })).toBeNull();
-
-    expect(view.getByRole("meter")).toHaveAttribute("value", "0");
-    fireEvent.input(input, { target: { value: "a".repeat(257) } });
-    expect(view.getByRole("alert")).toHaveTextContent("Use at most 256 characters");
-    expect(view.queryByRole("meter")).toBeNull();
-    expect(view.queryByRole("note", { name: "Example output" })).toBeNull();
-    fireEvent.click(view.getByRole("button", { name: "Clear" }));
-    expect(input).toHaveValue("");
-    expect(view.getByRole("note", { name: "Example output" })).toBeInTheDocument();
-    expect(view.getByRole("meter")).toBeInTheDocument();
-  });
+describe("Tool input state", () => {
   it("uses a matching HTML example in both modes without inserting source markup", () => {
     const view = render(() => <HtmlEntitiesTool />);
     const source = view.getByLabelText("Source");
@@ -96,7 +74,6 @@ describe("Examples in added tools", () => {
     fireEvent.input(source, { target: { value: "/path?tag=one&tag=two#frag" } });
     expect(view.container.querySelector("pre")).toHaveTextContent("/path?tag=one&tag=two#frag");
     expect(view.container).not.toHaveTextContent("hello world");
-    expect(view.queryByRole("button", { name: "Load parameters" })).toBeNull();
     expect(view.getByLabelText("Key 1")).toHaveValue("tag");
     expect(view.getByLabelText("Value 2")).toHaveValue("two");
     fireEvent.input(view.getByLabelText("Value 2"), { target: { value: "three" } });
@@ -110,7 +87,6 @@ describe("Examples in added tools", () => {
     const view = render(() => <CronTool />);
     for (const field of view.getAllByRole("textbox")) {
       expect(field).toHaveValue("");
-      expect(field.getAttribute("placeholder")).toBeTruthy();
     }
     const preview = view.getByRole("button", { name: "Preview built schedule" });
     expect(preview).toBeDisabled();

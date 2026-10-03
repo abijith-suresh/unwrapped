@@ -1,6 +1,8 @@
 import { fireEvent, render, screen } from "@solidjs/testing-library";
-import { expect, it, vi } from "vitest";
+import { afterEach, expect, it, vi } from "vitest";
 import Tool from "./Tool";
+
+afterEach(() => vi.restoreAllMocks());
 
 it("masks the secret, evaluates locally and clears the secret and result", () => {
   const request = vi.spyOn(globalThis, "fetch");
@@ -13,6 +15,10 @@ it("masks the secret, evaluates locally and clears the secret and result", () =>
   expect(screen.getByText("Very weak · 0/4")).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Show password" }));
   expect(input).toHaveAttribute("type", "text");
+  fireEvent.input(input, { target: { value: "a".repeat(257) } });
+  expect(screen.getByRole("alert")).toHaveTextContent("Use at most 256 characters");
+  expect(screen.queryByRole("meter")).not.toBeInTheDocument();
+  expect(screen.queryByRole("note", { name: "Example output" })).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Clear" }));
   expect(input).toHaveValue("");
   expect(input).toHaveAttribute("type", "password");
@@ -20,6 +26,4 @@ it("masks the secret, evaluates locally and clears the secret and result", () =>
   expect(screen.getByRole("meter")).toBeInTheDocument();
   expect(request).not.toHaveBeenCalled();
   expect(storage).not.toHaveBeenCalled();
-  request.mockRestore();
-  storage.mockRestore();
 });

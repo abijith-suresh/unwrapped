@@ -13,7 +13,18 @@ describe("network reference", () => {
   });
   it("supports empty queries, filters and no matches", () => {
     expect(searchNetworkReference("")).toHaveLength(NETWORK_REFERENCE.length);
-    expect(searchNetworkReference("", "dns").every((entry) => entry.kind === "dns")).toBe(true);
+    expect(searchNetworkReference("", "dns").map((entry) => entry.name)).toEqual([
+      "A",
+      "AAAA",
+      "CNAME",
+      "MX",
+      "TXT",
+      "NS",
+      "SOA",
+      "PTR",
+      "SRV",
+      "CAA",
+    ]);
     expect(searchNetworkReference("no-such-record")).toEqual([]);
   });
   it("has unique names, usable examples and source URLs", () => {

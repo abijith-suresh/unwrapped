@@ -8,31 +8,30 @@ import {
   encodeBytesToBase64,
   encodeTextToBase64,
   processBase64Input,
-  toBase64Url,
 } from "./base64";
 
 describe("base64 utilities", () => {
   it("previews readable Unicode and keeps the original bytes for download", () => {
     const bytes = new TextEncoder().encode("\uFEFFAda ☕\n");
     const result = decodeBase64Input(encodeBytesToBase64(bytes, "url"), "url", "note.txt.b64");
-    expect(result.ok).toBe(true);
-    if (result.ok) {
-      expect(result.outputKind).toBe("text");
-      expect(result.value).toBe("Ada ☕\n");
-      expect([...result.bytes]).toEqual([...bytes]);
-      expect(result.downloadName).toBe("note.txt");
-    }
+    expect(result).toEqual({
+      ok: true,
+      outputKind: "text",
+      value: "Ada ☕\n",
+      bytes,
+      downloadName: "note.txt",
+    });
   });
 
   it("automatically previews binary bytes, including valid UTF-8 control bytes", () => {
     for (const bytes of [new Uint8Array([0, 255, 16]), new Uint8Array([0, 1, 2])]) {
       const result = decodeBase64Input(encodeBytesToBase64(bytes, "standard"), "standard");
-      expect(result.ok).toBe(true);
-      if (result.ok) {
-        expect(result.outputKind).toBe("bytes");
-        expect(result.value).toContain("3 bytes");
-        expect(result.bytes).toEqual(bytes);
-      }
+      expect(result).toMatchObject({
+        ok: true,
+        outputKind: "bytes",
+        value: expect.stringMatching(/^3 bytes\n/),
+        bytes,
+      });
     }
   });
 
@@ -54,7 +53,7 @@ describe("base64 utilities", () => {
   it("encodes and decodes base64url text", () => {
     const encoded = encodeTextToBase64("hello?", "url");
 
-    expect(encoded).toBe(toBase64Url("aGVsbG8/"));
+    expect(encoded).toBe("aGVsbG8_");
     expect(decodeBase64ToText(encoded, "url")).toBe("hello?");
   });
 
@@ -77,13 +76,13 @@ describe("base64 utilities", () => {
   it("returns decoded bytes and a preview for binary decode workflows", () => {
     const result = processBase64Input("AP8Q", "decode", "standard", "file");
 
-    expect(result.ok).toBe(true);
-    if (result.ok && result.outputKind === "bytes") {
-      expect(Array.from(result.bytes)).toEqual([0, 255, 16]);
-      expect(result.value).toContain("3 bytes");
-      expect(result.value).toContain("00 ff 10");
-      expect(result.downloadName).toBe("decoded.bin");
-    }
+    expect(result).toEqual({
+      ok: true,
+      outputKind: "bytes",
+      bytes: new Uint8Array([0, 255, 16]),
+      value: "3 bytes\n00 ff 10",
+      downloadName: "decoded.bin",
+    });
   });
 
   it("derives decoded file names from encoded source names", () => {

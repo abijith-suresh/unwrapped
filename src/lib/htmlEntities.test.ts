@@ -19,6 +19,7 @@ describe("HTML entities", () => {
   });
   it("round trips Unicode and returns empty output", () => {
     const encoded = transformEntities("© 😀 café", "encode", true);
+    expect(encoded.ok).toBe(true);
     if (encoded.ok)
       expect(transformEntities(encoded.output, "decode")).toMatchObject({ output: "© 😀 café" });
     expect(transformEntities("", "encode")).toEqual({ ok: true, output: "" });

@@ -86,6 +86,11 @@ component tests. Keep tool integration tests when they cover behavior beyond tho
 file reads/downloads, mode transitions, stale asynchronous results, secret handling, or safe rendering
 of untrusted markup. Do not repeat heading, panel and placeholder assertions for every transform.
 
+Prefer queries by role or label, following [Testing Library's query guidance](https://testing-library.com/docs/queries/about/).
+Use fixed expected results or an independent parser to check outputs. Assert success before reading a
+conditional result so a failure cannot skip the test's main assertions. Restore spies in `afterEach`
+so cleanup also runs when an assertion fails.
+
 jsdom cannot verify layout or browser hydration. For changes to shared UI, inspect the built app in
 real browsers at phone and desktop widths and exercise the affected user flows. Record the browsers,
 flows and limitations in the PR. Avoid DOM snapshots and tests that assert utility class names.

@@ -7,10 +7,6 @@ describe("ToolCodeEditor", () => {
   it("keeps generated controls associated with their labels", () => {
     const { getByRole } = render(() => <ToolCodeEditor label="Source code" name="source" />);
     const editor = getByRole("textbox", { name: "Source code" });
-    const label = document.querySelector(`label[for="${editor.id}"]`);
-
-    expect(editor.id).not.toBe("");
-    expect(label).toBeInTheDocument();
     expect(editor).toHaveAttribute("name", "source");
   });
 

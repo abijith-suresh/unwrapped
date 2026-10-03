@@ -36,14 +36,19 @@ describe("ToolSearch", () => {
     expect(getByText(/No matching tools/i)).toBeInTheDocument();
   });
 
-  it("moves the keyboard selection with arrow keys", () => {
-    const { getByRole, getAllByRole } = render(() => <ToolSearch />);
+  it("announces arrow-key selection and stops at the result boundary", () => {
+    const { getByRole } = render(() => <ToolSearch />);
     const input = getByRole("textbox", { name: "Search tools" });
-
+    fireEvent.input(input, { target: { value: "cron" } });
     fireEvent.keyDown(input, { key: "ArrowDown" });
-
-    const links = getAllByRole("link");
-    expect(links[0]).toHaveClass("lp-row--active");
+    expect(getByRole("status")).toHaveTextContent(
+      "1 tool available for cron. Cron Schedule highlighted."
+    );
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    expect(getByRole("status")).toHaveTextContent("Cron Schedule highlighted.");
+    fireEvent.keyDown(input, { key: "ArrowUp" });
+    expect(getByRole("status")).toHaveTextContent("1 tool available for cron.");
+    expect(getByRole("status")).not.toHaveTextContent("highlighted");
   });
 
   it("clears the query on Escape", () => {
@@ -59,7 +64,7 @@ describe("ToolSearch", () => {
     expect(getAllByRole("link")).toHaveLength(tools.length);
   });
 
-  it("exposes combobox state and announces result counts", () => {
+  it("announces result counts as the query changes", () => {
     const { getByRole, getByText } = render(() => <ToolSearch />);
     const input = getByRole("textbox", { name: "Search tools" });
 
@@ -72,15 +77,21 @@ describe("ToolSearch", () => {
   });
 
   it("keeps Home and End selection within the filtered results", () => {
-    const { getByRole, getAllByRole } = render(() => <ToolSearch />);
+    const { getByRole } = render(() => <ToolSearch />);
     const input = getByRole("textbox", { name: "Search tools" });
-    const links = getAllByRole("link");
+    fireEvent.input(input, { target: { value: "formatter" } });
 
     fireEvent.keyDown(input, { key: "Home" });
-    expect(links[0]).toHaveClass("lp-row--active");
+    expect(getByRole("status")).toHaveTextContent("JSON Formatter highlighted.");
 
     fireEvent.keyDown(input, { key: "End" });
-    expect(links.at(-1)).toHaveClass("lp-row--active");
+    expect(getByRole("status")).toHaveTextContent("XML Formatter highlighted.");
+
+    fireEvent.input(input, { target: { value: "no-such-tool" } });
+    fireEvent.keyDown(input, { key: "Home" });
+    fireEvent.keyDown(input, { key: "End" });
+    expect(getByRole("status")).toHaveTextContent("0 tools available for no-such-tool.");
+    expect(getByRole("status")).not.toHaveTextContent("highlighted");
   });
 
   it("keeps native links for direct keyboard navigation", () => {

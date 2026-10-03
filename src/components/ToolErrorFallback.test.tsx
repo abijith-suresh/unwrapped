@@ -14,12 +14,11 @@ describe("ToolErrorFallback", () => {
     expect(getByRole("button", { name: "Retry tool" })).toBeInTheDocument();
   });
 
-  it("shows the error message in dev and hides it in production", () => {
-    const dev = render(() => (
+  it("shows error details in development", () => {
+    const { getByRole } = render(() => (
       <ToolErrorFallback toolName="Diff" error={new Error("secret detail")} />
     ));
-    expect(dev.getByText("secret detail")).toBeInTheDocument();
-    dev.unmount();
+    expect(getByRole("alert")).toHaveTextContent("secret detail");
   });
 
   it("omits the retry button when no retry handler is given", () => {

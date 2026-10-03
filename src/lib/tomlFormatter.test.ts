@@ -72,7 +72,6 @@ describe("TOML formatter", () => {
   });
   it("accepts empty documents and drops comments", () => {
     expect(formatToml("")).toEqual({ ok: true, output: "" });
-    const result = formatToml("# comment\nx=1");
-    if (result.ok) expect(result.output).not.toContain("comment");
+    expect(formatToml("# comment\nx=1")).toEqual({ ok: true, output: "x = 1\n" });
   });
 });

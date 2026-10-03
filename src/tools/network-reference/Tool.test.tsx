@@ -1,6 +1,8 @@
 import { fireEvent, render, screen } from "@solidjs/testing-library";
-import { expect, it, vi } from "vitest";
+import { afterEach, expect, it, vi } from "vitest";
 import Tool from "./Tool";
+
+afterEach(() => vi.restoreAllMocks());
 
 it("filters bundled entries and shows an empty state without requests", () => {
   const request = vi.spyOn(globalThis, "fetch");
@@ -14,5 +16,4 @@ it("filters bundled entries and shows an empty state without requests", () => {
   fireEvent.click(screen.getByRole("radio", { name: "HTTP headers" }));
   expect(screen.getByText("No matching entries.")).toBeInTheDocument();
   expect(request).not.toHaveBeenCalled();
-  request.mockRestore();
 });

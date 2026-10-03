@@ -15,10 +15,9 @@ describe("ToolActionButton", () => {
     const button = getByRole("button", { name: "Sort keys" });
     expect(button).toHaveAttribute("type", "button");
     expect(button).toHaveAttribute("aria-pressed", "true");
-    expect(button).toHaveClass("border-[var(--accent-primary)]");
   });
 
-  it("updates its visual and accessible state when the value changes", () => {
+  it("updates its pressed state when clicked", () => {
     const [active, setActive] = createSignal(false);
     const { getByRole } = render(() => (
       <ToolActionButton active={active()} variant="toggle" onClick={() => setActive(true)}>
@@ -32,7 +31,6 @@ describe("ToolActionButton", () => {
     fireEvent.click(button);
 
     expect(button).toHaveAttribute("aria-pressed", "true");
-    expect(button).toHaveClass("text-[var(--accent-primary)]");
   });
 
   it("owns radio and tab state without exposing conflicting pressed state", () => {

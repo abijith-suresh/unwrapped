@@ -26,7 +26,7 @@ describe("HTTP_STATUS_CODES", () => {
 
 describe("searchHttpStatusCodes", () => {
   it("finds entries by numeric code", () => {
-    expect(searchHttpStatusCodes("404").map((entry) => entry.code)).toContain(404);
+    expect(searchHttpStatusCodes("404").map((entry) => entry.code)).toEqual([404]);
   });
 
   it("finds entries by standard name", () => {
@@ -36,9 +36,8 @@ describe("searchHttpStatusCodes", () => {
   });
 
   it("finds entries by category text", () => {
-    expect(
-      searchHttpStatusCodes("redirect").every((entry) => entry.category === "Redirection")
-    ).toBe(true);
-    expect(searchHttpStatusCodes("redirect").length).toBeGreaterThan(0);
+    expect(searchHttpStatusCodes("redirect").map((entry) => entry.code)).toEqual([
+      300, 301, 302, 303, 304, 305, 307, 308,
+    ]);
   });
 });

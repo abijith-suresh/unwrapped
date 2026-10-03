@@ -10,14 +10,25 @@ describe("diffAnalysis", () => {
       leftLanguage: "json",
       rightLanguage: "json",
       changesOnly: true,
+      context: 0,
     });
 
     expect(result.strategy).toBe("json");
     expect(result.errors).toEqual([]);
     expect(result.stats).toEqual({ added: 1, removed: 1 });
     expect(result.isIdentical).toBe(false);
-    expect(result.rows.some((row) => row.type === "changed")).toBe(true);
-    expect(result.filteredRows.length).toBeGreaterThan(0);
+    expect(result.filteredRows).toEqual([
+      {
+        sourceIndex: 2,
+        row: {
+          left: '  "b": 2',
+          right: '  "b": 3',
+          leftLineNum: 3,
+          rightLineNum: 3,
+          type: "changed",
+        },
+      },
+    ]);
     expect(result.changeIndices).toEqual([2]);
   });
 
@@ -32,7 +43,15 @@ describe("diffAnalysis", () => {
 
     expect(result.strategy).toBe("text");
     expect(result.errors).toEqual([expect.objectContaining({ side: "left" })]);
-    expect(result.rows.some((row) => row.type !== "equal")).toBe(true);
+    expect(result.rows).toEqual([
+      {
+        left: '{"a":',
+        right: '{"a":1}',
+        leftLineNum: 1,
+        rightLineNum: 1,
+        type: "changed",
+      },
+    ]);
   });
 
   it("returns all rows when changes-only mode is disabled", () => {
@@ -44,7 +63,11 @@ describe("diffAnalysis", () => {
       changesOnly: false,
     });
 
-    expect(result.filteredRows).toHaveLength(result.rows.length);
+    expect(result.filteredRows.map(({ sourceIndex, row }) => [sourceIndex, row.type])).toEqual([
+      [0, "equal"],
+      [1, "changed"],
+      [2, "added"],
+    ]);
     expect(result.stats).toEqual({ added: 2, removed: 1 });
   });
 
