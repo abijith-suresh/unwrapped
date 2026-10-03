@@ -14,18 +14,18 @@ export default function JwtDecoder() {
   const [input, setInput] = createSignal("");
   const isExample = () => input() === "";
 
-  const parsed = createMemo(() => {
-    const raw = (input() || EXAMPLE_JWT).trim();
-    if (!raw) return null;
-    return parseJwt(raw);
+  const decoded = createMemo(() => {
+    try {
+      return { parsed: parseJwt(input() || EXAMPLE_JWT), error: null };
+    } catch (error) {
+      return {
+        parsed: null,
+        error: `Invalid JWT. ${error instanceof Error ? error.message : String(error)}`,
+      };
+    }
   });
-
-  const error = createMemo((): string | null => {
-    const raw = input().trim();
-    if (!raw) return null;
-    if (parsed() === null) return "Invalid JWT — expected three base64url parts separated by dots.";
-    return null;
-  });
+  const parsed = () => decoded().parsed;
+  const error = () => decoded().error;
 
   const claimsSummary = createMemo(() => {
     const result = parsed();
@@ -63,6 +63,11 @@ export default function JwtDecoder() {
         <Show when={parsed()}>
           {(result) => (
             <>
+              <p class="m-0 text-sm text-[var(--text-secondary)]">
+                {result().signature === ""
+                  ? "Unsecured token. No signature or authentication."
+                  : "Signature not verified. Claims and expiration do not establish authenticity."}
+              </p>
               {/* Expiry badge */}
               <Show when={expiryStatus()}>
                 {(status) => (
@@ -70,9 +75,11 @@ export default function JwtDecoder() {
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium self-start"
                     classList={{
                       "border border-[var(--accent-error)] bg-[color-mix(in_srgb,var(--accent-error)_12%,transparent)] text-[var(--accent-error)]":
-                        status().expired,
+                        status().expired === true,
                       "border border-[var(--accent-success)] bg-[color-mix(in_srgb,var(--accent-success)_12%,transparent)] text-[var(--accent-success)]":
-                        !status().expired,
+                        status().expired === false,
+                      "border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--text-secondary)]":
+                        status().expired === null,
                     }}
                   >
                     <span class="w-1.5 h-1.5 rounded-full bg-current shrink-0" />
