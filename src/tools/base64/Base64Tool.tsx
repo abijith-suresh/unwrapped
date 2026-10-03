@@ -9,6 +9,7 @@ import ToolFilePicker from "@/components/tool/ToolFilePicker";
 import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
 import ToolToolbar from "@/components/tool/ToolToolbar";
 import ToolTransformWorkspace from "@/components/tool/ToolTransformWorkspace";
+import { useToolHandoff } from "@/components/toolHandoff";
 import {
   type Base64Mode,
   type Base64Variant,
@@ -165,6 +166,12 @@ export default function Base64Tool() {
     return `${error.file.name} could not be read. ${error.message}.`;
   };
 
+  useToolHandoff("base64", (handoff) => {
+    clearFile();
+    setMode(handoff.format === "base64" ? "decode" : "encode");
+    setInput(handoff.value);
+  });
+
   return (
     <ToolContainer>
       <ToolToolbar
@@ -242,6 +249,7 @@ export default function Base64Tool() {
             ),
           }}
           output={{
+            handoff: binaryOutput() ? false : mode() === "encode" ? "base64" : "text",
             download: mode() === "encode" ? { format: "base64" } : false,
             compact: true,
             title:
@@ -259,7 +267,7 @@ export default function Base64Tool() {
             actions: decodedOutput() ? (
               <>
                 <Show when={!binaryOutput()}>
-                  <CopyButton text={outputValue()} />
+                  <CopyButton text={outputValue()} compact />
                 </Show>
                 <ToolDownloadButton
                   blob={

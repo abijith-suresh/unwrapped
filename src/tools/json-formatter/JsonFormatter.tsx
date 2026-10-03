@@ -4,12 +4,14 @@ import ToolContainer from "@/components/tool/ToolContainer";
 import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
 import ToolToolbar from "@/components/tool/ToolToolbar";
 import ToolTransformWorkspace from "@/components/tool/ToolTransformWorkspace";
+import { useToolHandoff } from "@/components/toolHandoff";
 import { EXAMPLE_JSON } from "@/lib/exampleData";
 import { formatJson } from "@/lib/jsonFormatter";
 
 type OutputFormat = "two-spaces" | "four-spaces" | "minified";
 export default function JsonFormatter() {
   const [input, setInput] = createSignal("");
+  useToolHandoff("json-formatter", (handoff) => setInput(handoff.value));
   const [outputFormat, setOutputFormat] = createSignal<OutputFormat>("two-spaces");
   const [sortKeys, setSortKeys] = createSignal(false);
   const result = createMemo(() =>

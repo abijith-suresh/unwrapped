@@ -1,13 +1,6 @@
-export type TextFormat =
-  | "text"
-  | "json"
-  | "yaml"
-  | "xml"
-  | "toml"
-  | "csv"
-  | "markdown"
-  | "css"
-  | "base64";
+import type { TextFormat } from "@/lib/textFormat";
+
+export type { TextFormat } from "@/lib/textFormat";
 
 const FORMATS: Record<TextFormat, { extension: string; mime: string }> = {
   text: { extension: "txt", mime: "text/plain" },

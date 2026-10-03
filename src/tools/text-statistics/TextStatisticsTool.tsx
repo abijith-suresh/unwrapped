@@ -2,6 +2,7 @@ import { createMemo, createSignal } from "solid-js";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolInputPanel from "@/components/tool/ToolInputPanel";
 import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
+import { useToolHandoff } from "@/components/toolHandoff";
 import { EXAMPLE_STATS_TEXT } from "@/lib/exampleData";
 import { analyzeText } from "@/lib/textStatistics";
 
@@ -14,6 +15,7 @@ const METRIC_LABELS = [
 
 export default function TextStatisticsTool() {
   const [input, setInput] = createSignal("");
+  useToolHandoff("text-statistics", (handoff) => setInput(handoff.value));
   const isExample = () => input() === "";
   const statistics = createMemo(() => analyzeText(input() || EXAMPLE_STATS_TEXT));
 

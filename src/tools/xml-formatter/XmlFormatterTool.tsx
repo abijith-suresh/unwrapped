@@ -1,13 +1,14 @@
 import { createMemo, createSignal } from "solid-js";
-
 import Input from "@/components/primitives/solid/Input";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolTransformWorkspace from "@/components/tool/ToolTransformWorkspace";
+import { useToolHandoff } from "@/components/toolHandoff";
 import { EXAMPLE_XML } from "@/lib/exampleData";
 import { formatXml } from "@/lib/xmlFormatter";
 
 export default function XmlFormatterTool() {
   const [input, setInput] = createSignal("");
+  useToolHandoff("xml-formatter", (handoff) => setInput(handoff.value));
   const isExample = () => input() === "";
   const [indent, setIndent] = createSignal(2);
   const result = createMemo(() => formatXml(input() || EXAMPLE_XML, { indent: indent() }));

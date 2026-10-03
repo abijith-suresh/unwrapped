@@ -4,6 +4,7 @@ import ToolContainer from "@/components/tool/ToolContainer";
 import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
 import ToolToolbar from "@/components/tool/ToolToolbar";
 import ToolTransformWorkspace from "@/components/tool/ToolTransformWorkspace";
+import { useToolHandoff } from "@/components/toolHandoff";
 import { EXAMPLE_CSV } from "@/lib/exampleData";
 import type { TableMode } from "@/lib/markdownTable";
 import { convertTable } from "@/lib/markdownTable";
@@ -28,6 +29,11 @@ export default function Tool() {
     const current = result();
     return current.ok ? "" : current.error;
   };
+  useToolHandoff("markdown-table", (handoff) => {
+    setMode(handoff.format === "markdown" ? "markdown" : "csv");
+    setInput(handoff.value);
+  });
+
   return (
     <ToolContainer>
       <ToolToolbar

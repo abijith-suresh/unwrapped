@@ -110,8 +110,8 @@ export default function JwtDecoder() {
                 layout="rows"
                 isExample={isExample()}
                 fields={[
-                  { label: "Header", value: prettyJson(result().header) },
-                  { label: "Payload", value: prettyJson(result().payload) },
+                  { label: "Header", value: prettyJson(result().header), format: "json" },
+                  { label: "Payload", value: prettyJson(result().payload), format: "json" },
                   { label: "Signature", value: result().signature },
                 ]}
               />

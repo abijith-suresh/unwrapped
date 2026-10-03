@@ -36,7 +36,7 @@ const FOOTER_LINKS = [
 
   <a class="ts-skip-link" href="#main-content">Skip to content</a>
 
-  <div class="ts-page" {...(accent ? { "data-tool-accent": accent } : {})}>
+  <div class="ts-page" data-tool-id={toolId} {...(accent ? { "data-tool-accent": accent } : {})}>
     <main id="main-content" class="ts-main" tabindex="-1">
       <header class="ts-tool-heading">
         <a href="/" class="ts-back-link" aria-label="All tools">
@@ -71,6 +71,24 @@ const FOOTER_LINKS = [
     </footer>
   </div>
 </Base>
+
+<script>
+  import { navigate } from "astro:transitions/client";
+  import { setToolHandoffNavigator, toolHandoffs } from "@/lib/toolHandoff";
+
+  setToolHandoffNavigator(async (route) => {
+    await navigate(route);
+    if (location.pathname.replace(/\/$/, "") !== route) {
+      throw new Error("Navigation did not reach the selected tool.");
+    }
+  });
+  document.addEventListener("astro:after-swap", () => {
+    toolHandoffs.discardUnless(
+      document.querySelector<HTMLElement>("[data-tool-id]")?.dataset.toolId
+    );
+  });
+  window.addEventListener("pagehide", () => toolHandoffs.clear());
+</script>
 
 <style>
   .ts-page {

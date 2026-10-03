@@ -1,14 +1,15 @@
 import { createMemo, createSignal } from "solid-js";
-
 import Input from "@/components/primitives/solid/Input";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolTransformWorkspace from "@/components/tool/ToolTransformWorkspace";
+import { useToolHandoff } from "@/components/toolHandoff";
 import { EXAMPLE_YAML_FORMAT } from "@/lib/exampleData";
 import { formatYaml } from "@/lib/yamlFormatter";
 
 export default function YamlFormatterTool() {
   const [input, setInput] = createSignal("");
+  useToolHandoff("yaml-formatter", (handoff) => setInput(handoff.value));
   const isExample = () => input() === "";
   const [indent, setIndent] = createSignal(2);
   const [sortKeys, setSortKeys] = createSignal(false);

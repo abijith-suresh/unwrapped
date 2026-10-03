@@ -12,8 +12,10 @@ import { PERSISTED_PREFERENCES } from "@/lib/localPersistence";
 
     <p class="pp-intro">
       unwrapped.tools processes tool input in your browser. It does not upload or server-process
-      that input, and it does not retain tool inputs or outputs. Files you explicitly download are saved
-      by your browser.
+      that input, and it does not save tool inputs or outputs. Files you explicitly download are saved
+      by your browser. "Open in…" transfers output to a compatible tool in the same tab using
+      memory only. The destination consumes it once. Pending transfers expire after one minute and
+      are cleared on refresh or when navigating elsewhere. Tool data is never added to URLs or history.
     </p>
 
     <section class="pp-section">
@@ -32,7 +34,7 @@ import { PERSISTED_PREFERENCES } from "@/lib/localPersistence";
     </section>
 
     <section class="pp-section">
-      <h2 class="pp-heading">The app never retains</h2>
+      <h2 class="pp-heading">The app never saves</h2>
       <ul class="pp-list">
         <li class="pp-list-item">tool inputs</li>
         <li class="pp-list-item">tool outputs</li>

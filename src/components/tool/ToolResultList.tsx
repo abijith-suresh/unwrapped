@@ -1,8 +1,9 @@
 import { For, Show } from "solid-js";
 import CopyButton from "@/components/CopyButton";
 import ToolDownloadButton from "@/components/ToolDownloadButton";
+import ToolHandoffButton from "@/components/ToolHandoffButton";
 import ToolPanel from "@/components/tool/ToolPanel";
-import { serializeResultFields } from "@/lib/download";
+import { serializeResultFields, type TextFormat } from "@/lib/download";
 
 export interface ToolResultField {
   label: string;
@@ -10,6 +11,7 @@ export interface ToolResultField {
   copyLabel?: string;
   metric?: boolean;
   copy?: boolean;
+  format?: TextFormat;
 }
 interface Props {
   fields: readonly ToolResultField[];
@@ -44,7 +46,12 @@ export default function ToolResultList(props: Props) {
                 <Show
                   when={!props.isExample && field.value && !field.metric && field.copy !== false}
                 >
-                  <CopyButton text={field.value} label={field.copyLabel ?? `Copy ${field.label}`} />
+                  <CopyButton
+                    text={field.value}
+                    label={field.copyLabel ?? `Copy ${field.label}`}
+                    compact
+                  />
+                  <ToolHandoffButton value={field.value} format={field.format} compact />
                 </Show>
               }
             >

@@ -53,7 +53,10 @@ Use `bun run format` to format files.
    - Result fields: `ToolResultList` owns result panels and contextual copy actions. Use `metric`
      for numeric statistics and `copy: false` for results that should not be copied.
    - File input and custom output: use `ToolInputPanel` and `ToolOutputPanel` action slots for file
-     pickers and downloads. Keep parsing, async work and request cancellation outside layouts.
+     pickers and downloads. Output panels also offer "Open in…" for real successful results.
+     Declare destination `inputFormats` in the registry and consume transfers with `useToolHandoff`.
+     Set output format through `download.format` or `handoff`; use `handoff: false` for binary output.
+     Keep parsing, async work and request cancellation outside layouts.
    - Controls: use `ToolToolbar` with its `actions` slot and `ToolSegmentedControl` for mutually
      exclusive choices. Keep the shared keyboard and selected-state behavior.
    - Feedback: `ToolStatusMessage`; actions: `ToolActionButton`.

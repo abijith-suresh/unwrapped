@@ -11,6 +11,7 @@ import {
 import Select from "@/components/primitives/solid/Select";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolDownloadButton from "@/components/ToolDownloadButton";
+import ToolHandoffButton from "@/components/ToolHandoffButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolComparerWorkspace from "@/components/tool/ToolComparerWorkspace";
 import ToolContainer from "@/components/tool/ToolContainer";
@@ -18,6 +19,7 @@ import ToolDropZone from "@/components/tool/ToolDropZone";
 import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolFilePicker from "@/components/tool/ToolFilePicker";
 import ToolInputPanel from "@/components/tool/ToolInputPanel";
+import { useToolHandoff } from "@/components/toolHandoff";
 import type { DiffAnalysisResult } from "@/lib/diffAnalysis";
 import { createDiffAnalysisExecutor } from "@/lib/diffExecution";
 import { EXAMPLE_DIFF_MODIFIED, EXAMPLE_DIFF_ORIGINAL } from "@/lib/exampleData";
@@ -222,6 +224,15 @@ export default function DiffTool() {
       setRightLang(savedSession.rightLang);
       setChangesOnly(savedSession.changesOnly);
     });
+  });
+
+  useToolHandoff("diff", (handoff) => {
+    setLeftContent(handoff.value);
+    setLeftLang(
+      SUPPORTED_LANGUAGES.includes(handoff.format as Language)
+        ? (handoff.format as Language)
+        : "text"
+    );
   });
 
   createEffect(() => {
@@ -471,6 +482,14 @@ export default function DiffTool() {
   }
 
   // ---------------------------------------------------------------------------
+  const comparisonReport = createMemo(() =>
+    JSON.stringify(
+      { strategy: analysis()?.strategy, stats: analysis()?.stats, rows: analysis()?.rows },
+      null,
+      2
+    )
+  );
+
   return (
     <ToolContainer class="gap-4">
       <ToolComparerWorkspace
@@ -583,19 +602,12 @@ export default function DiffTool() {
 
             <Show when={!isExample() && !pending() && analysis() !== null}>
               <ToolDownloadButton
-                value={JSON.stringify(
-                  {
-                    strategy: analysis()?.strategy,
-                    stats: analysis()?.stats,
-                    rows: analysis()?.rows,
-                  },
-                  null,
-                  2
-                )}
+                value={comparisonReport()}
                 format="json"
                 fileName="comparison.json"
                 label="Download comparison"
               />
+              <ToolHandoffButton value={comparisonReport()} format="json" />
             </Show>
             {/* Swap button */}
             <ToolActionButton type="button" onClick={handleSwap} title="Swap left and right">
