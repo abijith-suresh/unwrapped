@@ -19,10 +19,23 @@ function rank(id: string): number {
 const orderedTools = [...tools].sort((a, b) => rank(a.id) - rank(b.id));
 const aliases: Record<string, string> = { encoder: "encode", decoder: "decode" };
 
-export function searchTools(query: string): readonly Tool[] {
+export interface ToolSearchOrder {
+  favoriteIds?: readonly string[];
+  rotation?: number;
+}
+
+export function searchTools(query: string, order: ToolSearchOrder = {}): readonly Tool[] {
+  const favorites = new Set(order.favoriteIds);
+  const rotation = Number.isSafeInteger(order.rotation) ? (order.rotation ?? 0) : 0;
+  const offset = ((rotation % orderedTools.length) + orderedTools.length) % orderedTools.length;
+  const rotated = [...orderedTools.slice(offset), ...orderedTools.slice(0, offset)];
+  const catalog = [
+    ...orderedTools.filter((tool) => favorites.has(tool.id)),
+    ...rotated.filter((tool) => !favorites.has(tool.id)),
+  ];
   const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
-  if (!terms.length) return orderedTools;
-  return orderedTools.filter((tool) => {
+  if (!terms.length) return catalog;
+  return catalog.filter((tool) => {
     const text = [tool.name, tool.description, ...tool.keywords].join(" ").toLowerCase();
     return terms.every((term) => text.includes(aliases[term] ?? term));
   });

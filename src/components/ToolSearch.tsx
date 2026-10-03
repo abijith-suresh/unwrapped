@@ -1,23 +1,22 @@
 import { createEffect, createMemo, createSignal, For, onMount, Show } from "solid-js";
-import CatalogFilter from "@/components/CatalogFilter";
 import FavoriteButton from "@/components/FavoriteButton";
 import { useFavorites } from "@/components/favorites";
+import { useToolRotation } from "@/components/toolOrder";
 import { ICON_MAP } from "@/lib/iconMap";
 import { searchTools } from "@/lib/toolSearch";
 import { getToolRoute } from "@/tools/registry";
 
 export default function ToolSearch() {
   const favorites = useFavorites();
-  const [onlyFavorites, setOnlyFavorites] = createSignal(false);
+  const rotation = useToolRotation();
   const [query, setQuery] = createSignal("");
   const [activeIndex, setActiveIndex] = createSignal(-1);
   const [focused, setFocused] = createSignal(false);
-  const [mac, setMac] = createSignal(true);
 
   let inputRef: HTMLInputElement | undefined;
 
   const filtered = createMemo(() =>
-    searchTools(query()).filter((tool) => !onlyFavorites() || favorites.contains(tool.id))
+    searchTools(query(), { favoriteIds: favorites.ids(), rotation: rotation() })
   );
   const resultAnnouncement = createMemo(() => {
     const results = filtered();
@@ -46,8 +45,6 @@ export default function ToolSearch() {
   });
 
   onMount(() => {
-    setMac(/Mac|iPhone|iPad/.test(navigator.userAgent));
-
     if (window.matchMedia("(pointer: fine)").matches) {
       inputRef?.focus();
     }
@@ -144,20 +141,7 @@ export default function ToolSearch() {
             ×
           </button>
         </Show>
-
-        <Show when={query().length === 0 && !focused()}>
-          <span class="lp-search-hint">
-            <kbd>{mac() ? "⌘" : "Ctrl+"}</kbd>
-            <kbd>K</kbd>
-          </span>
-        </Show>
       </div>
-
-      <CatalogFilter
-        favorites={onlyFavorites()}
-        onChange={setOnlyFavorites}
-        count={favorites.ids().length}
-      />
       <p class="sr-only" id="lp-results-status" role="status" aria-live="polite" aria-atomic="true">
         {resultAnnouncement()}
       </p>
@@ -204,11 +188,7 @@ export default function ToolSearch() {
         </ul>
       </Show>
       <Show when={filtered().length === 0}>
-        <p class="lp-empty">
-          {onlyFavorites() && !favorites.ids().length
-            ? "Star a tool to add it here."
-            : "No matching tools."}
-        </p>
+        <p class="lp-empty">No matching tools.</p>
       </Show>
     </search>
   );

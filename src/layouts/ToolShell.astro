@@ -39,16 +39,18 @@ const FOOTER_LINKS = [
   <div class="ts-page" {...(accent ? { "data-tool-accent": accent } : {})}>
     <main id="main-content" class="ts-main" tabindex="-1">
       <header class="ts-tool-heading">
-        <div class="ts-tool-identity">
-          <a href="/" class="ts-back-link" aria-label="All tools">
-            <span aria-hidden="true">←</span><span class="ts-back-label">All tools</span>
-          </a>
-          <span class="ts-tool-separator" aria-hidden="true">/</span>
-          <h1 id="tool-title">{title}</h1>
+        <a href="/" class="ts-back-link" aria-label="All tools">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+            <path d="m12 5-7 7 7 7M5 12h14" />
+          </svg>
+          <span>Tools</span>
+        </a>
+        <h1 id="tool-title">{title}</h1>
+        <div class="ts-tool-actions">
+          {toolId ? <FavoriteButton toolId={toolId} toolName={title} class="tool-header-favorite" client:load /> : null}
+          <GlobalToolSearch client:load />
+          {description ? <ToolHelp title={title} description={description} notes={help} /> : null}
         </div>
-        {toolId ? <FavoriteButton toolId={toolId} toolName={title} class="tool-header-favorite" client:load /> : null}
-        <GlobalToolSearch client:load />
-        {description ? <ToolHelp title={title} description={description} notes={help} /> : null}
       </header>
       <slot />
     </main>
@@ -86,58 +88,59 @@ const FOOTER_LINKS = [
   }
 
   .ts-tool-heading {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    gap: 0.75rem;
+    gap: 1rem;
     width: min(100%, var(--tool-width));
     margin: 0 auto;
-    padding: 0  var(--tool-padding) 0.75rem;
+    padding: 0 var(--tool-padding) 1rem;
     border-bottom: 1px solid var(--border);
-  }
-
-  .ts-tool-identity {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    min-height: 2.75rem;
-    flex: 1;
-    min-width: 0;
   }
 
   .ts-back-link {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    flex-shrink: 0;
+    justify-content: center;
+    gap: 0.5rem;
     min-height: 2.75rem;
+    padding: 0 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    background: var(--bg-secondary);
     color: var(--text-secondary);
-    font-size: 0.85rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
     text-decoration: none;
   }
 
   .ts-back-link:hover {
-    color: var(--text-primary);
-  }
-
-  .ts-tool-separator {
-    color: var(--text-secondary);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
   }
 
   .ts-tool-heading h1 {
     margin: 0;
     min-width: 0;
-    color: var(--text-primary);
-    font-size: 1.15rem;
+    padding-left: 0.8rem;
+    border-left: 2px solid var(--accent-primary);
+    color: var(--accent-primary);
+    font-size: clamp(1.1rem, 2vw, 1.35rem);
     font-weight: 650;
     letter-spacing: -0.03em;
     line-height: 1.35;
     overflow-wrap: anywhere;
   }
 
+  .ts-tool-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
   .ts-back-link:focus-visible {
     outline: 2px solid var(--accent-primary);
     outline-offset: 3px;
-    border-radius: 0.2rem;
   }
 
   .ts-footer {
@@ -154,22 +157,14 @@ const FOOTER_LINKS = [
     .ts-page { --tool-padding: 1.5rem; }
   }
 
-  @media (max-width: 480px) {
-    .ts-tool-heading { gap: 0.5rem; }
-    .ts-tool-heading h1 { font-size: 1rem; }
-    .ts-tool-identity {
-      gap: 0.5rem;
-
+  @media (max-width: 640px) {
+    .ts-tool-heading {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.75rem;
     }
 
-    .ts-back-link {
-      justify-content: center;
-      min-width: 2.75rem;
-    }
-
-    .ts-back-label,
-    .ts-tool-separator {
-      display: none;
-    }
+    .ts-back-link { justify-self: start; }
+    .ts-tool-actions { grid-column: 2; grid-row: 1; }
+    .ts-tool-heading h1 { grid-column: 1 / -1; grid-row: 2; }
   }
 </style>

@@ -1,20 +1,19 @@
 import { Search, X } from "lucide-solid";
 import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
-import CatalogFilter from "@/components/CatalogFilter";
 import FavoriteButton from "@/components/FavoriteButton";
 import { useFavorites } from "@/components/favorites";
+import { useToolRotation } from "@/components/toolOrder";
 import { ICON_MAP } from "@/lib/iconMap";
 import { searchTools } from "@/lib/toolSearch";
 import { getToolRoute } from "@/tools/registry";
 
 export default function GlobalToolSearch() {
   const favorites = useFavorites();
-  const [onlyFavorites, setOnlyFavorites] = createSignal(false);
+  const rotation = useToolRotation();
   const [query, setQuery] = createSignal("");
   const [activeIndex, setActiveIndex] = createSignal(0);
-  const [mac, setMac] = createSignal(false);
   const results = createMemo(() =>
-    searchTools(query()).filter((tool) => !onlyFavorites() || favorites.contains(tool.id))
+    searchTools(query(), { favoriteIds: favorites.ids(), rotation: rotation() })
   );
   let dialog: HTMLDialogElement | undefined;
   let input: HTMLInputElement | undefined;
@@ -50,7 +49,6 @@ export default function GlobalToolSearch() {
   }
 
   onMount(() => {
-    setMac(/Mac|iPhone|iPad/.test(navigator.userAgent));
     function shortcut(event: KeyboardEvent) {
       if (
         event.isComposing ||
@@ -96,7 +94,6 @@ export default function GlobalToolSearch() {
       >
         <Search size={18} aria-hidden="true" />
         <span class="global-search-label">Search</span>
-        <kbd>{mac() ? "⌘K" : "Ctrl K"}</kbd>
       </button>
       <dialog
         ref={dialog}
@@ -142,11 +139,6 @@ export default function GlobalToolSearch() {
               onKeyDown={onKeyDown}
             />
           </div>
-          <CatalogFilter
-            favorites={onlyFavorites()}
-            onChange={setOnlyFavorites}
-            count={favorites.ids().length}
-          />
           <p class="sr-only" role="status" aria-live="polite" aria-atomic="true">
             {results().length} {results().length === 1 ? "tool" : "tools"} available.{" "}
             {results()[activeIndex()]?.name ? `${results()[activeIndex()].name} highlighted.` : ""}
@@ -191,11 +183,7 @@ export default function GlobalToolSearch() {
             </For>
           </ul>
           <Show when={!results().length}>
-            <p class="global-search-empty">
-              {onlyFavorites() && !favorites.ids().length
-                ? "Star a tool to add it here."
-                : "No matching tools."}
-            </p>
+            <p class="global-search-empty">No matching tools.</p>
           </Show>
         </div>
       </dialog>

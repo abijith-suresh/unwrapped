@@ -135,34 +135,6 @@
   color: var(--accent-primary);
   border-color: color-mix(in srgb, var(--accent-primary) 50%, var(--border));
 }
-.catalog-filter {
-  border: 0;
-  padding: 0;
-  min-inline-size: 0;
-  display: flex;
-  gap: 0.5rem;
-  margin-block: 0.75rem;
-}
-.catalog-filter button {
-  min-height: 2.75rem;
-  padding: 0.5rem 0.8rem;
-  border: 1px solid var(--border);
-  border-radius: 0.4rem;
-  background: transparent;
-  color: var(--text-secondary);
-  font: inherit;
-  font-size: 0.85rem;
-  cursor: pointer;
-}
-.catalog-filter button[aria-pressed="true"] {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-}
-.catalog-filter-count {
-  margin-inline-start: 0.4rem;
-  color: var(--text-muted);
-  font: 0.75rem var(--font-mono);
-}
 .lp-tool-card,
 .global-search-item {
   position: relative;
@@ -181,10 +153,4 @@
 }
 .global-search-item .global-search-result {
   padding-right: 4rem;
-}
-
-@media (max-width: 480px) {
-  .tool-header-favorite {
-    display: none;
-  }
 }
