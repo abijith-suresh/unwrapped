@@ -4,6 +4,7 @@ import Input from "@/components/primitives/solid/Input";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolCodeBlock from "@/components/tool/ToolCodeBlock";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
 import ToolPanel from "@/components/tool/ToolPanel";
 import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
 import ToolToolbar from "@/components/tool/ToolToolbar";
@@ -14,54 +15,61 @@ export default function Tool() {
   const entries = createMemo(() => searchNetworkReference(query(), kind()));
   return (
     <ToolContainer>
-      <Input
-        label="Search record types or headers"
-        value={query()}
-        onInput={setQuery}
-        autocomplete="off"
-        placeholder="IPv6"
-      />
-      <ToolToolbar label="Reference category">
-        <ToolSegmentedControl
-          label="Reference category"
-          hideLabel
-          value={kind()}
-          onChange={setKind}
-          options={[
-            { value: "all", label: "All" },
-            { value: "dns", label: "DNS records" },
-            { value: "headers", label: "HTTP headers" },
-          ]}
-        />
-      </ToolToolbar>
-      <ToolStatusMessage tone="muted">{entries().length} results</ToolStatusMessage>
-      <Show
-        when={entries().length}
-        fallback={<ToolStatusMessage tone="muted">No matching entries.</ToolStatusMessage>}
+      <ToolInspectorWorkspace
+        input={
+          <>
+            <Input
+              label="Search record types or headers"
+              value={query()}
+              onInput={setQuery}
+              autocomplete="off"
+              placeholder="IPv6"
+            />
+            <ToolToolbar label="Reference category">
+              <ToolSegmentedControl
+                label="Reference category"
+                hideLabel
+                value={kind()}
+                onChange={setKind}
+                options={[
+                  { value: "all", label: "All" },
+                  { value: "dns", label: "DNS records" },
+                  { value: "headers", label: "HTTP headers" },
+                ]}
+              />
+            </ToolToolbar>
+          </>
+        }
       >
-        <div class="grid gap-4 md:grid-cols-2">
-          <For each={entries()}>
-            {(entry) => (
-              <ToolPanel
-                title={entry.name}
-                description={entry.kind === "dns" ? "DNS record" : "HTTP header"}
-                actions={<CopyButton text={entry.example} label={`Copy ${entry.name} example`} />}
-              >
-                <p class="mt-0 text-sm text-[var(--text-secondary)]">{entry.description}</p>
-                <ToolCodeBlock class="!min-h-0">{entry.example}</ToolCodeBlock>
-                <a
-                  href={entry.source}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-block mt-3 text-sm text-[var(--accent-primary)] underline"
+        <ToolStatusMessage tone="muted">{entries().length} results</ToolStatusMessage>
+        <Show
+          when={entries().length}
+          fallback={<ToolStatusMessage tone="muted">No matching entries.</ToolStatusMessage>}
+        >
+          <div class="grid gap-4 md:grid-cols-2">
+            <For each={entries()}>
+              {(entry) => (
+                <ToolPanel
+                  title={entry.name}
+                  description={entry.kind === "dns" ? "DNS record" : "HTTP header"}
+                  actions={<CopyButton text={entry.example} label={`Copy ${entry.name} example`} />}
                 >
-                  {entry.kind === "dns" ? "IANA source" : "MDN source"}
-                </a>
-              </ToolPanel>
-            )}
-          </For>
-        </div>
-      </Show>
+                  <p class="mt-0 text-sm text-[var(--text-secondary)]">{entry.description}</p>
+                  <ToolCodeBlock class="!min-h-0">{entry.example}</ToolCodeBlock>
+                  <a
+                    href={entry.source}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-block mt-3 text-sm text-[var(--accent-primary)] underline"
+                  >
+                    {entry.kind === "dns" ? "IANA source" : "MDN source"}
+                  </a>
+                </ToolPanel>
+              )}
+            </For>
+          </div>
+        </Show>
+      </ToolInspectorWorkspace>
     </ToolContainer>
   );
 }

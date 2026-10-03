@@ -43,7 +43,7 @@ export default function ToolPanel(props: ToolPanelProps) {
         local.class
       )}
     >
-      <header class="flex min-h-[3.75rem] min-w-0 shrink-0 flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] px-4 py-3">
+      <header class="flex min-h-[4.25rem] min-w-0 shrink-0 flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] px-4 py-3">
         <div class="min-w-0">
           <div class="flex min-w-0 flex-wrap items-center gap-2">
             <h2
@@ -79,5 +79,6 @@ export default function ToolPanel(props: ToolPanelProps) {
  * Standard sizing for code-editor panels: clamp the editor viewport to the
  * page height, then let the editor body flex-fill it.
  */
-export const TOOL_EDITOR_PANEL_CLASSES = "flex h-[clamp(18rem,44dvh,28rem)] min-h-0 flex-col";
+export const TOOL_EDITOR_PANEL_CLASSES =
+  "flex h-[clamp(14rem,30dvh,20rem)] min-h-0 flex-col lg:h-[clamp(18rem,44dvh,28rem)]";
 export const TOOL_EDITOR_BODY_CLASSES = "flex min-h-0 flex-1 flex-col";

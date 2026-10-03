@@ -26,14 +26,20 @@ export default function Tool() {
       </ToolToolbar>
 
       <ToolTransformWorkspace
-        inputLabel="Source"
-        value={input()}
-        onInput={setInput}
-        placeholder={EXAMPLE_TOML}
-        output={output()}
-        isExample={isExample()}
-        error={error()}
-        copyLabel="Copy output"
+        input={{
+          label: "Source",
+          value: input(),
+          onInput: setInput,
+          placeholder: EXAMPLE_TOML,
+          name: "source",
+        }}
+        output={{
+          title: "Output",
+          value: output(),
+          isExample: isExample(),
+          error: error(),
+          copyLabel: "Copy output",
+        }}
       />
     </ToolContainer>
   );

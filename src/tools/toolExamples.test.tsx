@@ -183,9 +183,7 @@ describe("Example output", () => {
   it("ignores a completed HMAC generation after the input changes", async () => {
     vi.stubGlobal("crypto", webcrypto);
     const { container, getByRole, queryByRole } = render(() => <HmacGeneratorTool />);
-    await waitFor(() =>
-      expect(container.querySelector("code")).toHaveTextContent(/^[a-f0-9]{64}$/)
-    );
+    await waitFor(() => expect(container.querySelector("pre")).toHaveTextContent(/^[a-f0-9]{64}$/));
     let complete!: (buffer: ArrayBuffer) => void;
     const signing = new Promise<ArrayBuffer>((resolve) => {
       complete = resolve;
@@ -198,7 +196,7 @@ describe("Example output", () => {
     fireEvent.input(getByRole("textbox", { name: "Message" }), { target: { value: "Bob" } });
     complete(new Uint8Array([0xab]).buffer);
     await signing;
-    expect(container.querySelector("code")).toHaveTextContent("—");
+    expect(container.querySelector("pre")).toHaveTextContent("—");
     expect(queryByRole("button", { name: "Copy HMAC" })).not.toBeInTheDocument();
   });
 

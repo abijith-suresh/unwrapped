@@ -8,15 +8,15 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import Card from "@/components/primitives/solid/Card";
-import Label from "@/components/primitives/solid/Label";
 import Select from "@/components/primitives/solid/Select";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolComparerWorkspace from "@/components/tool/ToolComparerWorkspace";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolDropZone from "@/components/tool/ToolDropZone";
 import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolFilePicker from "@/components/tool/ToolFilePicker";
+import ToolInputPanel from "@/components/tool/ToolInputPanel";
 import type { DiffAnalysisResult } from "@/lib/diffAnalysis";
 import { createDiffAnalysisExecutor } from "@/lib/diffExecution";
 import { EXAMPLE_DIFF_MODIFIED, EXAMPLE_DIFF_ORIGINAL } from "@/lib/exampleData";
@@ -104,51 +104,38 @@ interface InputPanelProps {
 
 function InputPanel(props: InputPanelProps) {
   return (
-    <ToolDropZone
-      onFile={props.onFileLoad}
-      class="flex-1 rounded-[var(--radius-panel)] border-2 border-transparent"
-    >
-      {/* Panel container */}
-      <Card class="flex flex-col h-full overflow-hidden p-0 rounded-[var(--radius-panel)]">
-        {/* Header */}
-        <div class="flex items-center gap-2 px-3 py-2 border-b border-[var(--border)] shrink-0">
-          <Label>{props.label}</Label>
-
-          <Select
-            aria-label={`${props.label} language`}
-            name={`diff-${props.label.toLowerCase()}-language`}
-            autocomplete="off"
-            value={props.lang}
-            onChange={(v) => props.onLangChange(v as Language)}
-            options={SUPPORTED_LANGUAGES.map((l) => ({ value: l, label: LANGUAGE_LABELS[l] }))}
-            class="w-auto ml-auto"
-            controlClass="!w-auto"
-          />
-
-          <ToolFilePicker onFileChange={props.onFileLoad} buttonClass="shrink-0" />
-        </div>
-
-        <Show when={props.fileMeta}>
-          {(fileMeta) => (
-            <div class="flex gap-2 px-3 py-1.5 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--bg-tertiary)_70%,transparent)] text-[var(--text-muted)] text-xs font-mono">
-              <span>{fileMeta().name}</span>
-              <span>{formatBytes(fileMeta().size)}</span>
-            </div>
-          )}
-        </Show>
-
-        {/* Textarea */}
-        <textarea
-          aria-label={`${props.label} text`}
-          name={`diff-${props.label.toLowerCase()}-text`}
-          value={props.content}
-          onInput={(e) => props.onContentChange(e.currentTarget.value)}
-          placeholder={props.label === "Original" ? EXAMPLE_DIFF_ORIGINAL : EXAMPLE_DIFF_MODIFIED}
-          spellcheck={false}
-          autocomplete="off"
-          class="flex-1 w-full p-3 bg-transparent text-[var(--text-primary)] placeholder:text-[var(--text-muted)] font-mono text-sm leading-[1.6] resize-y min-h-[280px] outline-none tab-size-2"
-        />
-      </Card>
+    <ToolDropZone onFile={props.onFileLoad}>
+      <ToolInputPanel
+        label={`${props.label} text`}
+        name={`diff-${props.label.toLowerCase()}-text`}
+        value={props.content}
+        onInput={props.onContentChange}
+        placeholder={props.label === "Original" ? EXAMPLE_DIFF_ORIGINAL : EXAMPLE_DIFF_MODIFIED}
+        actions={
+          <>
+            <Select
+              aria-label={`${props.label} language`}
+              name={`diff-${props.label.toLowerCase()}-language`}
+              value={props.lang}
+              onChange={(value) => props.onLangChange(value as Language)}
+              options={SUPPORTED_LANGUAGES.map((value) => ({
+                value,
+                label: LANGUAGE_LABELS[value],
+              }))}
+              class="w-auto"
+              controlClass="!w-auto"
+            />
+            <ToolFilePicker onFileChange={props.onFileLoad} />
+          </>
+        }
+      />
+      <Show when={props.fileMeta}>
+        {(file) => (
+          <p class="m-0 mt-2 break-all text-xs text-[var(--text-muted)]">
+            {file().name} · {formatBytes(file().size)}
+          </p>
+        )}
+      </Show>
     </ToolDropZone>
   );
 }
@@ -465,270 +452,260 @@ export default function DiffTool() {
   // ---------------------------------------------------------------------------
   return (
     <ToolContainer class="gap-4">
-      {/* -------------------------------------------------------------------- */}
-      {/* Input panels (two columns)                                           */}
-      {/* -------------------------------------------------------------------- */}
-      <div class="flex gap-3 items-stretch">
-        <InputPanel
-          label="Original"
-          content={leftContent()}
-          lang={leftLang()}
-          fileMeta={leftFile()}
-          onContentChange={setLeftContent}
-          onLangChange={setLeftLang}
-          onFileLoad={(file) => void handleFileLoad("left", file)}
-        />
-        <InputPanel
-          label="Modified"
-          content={rightContent()}
-          lang={rightLang()}
-          fileMeta={rightFile()}
-          onContentChange={setRightContent}
-          onLangChange={setRightLang}
-          onFileLoad={(file) => void handleFileLoad("right", file)}
-        />
-      </div>
+      <ToolComparerWorkspace
+        left={
+          <InputPanel
+            label="Original"
+            content={leftContent()}
+            lang={leftLang()}
+            fileMeta={leftFile()}
+            onContentChange={setLeftContent}
+            onLangChange={setLeftLang}
+            onFileLoad={(file) => void handleFileLoad("left", file)}
+          />
+        }
+        right={
+          <InputPanel
+            label="Modified"
+            content={rightContent()}
+            lang={rightLang()}
+            fileMeta={rightFile()}
+            onContentChange={setRightContent}
+            onLangChange={setRightLang}
+            onFileLoad={(file) => void handleFileLoad("right", file)}
+          />
+        }
+      >
+        <ToolExampleNotice when={isExample()} />
 
-      {/* -------------------------------------------------------------------- */}
-      {/* Empty state                                                          */}
-      {/* -------------------------------------------------------------------- */}
-      <ToolExampleNotice when={isExample()} />
+        <For each={DIFF_SIDES}>
+          {(side) => (
+            <Show when={fileError()[side]}>
+              <ToolStatusMessage tone="error">
+                <strong>{SIDE_LABELS[side]}:</strong> {fileError()[side]}
+              </ToolStatusMessage>
+            </Show>
+          )}
+        </For>
 
-      <For each={DIFF_SIDES}>
-        {(side) => (
-          <Show when={fileError()[side]}>
-            <ToolStatusMessage tone="error">
-              <strong>{SIDE_LABELS[side]}:</strong> {fileError()[side]}
-            </ToolStatusMessage>
-          </Show>
-        )}
-      </For>
-
-      <For each={DIFF_SIDES}>
-        {(side) => (
-          <Show when={fileNotice()[side]}>
-            <ToolStatusMessage tone="warning">
-              <strong>{SIDE_LABELS[side]}:</strong> {fileNotice()[side]}
-            </ToolStatusMessage>
-          </Show>
-        )}
-      </For>
-
-      {/* -------------------------------------------------------------------- */}
-      {/* Toolbar (only when there's data or pending)                          */}
-      {/* -------------------------------------------------------------------- */}
-      <Show when={!isEmpty() || isExample()}>
-        <div class="flex flex-wrap items-center gap-2 px-3.5 py-2.5 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg">
-          {/* Strategy badge */}
-          <span class="text-xs font-semibold tracking-widest uppercase text-[var(--accent-primary)] bg-[color-mix(in_srgb,var(--accent-primary)_12%,transparent)] border border-[color-mix(in_srgb,var(--accent-primary)_30%,transparent)] rounded px-2 py-0.5">
-            {STRATEGY_LABELS[strategy()] ?? "Text"}
-          </span>
-
-          {/* Pending spinner */}
-          <Show when={pending()}>
-            <span
-              role="status"
-              aria-live="polite"
-              aria-atomic="true"
-              class="text-sm text-[var(--text-muted)] italic"
-            >
-              Comparing…
+        <For each={DIFF_SIDES}>
+          {(side) => (
+            <Show when={fileNotice()[side]}>
+              <ToolStatusMessage tone="warning">
+                <strong>{SIDE_LABELS[side]}:</strong> {fileNotice()[side]}
+              </ToolStatusMessage>
+            </Show>
+          )}
+        </For>
+        <Show when={!isEmpty() || isExample()}>
+          <div class="flex flex-wrap items-center gap-2 px-3.5 py-2.5 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg">
+            {/* Strategy badge */}
+            <span class="text-xs font-semibold tracking-widest uppercase text-[var(--accent-primary)] bg-[color-mix(in_srgb,var(--accent-primary)_12%,transparent)] border border-[color-mix(in_srgb,var(--accent-primary)_30%,transparent)] rounded px-2 py-0.5">
+              {STRATEGY_LABELS[strategy()] ?? "Text"}
             </span>
-          </Show>
 
-          {/* Identical label */}
-          <Show when={isIdentical()}>
-            <span class="text-sm font-medium text-[var(--accent-success)]">Identical</span>
-          </Show>
+            {/* Pending spinner */}
+            <Show when={pending()}>
+              <span
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+                class="text-sm text-[var(--text-muted)] italic"
+              >
+                Comparing…
+              </span>
+            </Show>
 
-          {/* Stats: +N / -N */}
-          <Show when={!pending() && analysis() !== null && !isIdentical() && diffData() !== null}>
-            <span class="text-sm font-semibold text-[var(--accent-success)]">+{stats().added}</span>
-            <span class="text-sm font-semibold text-[var(--accent-error)]">-{stats().removed}</span>
-          </Show>
+            {/* Identical label */}
+            <Show when={isIdentical()}>
+              <span class="text-sm font-medium text-[var(--accent-success)]">Identical</span>
+            </Show>
 
-          {/* Spacer */}
-          <div class="flex-1" />
+            {/* Stats: +N / -N */}
+            <Show when={!pending() && analysis() !== null && !isIdentical() && diffData() !== null}>
+              <span class="text-sm font-semibold text-[var(--accent-success)]">
+                +{stats().added}
+              </span>
+              <span class="text-sm font-semibold text-[var(--accent-error)]">
+                -{stats().removed}
+              </span>
+            </Show>
 
-          {/* Changes only toggle */}
-          <label class="flex items-center gap-1.5 cursor-pointer text-sm text-[var(--text-secondary)] select-none">
-            <input
-              aria-label="Show changes only"
-              name="changes-only"
-              type="checkbox"
-              checked={changesOnly()}
-              onChange={(e) => setChangesOnly(e.currentTarget.checked)}
-              class="cursor-pointer accent-[var(--accent-primary)]"
-            />
-            Changes only
-          </label>
+            {/* Spacer */}
+            <div class="flex-1" />
 
-          {/* Next change button */}
-          <Show when={!pending() && analysis() !== null && changeIndices().length > 0}>
-            <ToolActionButton
-              type="button"
-              onClick={handleNextChange}
-              disabled={pending() || analysis() === null}
-              title="Jump to next change"
-            >
-              ↓ Next change
+            {/* Changes only toggle */}
+            <label class="flex items-center gap-1.5 cursor-pointer text-sm text-[var(--text-secondary)] select-none">
+              <input
+                aria-label="Show changes only"
+                name="changes-only"
+                type="checkbox"
+                checked={changesOnly()}
+                onChange={(e) => setChangesOnly(e.currentTarget.checked)}
+                class="cursor-pointer accent-[var(--accent-primary)]"
+              />
+              Changes only
+            </label>
+
+            {/* Next change button */}
+            <Show when={!pending() && analysis() !== null && changeIndices().length > 0}>
+              <ToolActionButton
+                type="button"
+                onClick={handleNextChange}
+                disabled={pending() || analysis() === null}
+                title="Jump to next change"
+              >
+                ↓ Next change
+              </ToolActionButton>
+            </Show>
+
+            {/* Swap button */}
+            <ToolActionButton type="button" onClick={handleSwap} title="Swap left and right">
+              ⇅ Swap
             </ToolActionButton>
+
+            <span class="text-xs text-[var(--text-muted)]">
+              File limit {formatBytes(DEFAULT_IMPORT_MAX_BYTES)}
+            </span>
+          </div>
+
+          <Show when={analysisError()}>
+            <ToolStatusMessage tone="error">{analysisError()}</ToolStatusMessage>
           </Show>
 
-          {/* Swap button */}
-          <ToolActionButton type="button" onClick={handleSwap} title="Swap left and right">
-            ⇅ Swap
-          </ToolActionButton>
-
-          <span class="text-xs text-[var(--text-muted)]">
-            File limit {formatBytes(DEFAULT_IMPORT_MAX_BYTES)}
+          <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+            {changeAnnouncement()}
           </span>
-        </div>
+          <Show when={structuredErrors().length > 0}>
+            <div class="flex flex-col gap-1.5">
+              <For each={structuredErrors()}>
+                {(err) => (
+                  <div
+                    role="alert"
+                    class="px-3.5 py-2.5 rounded-md border border-[var(--accent-error)] bg-[color-mix(in_srgb,var(--accent-error)_10%,transparent)] text-[var(--accent-error)] text-sm"
+                  >
+                    <strong class="capitalize">{err.side}</strong>: {err.message} — falling back to
+                    text diff.
+                  </div>
+                )}
+              </For>
+            </div>
+          </Show>
+          <Show
+            when={
+              !pending() && analysis() !== null && diffData() !== null && filteredRows().length > 0
+            }
+          >
+            <div class="overflow-x-auto border border-[var(--border)] rounded-lg bg-[var(--bg-secondary)]">
+              <table class="w-full border-collapse table-fixed text-sm leading-[1.5]">
+                <colgroup>
+                  <col style="width: 2.75rem" />
+                  <col style="width: 50%" />
+                  <col style="width: 2.75rem" />
+                  <col style="width: 50%" />
+                </colgroup>
+                <tbody>
+                  <For each={filteredRows()}>
+                    {(indexedRow, i) => {
+                      const { row, sourceIndex } = indexedRow;
+                      const prevSourceIndex =
+                        i() > 0 ? filteredRows()[i() - 1]?.sourceIndex : undefined;
+                      const showSeparator = isSeparator(sourceIndex, prevSourceIndex);
 
-        <Show when={analysisError()}>
-          <ToolStatusMessage tone="error">{analysisError()}</ToolStatusMessage>
-        </Show>
-
-        <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">
-          {changeAnnouncement()}
-        </span>
-
-        {/* ------------------------------------------------------------------ */}
-        {/* Error banners from structured normalization                        */}
-        {/* ------------------------------------------------------------------ */}
-        <Show when={structuredErrors().length > 0}>
-          <div class="flex flex-col gap-1.5">
-            <For each={structuredErrors()}>
-              {(err) => (
-                <div
-                  role="alert"
-                  class="px-3.5 py-2.5 rounded-md border border-[var(--accent-error)] bg-[color-mix(in_srgb,var(--accent-error)_10%,transparent)] text-[var(--accent-error)] text-sm"
-                >
-                  <strong class="capitalize">{err.side}</strong>: {err.message} — falling back to
-                  text diff.
-                </div>
-              )}
-            </For>
-          </div>
-        </Show>
-
-        {/* ------------------------------------------------------------------ */}
-        {/* Diff output table                                                  */}
-        {/* ------------------------------------------------------------------ */}
-        <Show
-          when={
-            !pending() && analysis() !== null && diffData() !== null && filteredRows().length > 0
-          }
-        >
-          <div class="overflow-x-auto border border-[var(--border)] rounded-lg bg-[var(--bg-secondary)]">
-            <table class="w-full border-collapse table-fixed text-sm leading-[1.5]">
-              <colgroup>
-                <col style="width: 2.75rem" />
-                <col style="width: 50%" />
-                <col style="width: 2.75rem" />
-                <col style="width: 50%" />
-              </colgroup>
-              <tbody>
-                <For each={filteredRows()}>
-                  {(indexedRow, i) => {
-                    const { row, sourceIndex } = indexedRow;
-                    const prevSourceIndex =
-                      i() > 0 ? filteredRows()[i() - 1]?.sourceIndex : undefined;
-                    const showSeparator = isSeparator(sourceIndex, prevSourceIndex);
-
-                    return (
-                      <>
-                        <Show when={showSeparator}>
-                          <tr>
+                      return (
+                        <>
+                          <Show when={showSeparator}>
+                            <tr>
+                              <td
+                                colspan={4}
+                                class="px-3 py-0.5 bg-[var(--bg-primary)] text-[var(--text-muted)] text-xs font-mono tracking-wider border-t border-b border-[var(--border)]"
+                              >
+                                · · ·
+                              </td>
+                            </tr>
+                          </Show>
+                          <tr
+                            data-source-row={sourceIndex}
+                            classList={{
+                              "border-t border-[color-mix(in_srgb,var(--border)_50%,transparent)]":
+                                !showSeparator && i() !== 0,
+                            }}
+                          >
+                            {/* Left line number */}
                             <td
-                              colspan={4}
-                              class="px-3 py-0.5 bg-[var(--bg-primary)] text-[var(--text-muted)] text-xs font-mono tracking-wider border-t border-b border-[var(--border)]"
+                              class="select-none text-right px-2 min-w-[2.5rem] text-[var(--text-muted)] tabular-nums border-r border-[var(--border)] text-xs"
+                              classList={{
+                                "bg-[color-mix(in_srgb,var(--accent-error)_18%,transparent)]":
+                                  row.type === "removed",
+                                "bg-[color-mix(in_srgb,var(--accent-error)_12%,transparent)]":
+                                  row.type === "changed",
+                              }}
                             >
-                              · · ·
+                              <Show when={row.leftLineNum !== null}>{row.leftLineNum}</Show>
+                            </td>
+                            {/* Left content */}
+                            <td
+                              class="px-3 whitespace-pre font-mono text-xs overflow-visible w-1/2"
+                              classList={{
+                                "bg-[color-mix(in_srgb,var(--accent-error)_18%,transparent)]":
+                                  row.type === "removed",
+                                "bg-[color-mix(in_srgb,var(--accent-error)_12%,transparent)]":
+                                  row.type === "changed",
+                              }}
+                            >
+                              <Show when={row.left !== null}>{row.left}</Show>
+                            </td>
+                            {/* Right line number */}
+                            <td
+                              class="select-none text-right px-2 min-w-[2.5rem] text-[var(--text-muted)] tabular-nums border-r border-[var(--border)] border-l border-[var(--border)] text-xs"
+                              classList={{
+                                "bg-[color-mix(in_srgb,var(--accent-success)_18%,transparent)]":
+                                  row.type === "added",
+                                "bg-[color-mix(in_srgb,var(--accent-success)_12%,transparent)]":
+                                  row.type === "changed",
+                              }}
+                            >
+                              <Show when={row.rightLineNum !== null}>{row.rightLineNum}</Show>
+                            </td>
+                            {/* Right content */}
+                            <td
+                              class="px-3 whitespace-pre font-mono text-xs overflow-visible w-1/2"
+                              classList={{
+                                "bg-[color-mix(in_srgb,var(--accent-success)_18%,transparent)]":
+                                  row.type === "added",
+                                "bg-[color-mix(in_srgb,var(--accent-success)_12%,transparent)]":
+                                  row.type === "changed",
+                              }}
+                            >
+                              <Show when={row.right !== null}>{row.right}</Show>
                             </td>
                           </tr>
-                        </Show>
-                        <tr
-                          data-source-row={sourceIndex}
-                          classList={{
-                            "border-t border-[color-mix(in_srgb,var(--border)_50%,transparent)]":
-                              !showSeparator && i() !== 0,
-                          }}
-                        >
-                          {/* Left line number */}
-                          <td
-                            class="select-none text-right px-2 min-w-[2.5rem] text-[var(--text-muted)] tabular-nums border-r border-[var(--border)] text-xs"
-                            classList={{
-                              "bg-[color-mix(in_srgb,var(--accent-error)_18%,transparent)]":
-                                row.type === "removed",
-                              "bg-[color-mix(in_srgb,var(--accent-error)_12%,transparent)]":
-                                row.type === "changed",
-                            }}
-                          >
-                            <Show when={row.leftLineNum !== null}>{row.leftLineNum}</Show>
-                          </td>
-                          {/* Left content */}
-                          <td
-                            class="px-3 whitespace-pre font-mono text-xs overflow-visible w-1/2"
-                            classList={{
-                              "bg-[color-mix(in_srgb,var(--accent-error)_18%,transparent)]":
-                                row.type === "removed",
-                              "bg-[color-mix(in_srgb,var(--accent-error)_12%,transparent)]":
-                                row.type === "changed",
-                            }}
-                          >
-                            <Show when={row.left !== null}>{row.left}</Show>
-                          </td>
-                          {/* Right line number */}
-                          <td
-                            class="select-none text-right px-2 min-w-[2.5rem] text-[var(--text-muted)] tabular-nums border-r border-[var(--border)] border-l border-[var(--border)] text-xs"
-                            classList={{
-                              "bg-[color-mix(in_srgb,var(--accent-success)_18%,transparent)]":
-                                row.type === "added",
-                              "bg-[color-mix(in_srgb,var(--accent-success)_12%,transparent)]":
-                                row.type === "changed",
-                            }}
-                          >
-                            <Show when={row.rightLineNum !== null}>{row.rightLineNum}</Show>
-                          </td>
-                          {/* Right content */}
-                          <td
-                            class="px-3 whitespace-pre font-mono text-xs overflow-visible w-1/2"
-                            classList={{
-                              "bg-[color-mix(in_srgb,var(--accent-success)_18%,transparent)]":
-                                row.type === "added",
-                              "bg-[color-mix(in_srgb,var(--accent-success)_12%,transparent)]":
-                                row.type === "changed",
-                            }}
-                          >
-                            <Show when={row.right !== null}>{row.right}</Show>
-                          </td>
-                        </tr>
-                      </>
-                    );
-                  }}
-                </For>
-              </tbody>
-            </table>
-          </div>
-        </Show>
+                        </>
+                      );
+                    }}
+                  </For>
+                </tbody>
+              </table>
+            </div>
+          </Show>
 
-        {/* No changes in "changes only" mode but diffs exist */}
-        <Show
-          when={
-            !pending() &&
-            analysis() !== null &&
-            diffData() !== null &&
-            filteredRows().length === 0 &&
-            changesOnly() &&
-            !isIdentical()
-          }
-        >
-          <div class="text-center text-[var(--text-muted)] text-sm py-6">
-            No changes to display with current context settings.
-          </div>
+          {/* No changes in "changes only" mode but diffs exist */}
+          <Show
+            when={
+              !pending() &&
+              analysis() !== null &&
+              diffData() !== null &&
+              filteredRows().length === 0 &&
+              changesOnly() &&
+              !isIdentical()
+            }
+          >
+            <div class="text-center text-[var(--text-muted)] text-sm py-6">
+              No changes to display with current context settings.
+            </div>
+          </Show>
         </Show>
-      </Show>
+      </ToolComparerWorkspace>
     </ToolContainer>
   );
 }

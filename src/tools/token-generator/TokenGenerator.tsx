@@ -1,11 +1,8 @@
-import { createSignal, Show } from "solid-js";
-
-import CopyButton from "@/components/CopyButton";
-import Card from "@/components/primitives/solid/Card";
-import Label from "@/components/primitives/solid/Label";
+import { createSignal } from "solid-js";
+import Input from "@/components/primitives/solid/Input";
 import ToolActionButton from "@/components/ToolActionButton";
-import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolGeneratorWorkspace from "@/components/tool/ToolGeneratorWorkspace";
 import {
   DEFAULT_TOKEN_OPTIONS,
   generateToken,
@@ -51,69 +48,39 @@ export default function TokenGenerator() {
 
   return (
     <ToolContainer>
-      <div class="grid min-w-0 gap-4 sm:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <Card class="flex flex-col gap-1.5">
-          <div class="flex justify-between gap-3">
-            <Label>Generated token</Label>
-            <CopyButton text={token()} label="Copy token" />
-          </div>
-          <code class="text-[var(--text-primary)] text-base leading-relaxed font-mono break-all min-h-[4.5rem] block">
-            {token() || "—"}
-          </code>
-        </Card>
-
-        <Card class="flex flex-col gap-1.5">
-          <Label>Options</Label>
-          <label class="text-sm text-[var(--text-secondary)]" for="token-length">
-            Length
-          </label>
-          <input
-            id="token-length"
-            type="number"
-            name="token-length"
-            autocomplete="off"
-            min={MIN_TOKEN_LENGTH}
-            max={MAX_TOKEN_LENGTH}
-            value={options().length}
-            onInput={(event) => updateOption("length", Number(event.currentTarget.value) || 0)}
-            class="w-full rounded-lg border border-[var(--border)] bg-[var(--bg-primary)] px-4 py-2.5 text-sm text-[var(--text-primary)] outline-none font-mono focus:border-[var(--accent-primary)]"
-          />
+      <ToolGeneratorWorkspace
+        configuration={
+          <>
+            <Input
+              label="Length"
+              type="number"
+              name="token-length"
+              min={MIN_TOKEN_LENGTH}
+              max={MAX_TOKEN_LENGTH}
+              value={String(options().length)}
+              onInput={(value) => updateOption("length", Number(value) || 0)}
+              controlClass="!w-24"
+            />
+            <div class="flex flex-wrap gap-2">
+              {(["uppercase", "lowercase", "digits", "symbols"] as const).map((key) => (
+                <ToolActionButton
+                  active={options()[key]}
+                  onClick={() => updateOption(key, !options()[key])}
+                >
+                  {key[0].toUpperCase() + key.slice(1)}
+                </ToolActionButton>
+              ))}
+            </div>
+          </>
+        }
+        actions={
           <ToolActionButton onClick={() => regenerate()} variant="primary">
             Regenerate
           </ToolActionButton>
-        </Card>
-      </div>
-
-      <div class="flex gap-2 flex-wrap">
-        <ToolActionButton
-          active={options().uppercase}
-          onClick={() => updateOption("uppercase", !options().uppercase)}
-        >
-          Uppercase
-        </ToolActionButton>
-        <ToolActionButton
-          active={options().lowercase}
-          onClick={() => updateOption("lowercase", !options().lowercase)}
-        >
-          Lowercase
-        </ToolActionButton>
-        <ToolActionButton
-          active={options().digits}
-          onClick={() => updateOption("digits", !options().digits)}
-        >
-          Digits
-        </ToolActionButton>
-        <ToolActionButton
-          active={options().symbols}
-          onClick={() => updateOption("symbols", !options().symbols)}
-        >
-          Symbols
-        </ToolActionButton>
-      </div>
-
-      <Show when={error()}>
-        {(message) => <ToolStatusMessage tone="error">{message()}</ToolStatusMessage>}
-      </Show>
+        }
+        error={error()}
+        fields={[{ label: "Generated token", value: token(), copyLabel: "Copy token" }]}
+      />
     </ToolContainer>
   );
 }

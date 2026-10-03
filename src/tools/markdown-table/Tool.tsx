@@ -47,15 +47,20 @@ export default function Tool() {
       </ToolToolbar>
 
       <ToolTransformWorkspace
-        inputLabel="Source"
-        value={input()}
-        onInput={setInput}
-        placeholder={examples[mode()]}
-        output={output()}
-        outputLabel={mode() === "markdown" ? "CSV" : "Markdown"}
-        isExample={isExample()}
-        error={error()}
-        copyLabel="Copy output"
+        input={{
+          label: "Source",
+          value: input(),
+          onInput: setInput,
+          placeholder: examples[mode()],
+          name: "source",
+        }}
+        output={{
+          title: mode() === "markdown" ? "CSV" : "Markdown",
+          value: output(),
+          isExample: isExample(),
+          error: error(),
+          copyLabel: "Copy output",
+        }}
       />
     </ToolContainer>
   );

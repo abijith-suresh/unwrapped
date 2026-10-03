@@ -1,14 +1,12 @@
-import { createMemo, createResource, createSignal, For, onCleanup, Show } from "solid-js";
+import { createMemo, createResource, createSignal, onCleanup, Show } from "solid-js";
 
-import CopyButton from "@/components/CopyButton";
-import Card from "@/components/primitives/solid/Card";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolDropZone from "@/components/tool/ToolDropZone";
-import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolFilePicker from "@/components/tool/ToolFilePicker";
 import ToolInputPanel from "@/components/tool/ToolInputPanel";
+import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
 import { EXAMPLE_TEXT } from "@/lib/exampleData";
 import {
   DEFAULT_IMPORT_MAX_BYTES,
@@ -140,78 +138,69 @@ export default function HashGenerator() {
 
   return (
     <ToolContainer>
-      <ToolDropZone onFile={(file) => void handleFile(file)}>
-        <ToolInputPanel
-          compact
-          label={workflow() === "text" ? "Input text" : "Input file"}
-          name="hash-input"
-          autocomplete="off"
-          spellcheck={false}
-          value={input()}
-          onInput={handleInput}
-          placeholder={EXAMPLE_TEXT}
-          rows={5}
-          file={loadedFile()}
-          onRemoveFile={handleClear}
-          actions={
-            <>
-              <Show when={!loadedFile()}>
-                <ToolActionButton onClick={handleClear} disabled={!input()}>
-                  Clear
-                </ToolActionButton>
-              </Show>
-              <ToolFilePicker
-                label={loadedFile() ? "Replace file" : "Open file"}
-                onFileChange={(file) => void handleFile(file)}
-              />
-            </>
-          }
-        />
-      </ToolDropZone>
-
-      <Show when={fileNotice()}>
-        <ToolStatusMessage tone="warning">{fileNotice()}</ToolStatusMessage>
-      </Show>
-      <Show when={fileError()?.code === "file-too-large"}>
-        <ToolStatusMessage tone="error">
-          File is too large. Maximum supported size is {formatBytes(DEFAULT_IMPORT_MAX_BYTES)}.
-        </ToolStatusMessage>
-      </Show>
-      <Show when={readFileError()}>
-        {(error) => (
-          <ToolStatusMessage tone="error">
-            {formatFileReadFailureMessage(error())}
-          </ToolStatusMessage>
-        )}
-      </Show>
-
-      <Show when={computing()}>
-        <ToolStatusMessage tone="muted">Computing…</ToolStatusMessage>
-      </Show>
-
-      <ToolExampleNotice when={isExample()} />
-      <Show when={displayedResults().length > 0}>
-        <div class="flex flex-col gap-3">
-          <For each={displayedResults()}>
-            {(result) => (
-              <Card class="overflow-hidden p-0">
-                <div class="flex items-center justify-between px-4 py-2 border-b border-[var(--border)]">
-                  <span class="text-xs font-bold tracking-wider uppercase text-[var(--accent-primary)]">
-                    {result.algorithm}
-                  </span>
-                  <Show when={!isExample()}>
-                    <CopyButton text={result.hex} label={`Copy ${result.algorithm} hash`} />
+      <ToolInspectorWorkspace
+        isExample={isExample()}
+        layout="rows"
+        fields={displayedResults().map((result) => ({
+          label: result.algorithm,
+          value: result.hex,
+          copyLabel: `Copy ${result.algorithm} hash`,
+        }))}
+        input={
+          <ToolDropZone onFile={(file) => void handleFile(file)}>
+            <ToolInputPanel
+              compact
+              label={workflow() === "text" ? "Input text" : "Input file"}
+              name="hash-input"
+              autocomplete="off"
+              spellcheck={false}
+              value={input()}
+              onInput={handleInput}
+              placeholder={EXAMPLE_TEXT}
+              rows={5}
+              file={loadedFile()}
+              onRemoveFile={handleClear}
+              actions={
+                <>
+                  <Show when={!loadedFile()}>
+                    <ToolActionButton onClick={handleClear} disabled={!input()}>
+                      Clear
+                    </ToolActionButton>
                   </Show>
-                </div>
+                  <ToolFilePicker
+                    label={loadedFile() ? "Replace file" : "Open file"}
+                    onFileChange={(file) => void handleFile(file)}
+                  />
+                </>
+              }
+            />
+          </ToolDropZone>
+        }
+        status={
+          <>
+            <Show when={fileNotice()}>
+              <ToolStatusMessage tone="warning">{fileNotice()}</ToolStatusMessage>
+            </Show>
+            <Show when={fileError()?.code === "file-too-large"}>
+              <ToolStatusMessage tone="error">
+                File is too large. Maximum supported size is {formatBytes(DEFAULT_IMPORT_MAX_BYTES)}
+                .
+              </ToolStatusMessage>
+            </Show>
+            <Show when={readFileError()}>
+              {(error) => (
+                <ToolStatusMessage tone="error">
+                  {formatFileReadFailureMessage(error())}
+                </ToolStatusMessage>
+              )}
+            </Show>
 
-                <pre class="m-0 p-3 px-4 text-xs leading-relaxed text-[var(--text-primary)] font-mono whitespace-pre-wrap break-all">
-                  {result.hex}
-                </pre>
-              </Card>
-            )}
-          </For>
-        </div>
-      </Show>
+            <Show when={computing()}>
+              <ToolStatusMessage tone="muted">Computing…</ToolStatusMessage>
+            </Show>
+          </>
+        }
+      />
     </ToolContainer>
   );
 }

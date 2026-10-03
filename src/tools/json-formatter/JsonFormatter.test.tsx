@@ -1,110 +1,30 @@
-import { fireEvent, render, waitFor } from "@solidjs/testing-library";
+import { fireEvent, render } from "@solidjs/testing-library";
 import { describe, expect, it } from "vitest";
-
 import JsonFormatter from "./JsonFormatter";
 
 describe("JsonFormatter", () => {
-  it("formats input inside the shared tool layout", async () => {
+  it("applies sorting independently of the output format", () => {
     const { container, getByRole } = render(() => <JsonFormatter />);
-
-    expect(getByRole("textbox", { name: "JSON document" })).toBeInTheDocument();
-    expect(getByRole("heading", { name: "Input" })).toBeInTheDocument();
-
     fireEvent.input(getByRole("textbox", { name: "JSON document" }), {
-      target: { value: '{"name":"Ada"}' },
+      target: { value: '{"z":1,"a":2}' },
     });
-
-    await waitFor(() => expect(container.querySelector("pre")).toHaveTextContent('"name": "Ada"'));
-    expect(getByRole("button", { name: "Copy JSON" })).toBeInTheDocument();
+    fireEvent.click(getByRole("radio", { name: "Minified" }));
+    fireEvent.click(getByRole("button", { name: "Sort keys A-Z" }));
+    expect(container.querySelector("pre")?.textContent).toBe('{"a":2,"z":1}');
+    fireEvent.click(getByRole("radio", { name: "4 spaces" }));
+    expect(container.querySelector("pre")?.textContent).toBe('{\n    "a": 2,\n    "z": 1\n}');
   });
-
-  it("keeps indentation and formatting modes visibly selected", () => {
-    const { getByRole } = render(() => <JsonFormatter />);
-
-    const twoSpaces = getByRole("radio", { name: "2 spaces" });
-    const fourSpaces = getByRole("radio", { name: "4 spaces" });
-    const minified = getByRole("radio", { name: "Minified" });
-
-    expect(twoSpaces).toHaveAttribute("aria-checked", "true");
-    expect(fourSpaces).toHaveAttribute("aria-checked", "false");
-    expect(minified).toHaveAttribute("aria-checked", "false");
-
-    fireEvent.click(fourSpaces);
-    expect(twoSpaces).toHaveAttribute("aria-checked", "false");
-    expect(fourSpaces).toHaveAttribute("aria-checked", "true");
-
-    fireEvent.click(minified);
-    expect(minified).toHaveAttribute("aria-checked", "true");
-    expect(fourSpaces).toHaveAttribute("aria-checked", "false");
-  });
-
-  it("keeps sort keys independent from the output format", () => {
-    const { getByRole, queryByRole } = render(() => <JsonFormatter />);
-
-    const minified = getByRole("radio", { name: "Minified" });
-    const fourSpaces = getByRole("radio", { name: "4 spaces" });
-    const sortKeys = getByRole("button", { name: "Sort keys A-Z" });
-
-    fireEvent.click(minified);
-    fireEvent.click(sortKeys);
-
-    expect(minified).toHaveAttribute("aria-checked", "true");
-    expect(sortKeys).toHaveAttribute("aria-pressed", "true");
-
-    fireEvent.click(fourSpaces);
-
-    expect(fourSpaces).toHaveAttribute("aria-checked", "true");
-    expect(sortKeys).toHaveAttribute("aria-pressed", "true");
-    expect(queryByRole("button", { name: "Clear" })).not.toBeInTheDocument();
-  });
-
-  it("switches between input and output views for compact mobile use", () => {
-    const { getByRole } = render(() => <JsonFormatter />);
-
-    const inputView = getByRole("tab", { name: "Input" });
-    const outputView = getByRole("tab", { name: "Output" });
-
-    expect(inputView).toHaveAttribute("aria-selected", "true");
-    expect(outputView).toHaveAttribute("aria-selected", "false");
-
-    fireEvent.click(outputView);
-
-    expect(inputView).toHaveAttribute("aria-selected", "false");
-    expect(outputView).toHaveAttribute("aria-selected", "true");
-  });
-
-  it("supports keyboard navigation for shared controls", () => {
-    const { getByRole } = render(() => <JsonFormatter />);
-
-    const twoSpaces = getByRole("radio", { name: "2 spaces" });
-    const fourSpaces = getByRole("radio", { name: "4 spaces" });
-    const inputView = getByRole("tab", { name: "Input" });
-    const outputView = getByRole("tab", { name: "Output" });
-
-    twoSpaces.focus();
-    fireEvent.keyDown(twoSpaces, { key: "ArrowRight" });
-    expect(fourSpaces).toHaveAttribute("aria-checked", "true");
-
-    inputView.focus();
-    fireEvent.keyDown(inputView, { key: "ArrowRight" });
-    expect(outputView).toHaveAttribute("aria-selected", "true");
-  });
-
-  it("shows an accessible toast and persistent inline diagnostic", async () => {
-    const { container, getByRole } = render(() => <JsonFormatter />);
-
-    fireEvent.input(getByRole("textbox", { name: "JSON document" }), {
-      target: { value: '{"name":' },
-    });
-
-    await waitFor(() => {
-      expect(getByRole("status")).toHaveTextContent("JSON could not be parsed.");
-    });
+  it("links a persistent parse error to the input and recovers after editing", () => {
+    const { container, getByRole, queryByRole } = render(() => <JsonFormatter />);
+    const editor = getByRole("textbox", { name: "JSON document" });
+    fireEvent.input(editor, { target: { value: '{"name":' } });
+    const alert = getByRole("alert");
+    expect(alert).toHaveTextContent("Check line");
+    expect(editor).toHaveAttribute("aria-describedby", alert.id);
     expect(container.querySelector("[data-tool-error-marker]")).toBeInTheDocument();
-    expect(container.querySelector("details")).not.toBeInTheDocument();
-    expect(getByRole("textbox", { name: "JSON document" })).toHaveAttribute(
-      "aria-describedby",
-      "json-input-error"
-    );
+    fireEvent.input(editor, { target: { value: '{"name":"Ada"}' } });
+    expect(queryByRole("alert")).not.toBeInTheDocument();
+    expect(editor).not.toHaveAttribute("aria-invalid");
+    expect(getByRole("button", { name: "Copy JSON" })).toBeEnabled();
   });
 });

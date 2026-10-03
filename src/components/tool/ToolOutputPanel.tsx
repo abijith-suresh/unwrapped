@@ -13,6 +13,7 @@ export interface ToolOutputPanelProps {
   title: string;
   value: string;
   isExample?: boolean;
+  showExampleNotice?: boolean;
   error?: string;
   errorId?: string;
   copyLabel?: string;
@@ -25,15 +26,17 @@ export default function ToolOutputPanel(props: ToolOutputPanelProps) {
   return (
     <ToolPanel
       title={props.title}
-      titleAddon={<ToolExampleNotice when={!!props.isExample} />}
       class={props.compact ? undefined : TOOL_EDITOR_PANEL_CLASSES}
       bodyClass={props.compact ? undefined : TOOL_EDITOR_BODY_CLASSES}
       actions={
-        <Show when={!props.isExample && !props.error && props.value}>
-          {props.actions ?? (
-            <CopyButton text={props.value} label={props.copyLabel ?? "Copy output"} />
-          )}
-        </Show>
+        <>
+          <ToolExampleNotice when={!!props.isExample && props.showExampleNotice !== false} />
+          <Show when={!props.isExample && !props.error && props.value}>
+            {props.actions ?? (
+              <CopyButton text={props.value} label={props.copyLabel ?? "Copy output"} />
+            )}
+          </Show>
+        </>
       }
     >
       <Show

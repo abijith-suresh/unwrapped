@@ -20,14 +20,20 @@ export default function JsonToYamlTool() {
   return (
     <ToolContainer>
       <ToolTransformWorkspace
-        inputLabel="JSON document"
-        value={input()}
-        onInput={setInput}
-        placeholder={EXAMPLE_JSON}
-        output={output()}
-        isExample={isExample()}
-        error={error()}
-        copyLabel="Copy YAML"
+        input={{
+          label: "JSON document",
+          value: input(),
+          onInput: setInput,
+          placeholder: EXAMPLE_JSON,
+          name: "source",
+        }}
+        output={{
+          title: "Output",
+          value: output(),
+          isExample: isExample(),
+          error: error(),
+          copyLabel: "Copy YAML",
+        }}
       />
     </ToolContainer>
   );

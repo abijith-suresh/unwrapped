@@ -1,12 +1,11 @@
 import { createMemo, createSignal, For, Show } from "solid-js";
 import CopyButton from "@/components/CopyButton";
-import Card from "@/components/primitives/solid/Card";
 import Input from "@/components/primitives/solid/Input";
-import Label from "@/components/primitives/solid/Label";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
+import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
 import ToolPanel from "@/components/tool/ToolPanel";
 import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
 import { CRON_FIELD_SPECS, SUPPORTED_CRON_SYNTAX } from "@/lib/cron";
@@ -128,68 +127,53 @@ export default function CronTool() {
           })()}
         </ToolStatusMessage>
       </ToolPanel>
-      <div class="flex flex-col gap-1.5">
-        <Input
-          label="Cron expression"
-          name="cron-expression"
-          autocomplete="off"
-          type="text"
-          value={input()}
-          onInput={setInput}
-          placeholder={EXAMPLE_CRON}
-          spellcheck={false}
-          describedBy={error() ? "cron-expression-error" : undefined}
-          error={!!error()}
-        />
-      </div>
-
-      <ToolSegmentedControl
-        label="Timezone"
-        value={timeZone()}
-        onChange={setTimeZone}
-        options={[
-          { value: "local", label: "Local time" },
-          { value: "utc", label: "UTC" },
-        ]}
-      />
-
-      <ToolExampleNotice when={isExample()} />
-
-      <Show
-        when={(isExample() || input().trim()) && !error()}
-        fallback={
-          <Show when={error()}>
-            {(message) => (
-              <ToolStatusMessage id="cron-expression-error" tone="error">
-                {message()}
-              </ToolStatusMessage>
-            )}
-          </Show>
+      <ToolInspectorWorkspace
+        input={
+          <>
+            <div class="flex flex-col gap-1.5">
+              <Input
+                label="Cron expression"
+                name="cron-expression"
+                autocomplete="off"
+                type="text"
+                value={input()}
+                onInput={setInput}
+                placeholder={EXAMPLE_CRON}
+                spellcheck={false}
+                describedBy={error() ? "cron-expression-error" : undefined}
+                error={!!error()}
+              />
+            </div>
+            <ToolSegmentedControl
+              label="Timezone"
+              value={timeZone()}
+              onChange={setTimeZone}
+              options={[
+                { value: "local", label: "Local time" },
+                { value: "utc", label: "UTC" },
+              ]}
+            />
+          </>
         }
-      >
-        <Card class="flex flex-col gap-3">
-          <Label>Humanized schedule</Label>
-          <strong class="text-[var(--text-primary)] text-[1.1rem]">{description()}</strong>
-        </Card>
-
-        <Card class="flex flex-col gap-3">
-          <Label>Next runs</Label>
-          <div class="flex flex-col gap-2">
-            <For each={nextRuns()}>
-              {(run, index) => (
-                <code class="px-3 py-2.5 bg-[var(--bg-primary)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] block">
-                  {index() + 1}. {formatPreview(run, timeZone())}
-                </code>
-              )}
-            </For>
-          </div>
-        </Card>
-      </Show>
-
-      <ToolStatusMessage tone="muted">
-        Supported subset: {SUPPORTED_CRON_SYNTAX.fieldOrder.join(" ")} · operators{" "}
-        {SUPPORTED_CRON_SYNTAX.operators.join(" ")}.
-      </ToolStatusMessage>
+        isExample={isExample()}
+        error={error()}
+        errorId="cron-expression-error"
+        layout="rows"
+        fields={
+          (isExample() || input().trim()) && !error()
+            ? [
+                { label: "Humanized schedule", value: description(), copy: false },
+                {
+                  label: "Next runs",
+                  value: nextRuns()
+                    .map((run, index) => `${index + 1}. ${formatPreview(run, timeZone())}`)
+                    .join("\n"),
+                  copy: false,
+                },
+              ]
+            : []
+        }
+      />
     </ToolContainer>
   );
 }
