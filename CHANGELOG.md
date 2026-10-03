@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.0.6](https://github.com/abijith-suresh/unwrapped/compare/0.0.5...0.0.6) (2026-10-03)
+
+
+### Features
+
+* add Markdown table converter ([#257](https://github.com/abijith-suresh/unwrapped/issues/257)) ([b3eca8f](https://github.com/abijith-suresh/unwrapped/commit/b3eca8f5a2698ef998108708a858eadba10a1819))
+* add TOML formatter ([#254](https://github.com/abijith-suresh/unwrapped/issues/254)) ([76051d7](https://github.com/abijith-suresh/unwrapped/commit/76051d7b99ea3d7deb481be03cbef7e0782c4494))
+* choose a site accent when opening a visit ([#268](https://github.com/abijith-suresh/unwrapped/issues/268)) ([d66ed3f](https://github.com/abijith-suresh/unwrapped/commit/d66ed3fe5944f9d0d6d8171a28d2252652998427))
+* download tool outputs in their native formats ([#276](https://github.com/abijith-suresh/unwrapped/issues/276)) ([f00f7ed](https://github.com/abijith-suresh/unwrapped/commit/f00f7edbf7eefe7e65a28d82f6f289b0c152d0e0))
+* open outputs in compatible tools ([#277](https://github.com/abijith-suresh/unwrapped/issues/277)) ([e8f6fef](https://github.com/abijith-suresh/unwrapped/commit/e8f6feff4b9a9ce7fba2b3a088772caddd53d5fd))
+* prioritize favorites and rotate tool discovery ([#272](https://github.com/abijith-suresh/unwrapped/issues/272)) ([7edc651](https://github.com/abijith-suresh/unwrapped/commit/7edc6510d8d6beb5aa88625e011242dac5052a8a))
+* search and switch tools from any page ([#267](https://github.com/abijith-suresh/unwrapped/issues/267)) ([4bbc915](https://github.com/abijith-suresh/unwrapped/commit/4bbc915bf04d832b10742b0042e7c6c107c44747))
+
+
+### Bug Fixes
+
+* cancel worker jobs and bound regex execution ([#275](https://github.com/abijith-suresh/unwrapped/issues/275)) ([9b16279](https://github.com/abijith-suresh/unwrapped/commit/9b16279bdf1dda5640250e9940a36e694dbaa745))
+* preserve values through data transformations ([#270](https://github.com/abijith-suresh/unwrapped/issues/270)) ([adb397c](https://github.com/abijith-suresh/unwrapped/commit/adb397c859f832311ac3235c5c8ba80a5ec984e6))
+* preserve XML text and attributes when formatting ([#271](https://github.com/abijith-suresh/unwrapped/issues/271)) ([0eabddc](https://github.com/abijith-suresh/unwrapped/commit/0eabddc5df637f27fd986ad3e93c6b4cdfe09588))
+* simplify tool headers and align homepage cards ([#264](https://github.com/abijith-suresh/unwrapped/issues/264)) ([952bf88](https://github.com/abijith-suresh/unwrapped/commit/952bf883e4555ae1ffe8f266aae8fe066b2fa646))
+* use one shared width for all tool pages ([#269](https://github.com/abijith-suresh/unwrapped/issues/269)) ([2ad37f8](https://github.com/abijith-suresh/unwrapped/commit/2ad37f83c436315a64b15a2ff39e39a56b812c05))
+* use real placeholders with example tool output ([#261](https://github.com/abijith-suresh/unwrapped/issues/261)) ([f0e0512](https://github.com/abijith-suresh/unwrapped/commit/f0e05128b82ad52ba0f899d20a70c81e443b2e8c))
+
 ## [0.0.5](https://github.com/abijith-suresh/unwrapped/compare/0.0.4...0.0.5) (2026-10-01)
 
 
