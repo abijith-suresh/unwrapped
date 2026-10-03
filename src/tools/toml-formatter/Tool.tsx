@@ -34,6 +34,7 @@ export default function Tool() {
           name: "source",
         }}
         output={{
+          download: { format: "toml" },
           title: "Output",
           value: output(),
           isExample: isExample(),

@@ -62,6 +62,7 @@ export default function JsonFormatter() {
           diagnostic: diagnostic(),
         }}
         output={{
+          download: { format: "json" },
           title: "Output",
           value: result().raw,
           segments: result().segments,

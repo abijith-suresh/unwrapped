@@ -56,6 +56,7 @@ export default function YamlFormatterTool() {
           name: "source",
         }}
         output={{
+          download: { format: "yaml" },
           title: "Formatted YAML",
           value: output(),
           isExample: isExample(),

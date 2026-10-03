@@ -34,6 +34,7 @@ export default function Tool() {
           name: "source",
         }}
         output={{
+          download: { format: "css" },
           title: "Output",
           value: output(),
           isExample: isExample(),

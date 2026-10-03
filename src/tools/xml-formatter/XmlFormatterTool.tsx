@@ -46,6 +46,7 @@ export default function XmlFormatterTool() {
           name: "source",
         }}
         output={{
+          download: { format: "xml" },
           title: "Formatted XML",
           value: output(),
           isExample: isExample(),

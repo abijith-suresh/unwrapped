@@ -28,6 +28,7 @@ export default function JsonToCsvTool() {
           name: "source",
         }}
         output={{
+          download: { format: "csv" },
           title: "CSV output",
           value: output(),
           isExample: isExample(),

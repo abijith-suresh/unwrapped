@@ -4,6 +4,7 @@ import Card from "@/components/primitives/solid/Card";
 import Input from "@/components/primitives/solid/Input";
 import Label from "@/components/primitives/solid/Label";
 import ToolActionButton from "@/components/ToolActionButton";
+import ToolDownloadButton from "@/components/ToolDownloadButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolInputPanel from "@/components/tool/ToolInputPanel";
@@ -282,6 +283,18 @@ export default function RegexTester() {
                 {result().summary.emptyMatchCount} empty
                 {result().summary.emptyMatchCount === 1 ? " match" : " matches"}
               </ToolStatusMessage>
+            </Show>
+            <Show when={!isExample()}>
+              <ToolDownloadButton
+                value={JSON.stringify(
+                  { matches: result().matches, summary: result().summary },
+                  null,
+                  2
+                )}
+                format="json"
+                fileName="matches.json"
+                label="Download matches"
+              />
             </Show>
             <Show when={result().summary.firstMatchIndex !== null}>
               <ToolStatusMessage tone="muted">

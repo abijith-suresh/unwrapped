@@ -27,12 +27,15 @@ describe("shared workspaces", () => {
     expect(editor).toHaveValue("");
     expect(container.querySelector("pre")).toHaveTextContent("sample output");
     expect(queryByRole("button", { name: "Copy output" })).not.toBeInTheDocument();
+    expect(queryByRole("button", { name: "Download result" })).not.toBeInTheDocument();
     fireEvent.input(editor, { target: { value: "user text" } });
     expect(getByRole("button", { name: "Copy output" })).toBeEnabled();
+    expect(getByRole("button", { name: "Download result" })).toBeEnabled();
     fireEvent.input(editor, { target: { value: "invalid" } });
     expect(editor).toHaveAttribute("aria-invalid", "true");
     expect(editor).toHaveAttribute("aria-describedby", getByRole("alert").id);
     expect(queryByRole("button", { name: "Copy output" })).not.toBeInTheDocument();
+    expect(queryByRole("button", { name: "Download result" })).not.toBeInTheDocument();
     fireEvent.input(editor, { target: { value: "" } });
     expect(queryByRole("alert")).not.toBeInTheDocument();
     expect(getByRole("note", { name: "Example output" })).toBeInTheDocument();

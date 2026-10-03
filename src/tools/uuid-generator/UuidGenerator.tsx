@@ -1,8 +1,8 @@
 import { createSignal, For, Show } from "solid-js";
-
 import CopyButton from "@/components/CopyButton";
 import Label from "@/components/primitives/solid/Label";
 import ToolActionButton from "@/components/ToolActionButton";
+import ToolDownloadButton from "@/components/ToolDownloadButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolGeneratorWorkspace from "@/components/tool/ToolGeneratorWorkspace";
@@ -79,6 +79,11 @@ export default function UuidGenerator() {
               Uppercase
             </ToolActionButton>
 
+            <ToolDownloadButton
+              value={uuids().map(display).join("\n")}
+              fileName="uuids.txt"
+              label="Download UUIDs"
+            />
             {/* Copy all */}
             <Show when={uuids().length > 1}>
               <ToolActionButton onClick={() => void copyAll()}>Copy all</ToolActionButton>

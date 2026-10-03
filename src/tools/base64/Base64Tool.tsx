@@ -1,7 +1,7 @@
 import { createMemo, createSignal, Show } from "solid-js";
-
 import CopyButton from "@/components/CopyButton";
 import ToolActionButton from "@/components/ToolActionButton";
+import ToolDownloadButton from "@/components/ToolDownloadButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolDropZone from "@/components/tool/ToolDropZone";
@@ -156,23 +156,6 @@ export default function Base64Tool() {
     setInput(result.value);
   }
 
-  function downloadDecodedBytes() {
-    const current = decodedOutput();
-    if (!current || current.bytes.length === 0) {
-      return;
-    }
-
-    const blob = new Blob([current.bytes as unknown as BlobPart], {
-      type: "application/octet-stream",
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = current.downloadName;
-    link.click();
-    URL.revokeObjectURL(url);
-  }
-
   const fileReadErrorMessage = () => {
     const error = fileError();
     if (error?.code !== "read-failed") {
@@ -259,6 +242,7 @@ export default function Base64Tool() {
             ),
           }}
           output={{
+            download: mode() === "encode" ? { format: "base64" } : false,
             compact: true,
             title:
               mode() === "encode"
@@ -277,7 +261,16 @@ export default function Base64Tool() {
                 <Show when={!binaryOutput()}>
                   <CopyButton text={outputValue()} />
                 </Show>
-                <ToolActionButton onClick={downloadDecodedBytes}>Download file</ToolActionButton>
+                <ToolDownloadButton
+                  blob={
+                    new Blob([decodedOutput()?.bytes as unknown as BlobPart], {
+                      type: "application/octet-stream",
+                    })
+                  }
+                  fileName={decodedOutput()?.downloadName}
+                  label="Download file"
+                  compact
+                />
               </>
             ) : undefined,
           }}
