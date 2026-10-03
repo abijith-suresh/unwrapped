@@ -70,7 +70,10 @@ export default function GlobalToolSearch() {
   function onKeyDown(event: KeyboardEvent) {
     if (event.isComposing) return;
     const count = results().length;
-    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      dialog?.close();
+    } else if (event.key === "ArrowDown" || event.key === "ArrowUp") {
       event.preventDefault();
       if (count)
         setActiveIndex((index) => (index + (event.key === "ArrowDown" ? 1 : -1) + count) % count);
