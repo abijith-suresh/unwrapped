@@ -1,3 +1,4 @@
+import { createWorkerExecutor, type WorkerTransport } from "@/lib/workerExecution";
 import {
   createDiffRows,
   DIFF_CONTEXT,
@@ -24,36 +25,26 @@ export interface DiffExecutionResponse {
   mode: "sync" | "worker";
 }
 
-interface WorkerLike {
-  onerror: ((event: ErrorEvent) => void) | null;
-  onmessage: ((event: MessageEvent<DiffExecutionResponse>) => void) | null;
-  postMessage: (message: DiffExecutionRequest) => void;
-  terminate: () => void;
-}
-
-interface PendingWorkerRequest {
-  input: DiffAnalysisInput;
-  requestId: number;
-  reject: (reason?: unknown) => void;
-  resolve: (response: DiffExecutionResponse) => void;
-}
-
 export interface DiffAnalysisExecutor {
+  cancel: () => void;
   dispose: () => void;
   execute: (input: DiffAnalysisInput) => Promise<DiffExecutionResponse>;
 }
 
 export interface DiffAnalysisExecutorOptions {
-  createWorker?: () => WorkerLike | null;
-  syncExecutor?: (input: DiffAnalysisInput) => DiffAnalysisResult | Promise<DiffAnalysisResult>;
+  createWorker?: () => WorkerTransport<DiffAnalysisInput, DiffAnalysisResult> | null;
   workerThresholdChars?: number;
+  timeoutMs?: number;
 }
 
 export function shouldUseDiffWorker(
   input: Pick<DiffAnalysisInput, "original" | "modified">,
   threshold = DIFF_WORKER_THRESHOLD_CHARS
 ): boolean {
-  return input.original.length + input.modified.length >= threshold;
+  return (
+    input.original.length + input.modified.length >= threshold ||
+    input.original.split("\n").length + input.modified.split("\n").length > 200
+  );
 }
 
 export function shouldUseStructuredCompareWorker(
@@ -85,7 +76,7 @@ function analyzePlainTextDiff(input: DiffAnalysisInput): DiffAnalysisResult {
   };
 }
 
-function createBrowserWorker(): WorkerLike | null {
+function createBrowserWorker(): WorkerTransport<DiffAnalysisInput, DiffAnalysisResult> | null {
   if (typeof Worker === "undefined") {
     return null;
   }
@@ -98,132 +89,33 @@ function createBrowserWorker(): WorkerLike | null {
 export function createDiffAnalysisExecutor(
   options: DiffAnalysisExecutorOptions = {}
 ): DiffAnalysisExecutor {
-  const syncExecutor =
-    options.syncExecutor ??
-    (async (input: DiffAnalysisInput) => {
-      const { analyzeDiff } = await import("./diffAnalysis");
-      return analyzeDiff(input);
-    });
-  const createWorker = options.createWorker ?? createBrowserWorker;
   const workerThresholdChars = options.workerThresholdChars ?? DIFF_WORKER_THRESHOLD_CHARS;
-
+  const executor = createWorkerExecutor<DiffAnalysisInput, DiffAnalysisResult>({
+    createWorker: options.createWorker ?? createBrowserWorker,
+    timeoutMs: options.timeoutMs ?? WORKER_TIMEOUT_MS,
+    timeoutMessage: "The comparison took too long. Try fewer lines or a smaller document.",
+    unavailableMessage:
+      "Background comparison is unavailable. Try a smaller plain-text comparison.",
+    errorMessage: "The comparison could not be completed. Edit an input to try again.",
+  });
   let nextRequestId = 0;
-  let worker: WorkerLike | null = null;
-  const pendingRequests = new Map<number, PendingWorkerRequest>();
-
-  function createTextSyncResponse(
-    requestId: number,
-    input: DiffAnalysisInput
-  ): DiffExecutionResponse {
-    return {
-      requestId,
-      result: analyzePlainTextDiff(input),
-      mode: "sync",
-    };
-  }
-
-  async function createFullSyncResponse(
-    requestId: number,
-    input: DiffAnalysisInput
-  ): Promise<DiffExecutionResponse> {
-    return {
-      requestId,
-      result: await syncExecutor(input),
-      mode: "sync",
-    };
-  }
-
-  function resolvePendingWithSyncFallback(): void {
-    const queuedRequests = Array.from(pendingRequests.values());
-    pendingRequests.clear();
-
-    for (const request of queuedRequests) {
-      void createFullSyncResponse(request.requestId, request.input).then(
-        request.resolve,
-        request.reject
-      );
-    }
-  }
-
-  function disposeWorker(): void {
-    worker?.terminate();
-    worker = null;
-  }
-
-  function getWorker(): WorkerLike | null {
-    if (worker) {
-      return worker;
-    }
-
-    try {
-      worker = createWorker();
-    } catch {
-      worker = null;
-    }
-
-    if (!worker) {
-      return null;
-    }
-
-    worker.onmessage = (event) => {
-      const response = event.data;
-      const pendingRequest = pendingRequests.get(response.requestId);
-
-      if (!pendingRequest) {
-        return;
-      }
-
-      pendingRequests.delete(response.requestId);
-      pendingRequest.resolve({ ...response, mode: "worker" });
-    };
-
-    worker.onerror = () => {
-      disposeWorker();
-      resolvePendingWithSyncFallback();
-    };
-
-    return worker;
-  }
+  let disposed = false;
 
   return {
+    cancel: executor.cancel,
     dispose() {
-      disposeWorker();
-      resolvePendingWithSyncFallback();
+      disposed = true;
+      executor.dispose();
     },
-    execute(input) {
+    async execute(input) {
+      executor.cancel();
+      if (disposed) throw new DOMException("Executor disposed.", "AbortError");
       const requestId = ++nextRequestId;
       const needsWorker =
         shouldUseStructuredCompareWorker(input) || shouldUseDiffWorker(input, workerThresholdChars);
-
-      if (!needsWorker) {
-        return Promise.resolve(createTextSyncResponse(requestId, input));
-      }
-
-      const activeWorker = getWorker();
-
-      if (!activeWorker) {
-        return createFullSyncResponse(requestId, input);
-      }
-
-      return new Promise((resolve, reject) => {
-        pendingRequests.set(requestId, { input, requestId, resolve, reject });
-
-        const timeoutId = setTimeout(() => {
-          if (pendingRequests.has(requestId)) {
-            pendingRequests.delete(requestId);
-            void createFullSyncResponse(requestId, input).then(resolve, reject);
-          }
-        }, WORKER_TIMEOUT_MS);
-
-        try {
-          activeWorker.postMessage({ requestId, input });
-        } catch {
-          clearTimeout(timeoutId);
-          pendingRequests.delete(requestId);
-          disposeWorker();
-          void createFullSyncResponse(requestId, input).then(resolve, reject);
-        }
-      });
+      if (!needsWorker) return { requestId, result: analyzePlainTextDiff(input), mode: "sync" };
+      const response = await executor.execute(input);
+      return { requestId, result: response.result, mode: "worker" };
     },
   };
 }

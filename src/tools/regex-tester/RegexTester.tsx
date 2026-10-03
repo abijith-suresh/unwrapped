@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, onCleanup, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, For, onCleanup, Show } from "solid-js";
 import CopyButton from "@/components/CopyButton";
 import Card from "@/components/primitives/solid/Card";
 import Input from "@/components/primitives/solid/Input";
@@ -12,11 +12,13 @@ import ToolOutputPanel from "@/components/tool/ToolOutputPanel";
 import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
 import { EXAMPLE_REGEX_PATTERN, EXAMPLE_REGEX_REPLACEMENT, EXAMPLE_TEXT } from "@/lib/exampleData";
 import {
-  buildRegexReplaceResult,
-  buildRegexResult,
+  analyzeRegex,
   type FlagKey,
   type MatchResult,
+  type RegexAnalysisResult,
 } from "@/lib/regex";
+import { createRegexAnalysisExecutor } from "@/lib/regexExecution";
+import { WorkerExecutionError } from "@/lib/workerExecution";
 
 interface Flag {
   key: FlagKey;
@@ -39,13 +41,84 @@ export default function RegexTester() {
   const [flags, setFlags] = createSignal<Set<FlagKey>>(new Set(["g"]));
   const [input, setInput] = createSignal("");
   const [replacement, setReplacement] = createSignal("");
+  const executor = createRegexAnalysisExecutor();
   let debounceTimer: ReturnType<typeof setTimeout> | undefined;
-  onCleanup(() => clearTimeout(debounceTimer));
-  const [debouncedInput, setDebouncedInput] = createSignal("");
+  let run = 0;
+  const [pending, setPending] = createSignal(false);
+  const [cancelled, setCancelled] = createSignal(false);
+  const emptyAnalysis: RegexAnalysisResult = {
+    match: {
+      matches: [],
+      highlighted: [],
+      error: null,
+      summary: { captureGroupCount: 0, emptyMatchCount: 0, firstMatchIndex: null },
+    },
+    replacement: { output: "", replacements: 0 },
+  };
+  const [analysis, setAnalysis] = createSignal(emptyAnalysis);
   const isExample = () => pattern() === "" && input() === "" && replacement() === "";
   const effectivePattern = () => (isExample() ? EXAMPLE_REGEX_PATTERN : pattern());
-  const effectiveInput = () =>
-    isExample() ? EXAMPLE_TEXT : debouncedInput() === input() ? debouncedInput() : "";
+  const example = createMemo(() =>
+    analyzeRegex({
+      pattern: EXAMPLE_REGEX_PATTERN,
+      input: EXAMPLE_TEXT,
+      flags: [...flags()],
+      replacement: EXAMPLE_REGEX_REPLACEMENT,
+      mode: mode(),
+    })
+  );
+
+  function cancelMatching() {
+    run++;
+    clearTimeout(debounceTimer);
+    executor.cancel();
+    setPending(false);
+    setCancelled(true);
+    setAnalysis(emptyAnalysis);
+  }
+
+  createEffect(() => {
+    const request = {
+      pattern: pattern(),
+      flags: [...flags()],
+      input: input(),
+      replacement: replacement(),
+      mode: mode(),
+    };
+    cancelMatching();
+    setCancelled(false);
+    if (isExample()) return;
+    const currentRun = run;
+    setPending(true);
+    debounceTimer = setTimeout(() => {
+      void executor
+        .execute(request)
+        .then((response) => {
+          if (run !== currentRun) return;
+          setAnalysis(response.result);
+          setPending(false);
+        })
+        .catch((error: unknown) => {
+          if (run !== currentRun) return;
+          setAnalysis({
+            ...emptyAnalysis,
+            match: {
+              ...emptyAnalysis.match,
+              error:
+                error instanceof WorkerExecutionError
+                  ? error.message
+                  : "Matching could not be completed.",
+            },
+          });
+          setPending(false);
+        });
+    }, 150);
+  });
+  onCleanup(() => {
+    run++;
+    clearTimeout(debounceTimer);
+    executor.dispose();
+  });
 
   function toggleFlag(key: FlagKey) {
     setFlags((prev) => {
@@ -59,16 +132,9 @@ export default function RegexTester() {
     });
   }
 
-  const result = createMemo(() => buildRegexResult(effectivePattern(), flags(), effectiveInput()));
+  const result = () => (isExample() ? example() : analysis()).match;
   const matchCount = createMemo(() => result().matches.length);
-  const replaceResult = createMemo(() =>
-    buildRegexReplaceResult(
-      effectivePattern(),
-      flags(),
-      effectiveInput(),
-      isExample() ? EXAMPLE_REGEX_REPLACEMENT : replacement()
-    )
-  );
+  const replaceResult = () => (isExample() ? example() : analysis()).replacement;
   const replaceOutput = createMemo(() => {
     const current = replaceResult();
     return "error" in current ? "" : current.output;
@@ -163,11 +229,7 @@ export default function RegexTester() {
                 name="regex-test-string"
                 autocomplete="off"
                 value={input()}
-                onInput={(v) => {
-                  setInput(v);
-                  clearTimeout(debounceTimer);
-                  debounceTimer = setTimeout(() => setDebouncedInput(v), 250);
-                }}
+                onInput={setInput}
                 placeholder={EXAMPLE_TEXT}
                 rows={6}
                 spellcheck={false}
@@ -186,10 +248,25 @@ export default function RegexTester() {
           </>
         }
         isExample={isExample()}
+        status={
+          <>
+            <Show when={cancelled()}>
+              <ToolStatusMessage>
+                Matching cancelled. Edit the pattern or test string to try again.
+              </ToolStatusMessage>
+            </Show>
+            <Show when={pending()}>
+              <div class="flex flex-wrap items-center gap-2" role="status">
+                <span class="text-sm text-[var(--text-muted)]">Matching…</span>
+                <ToolActionButton onClick={cancelMatching}>Cancel matching</ToolActionButton>
+              </div>
+            </Show>
+          </>
+        }
         error={result().error}
         errorId="regex-error"
       >
-        <Show when={effectivePattern() && !result().error}>
+        <Show when={!pending() && !cancelled() && effectivePattern() && !result().error}>
           <div class="flex gap-3 flex-wrap">
             <ToolStatusMessage tone={matchCount() > 0 ? "success" : "muted"}>
               {matchCount() === 0
@@ -219,7 +296,7 @@ export default function RegexTester() {
             <div class="flex items-center justify-between px-4 py-2 border-b border-[var(--border)]">
               <Label>{mode() === "replace" ? "Match preview" : "Matches"}</Label>
               <Show
-                when={effectivePattern() && !result().error}
+                when={!pending() && !cancelled() && effectivePattern() && !result().error}
                 fallback={<span class="text-xs text-[var(--text-muted)]">—</span>}
               >
                 <span
@@ -258,6 +335,8 @@ export default function RegexTester() {
           when={
             mode() === "replace" &&
             (isExample() || input().trim()) &&
+            !pending() &&
+            !cancelled() &&
             !result().error &&
             !("error" in replaceResult())
           }

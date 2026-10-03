@@ -33,6 +33,7 @@ import { type Language, SUPPORTED_LANGUAGES } from "@/lib/language";
 import { detectLanguage } from "@/lib/languageDetection";
 import { DIFF_SESSION_STORAGE_KEY } from "@/lib/localPersistence";
 import { clearSessionState, loadSessionState, saveSessionState } from "@/lib/session";
+import { WorkerExecutionError } from "@/lib/workerExecution";
 import {
   DEFAULT_DIFF_SESSION_STATE,
   DIFF_SESSION_VERSION,
@@ -154,6 +155,7 @@ export default function DiffTool() {
   const [rightLang, setRightLang] = createSignal<Language>("text");
   const [changesOnly, setChangesOnly] = createSignal(true);
   const [pending, setPending] = createSignal(false);
+  const [cancelled, setCancelled] = createSignal(false);
   const [currentChangeIdx, setCurrentChangeIdx] = createSignal(-1);
   const [changeAnnouncement, setChangeAnnouncement] = createSignal("");
   const [analysisError, setAnalysisError] = createSignal<string | null>(null);
@@ -230,6 +232,8 @@ export default function DiffTool() {
     const rl = example ? "text" : rightLang();
 
     latestAnalysisRun++;
+    diffExecutor.cancel();
+    setCancelled(false);
     setAnalysis(null);
 
     if (debounceTimer !== null) clearTimeout(debounceTimer);
@@ -272,6 +276,7 @@ export default function DiffTool() {
     }
 
     setPending(true);
+    setCancelled(false);
     setAnalysisError(null);
     setCurrentChangeIdx(-1);
     setChangeAnnouncement("");
@@ -296,7 +301,7 @@ export default function DiffTool() {
           setAnalysisError(null);
         });
       })
-      .catch(() => {
+      .catch((error: unknown) => {
         if (runId !== latestAnalysisRun) {
           return;
         }
@@ -304,7 +309,11 @@ export default function DiffTool() {
         batch(() => {
           setAnalysis(null);
           setPending(false);
-          setAnalysisError("The comparison could not be completed. Please try again.");
+          setAnalysisError(
+            error instanceof WorkerExecutionError
+              ? error.message
+              : "The comparison could not be completed. Edit an input to try again."
+          );
         });
       });
   });
@@ -337,7 +346,18 @@ export default function DiffTool() {
     });
   });
 
+  function cancelComparison() {
+    latestAnalysisRun++;
+    if (debounceTimer !== null) clearTimeout(debounceTimer);
+    diffExecutor.cancel();
+    setPending(false);
+    setCancelled(true);
+    setAnalysis(null);
+    setChangeAnnouncement("Comparison cancelled. Edit an input to compare again.");
+  }
+
   onCleanup(() => {
+    latestAnalysisRun++;
     if (debounceTimer !== null) clearTimeout(debounceTimer);
     diffExecutor.dispose();
   });
@@ -514,6 +534,7 @@ export default function DiffTool() {
               >
                 Comparing…
               </span>
+              <ToolActionButton onClick={cancelComparison}>Cancel comparison</ToolActionButton>
             </Show>
 
             {/* Identical label */}
@@ -569,6 +590,11 @@ export default function DiffTool() {
             </span>
           </div>
 
+          <Show when={cancelled()}>
+            <ToolStatusMessage>
+              Comparison cancelled. Edit an input to compare again.
+            </ToolStatusMessage>
+          </Show>
           <Show when={analysisError()}>
             <ToolStatusMessage tone="error">{analysisError()}</ToolStatusMessage>
           </Show>
