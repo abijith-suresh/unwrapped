@@ -106,7 +106,7 @@ describe("diffExecution", () => {
       changesOnly: true,
     });
 
-    worker.onerror?.(new ErrorEvent("error"));
+    worker.onerror?.(new Event("error") as ErrorEvent);
 
     await expect(comparison).rejects.toBe(expectedError);
   });

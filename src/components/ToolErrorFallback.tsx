@@ -1,15 +1,9 @@
+import { getToolErrorMessage } from "@/lib/toolError";
+
 interface ToolErrorFallbackProps {
   toolName: string;
   onRetry?: () => void;
   error?: unknown;
-}
-
-export function getToolErrorMessage(error: unknown, isProd: boolean): string | null {
-  if (isProd) {
-    return null;
-  }
-
-  return error instanceof Error ? error.message : "Unknown tool error";
 }
 
 function getErrorMessage(error: unknown): string | null {

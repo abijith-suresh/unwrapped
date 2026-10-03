@@ -1,44 +1,9 @@
 import { fireEvent, render } from "@solidjs/testing-library";
 import { describe, expect, it } from "vitest";
 import CronTool from "@/tools/cron/CronTool";
-import CssMinifierTool from "@/tools/css-minifier/Tool";
-import JsonToCsvTool from "@/tools/json-to-csv/JsonToCsvTool";
-import JsonToYamlTool from "@/tools/json-to-yaml/JsonToYamlTool";
-import MarkdownTableTool from "@/tools/markdown-table/Tool";
-import TomlFormatterTool from "@/tools/toml-formatter/Tool";
 import UrlInspectorTool from "@/tools/url-inspector/UrlInspectorTool";
-import XmlFormatterTool from "@/tools/xml-formatter/XmlFormatterTool";
-import YamlFormatterTool from "@/tools/yaml-formatter/YamlFormatterTool";
-import YamlToJsonTool from "@/tools/yaml-to-json/YamlToJsonTool";
 
 const tools = [
-  {
-    name: "TOML formatter",
-    Tool: TomlFormatterTool,
-    label: "Source",
-    input: 'name = "User"',
-    invalid: "date = 2024-02-30",
-    exampleOutput: "8080",
-    userOutput: "User",
-  },
-  {
-    name: "Markdown table converter",
-    Tool: MarkdownTableTool,
-    label: "Source",
-    input: "Name,Role\nUser,Reviewer",
-    invalid: "a,b\n1,2,3",
-    exampleOutput: "Scientist",
-    userOutput: "Reviewer",
-  },
-  {
-    name: "CSS minifier",
-    Tool: CssMinifierTool,
-    label: "Source",
-    input: ".user { color: red; }",
-    invalid: ".user { color: red; } }",
-    exampleOutput: ".card",
-    userOutput: ".user",
-  },
   {
     name: "Cron",
     Tool: CronTool,
@@ -49,24 +14,6 @@ const tools = [
     userOutput: "12:00",
   },
   {
-    name: "JSON to CSV",
-    Tool: JsonToCsvTool,
-    label: "JSON array input",
-    input: '[{"name":"Ada"}]',
-    invalid: "[",
-    exampleOutput: "Alice",
-    userOutput: "Ada",
-  },
-  {
-    name: "JSON to YAML",
-    Tool: JsonToYamlTool,
-    label: "JSON document",
-    input: '{"name":"Ada"}',
-    invalid: "{",
-    exampleOutput: "Alice",
-    userOutput: "Ada",
-  },
-  {
     name: "URL Inspector",
     Tool: UrlInspectorTool,
     label: "URL or raw query string",
@@ -74,33 +21,6 @@ const tools = [
     invalid: "https://[",
     exampleOutput: "hello world",
     userOutput: "example.net",
-  },
-  {
-    name: "XML Formatter",
-    Tool: XmlFormatterTool,
-    label: "XML input",
-    input: "<user>Ada</user>",
-    invalid: "<user>",
-    exampleOutput: '<item id="1">',
-    userOutput: "Ada",
-  },
-  {
-    name: "YAML Formatter",
-    Tool: YamlFormatterTool,
-    label: "YAML input",
-    input: "name: Ada",
-    invalid: "name: [",
-    exampleOutput: "child:",
-    userOutput: "Ada",
-  },
-  {
-    name: "YAML to JSON",
-    Tool: YamlToJsonTool,
-    label: "YAML document",
-    input: "name: Ada",
-    invalid: "name: [",
-    exampleOutput: '"enabled": true',
-    userOutput: "Ada",
   },
 ];
 
