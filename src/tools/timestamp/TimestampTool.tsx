@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, Show } from "solid-js";
+import { batch, createMemo, createSignal, createUniqueId, For, Show } from "solid-js";
 
 import CopyButton from "@/components/CopyButton";
 import Card from "@/components/primitives/solid/Card";
@@ -8,67 +8,92 @@ import Select from "@/components/primitives/solid/Select";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
+import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
+import ToolToolbar from "@/components/tool/ToolToolbar";
 import { EXAMPLE_EPOCH } from "@/lib/exampleData";
 import {
   DEFAULT_ZONES,
+  type EpochUnit,
+  formatEpoch,
   formatInZone,
   getDerivedTimestampFormats,
   localInputToMs,
   msToLocalInput,
+  type ParsedEpoch,
   PRESET_ZONES,
   parseEpoch,
   type TimeZoneOption,
 } from "@/lib/timestamp";
 
-// ---------------------------------------------------------------------------
-// Main component
-// ---------------------------------------------------------------------------
-
 export default function TimestampTool() {
   const [epochInput, setEpochInput] = createSignal("");
   const [datetimeInput, setDatetimeInput] = createSignal("");
+  const [unit, setUnit] = createSignal<EpochUnit>("auto");
+  const [source, setSource] = createSignal<"epoch" | "datetime">("epoch");
   const [zones, setZones] = createSignal<TimeZoneOption[]>(DEFAULT_ZONES);
+  const errorId = createUniqueId();
   const isExample = () => epochInput() === "" && datetimeInput() === "";
 
-  const parsed = createMemo((): { ms: number; unit: "s" | "ms" } | null => {
+  const parsed = createMemo((): ParsedEpoch => {
     if (isExample()) return parseEpoch(EXAMPLE_EPOCH);
-    // Prefer epoch input; fall back to datetime-local
-    const raw = epochInput().trim();
-    if (raw) return parseEpoch(raw);
-    const dtMs = localInputToMs(datetimeInput());
-    if (dtMs !== null) return { ms: dtMs, unit: "ms" };
-    return null;
+    if (source() === "epoch") return parseEpoch(epochInput(), unit());
+    const ms = localInputToMs(datetimeInput());
+    return ms === null
+      ? { error: "Enter a valid local date and time within the supported Date range." }
+      : { ms, unit: "ms" };
   });
-
-  const date = createMemo((): Date | null => {
-    const p = parsed();
-    if (!p) return null;
-    const d = new Date(p.ms);
-    return Number.isNaN(d.getTime()) ? null : d;
+  const error = () => {
+    const result = parsed();
+    return "error" in result ? result.error : null;
+  };
+  const interpretedUnit = () => {
+    const result = parsed();
+    return "unit" in result ? result.unit : null;
+  };
+  const date = createMemo(() => {
+    const result = parsed();
+    return "error" in result ? null : new Date(result.ms);
   });
 
   function useNow() {
-    const now = Date.now();
-    setEpochInput(String(Math.floor(now / 1000)));
-    setDatetimeInput(msToLocalInput(now));
+    handleEpochInput(formatEpoch(Date.now(), unit()));
   }
 
   function reset() {
-    setEpochInput("");
-    setDatetimeInput("");
-    setZones(DEFAULT_ZONES);
+    batch(() => {
+      setEpochInput("");
+      setDatetimeInput("");
+      setUnit("auto");
+      setSource("epoch");
+      setZones(DEFAULT_ZONES);
+    });
   }
 
   function handleEpochInput(value: string) {
-    setEpochInput(value);
-    const p = parseEpoch(value);
-    setDatetimeInput(p ? msToLocalInput(p.ms) : "");
+    const result = parseEpoch(value, unit());
+    batch(() => {
+      setSource("epoch");
+      setEpochInput(value);
+      setDatetimeInput("error" in result ? "" : msToLocalInput(result.ms));
+    });
   }
 
   function handleDatetimeInput(value: string) {
-    setDatetimeInput(value);
     const ms = localInputToMs(value);
-    setEpochInput(ms !== null ? String(Math.floor(ms / 1000)) : "");
+    batch(() => {
+      setSource("datetime");
+      setDatetimeInput(value);
+      setEpochInput(ms === null ? "" : formatEpoch(ms, unit()));
+    });
+  }
+
+  function changeUnit(value: EpochUnit) {
+    batch(() => {
+      setUnit(value);
+      if (isExample()) return;
+      if (source() === "epoch") handleEpochInput(epochInput());
+      else handleDatetimeInput(datetimeInput());
+    });
   }
 
   function changeZone(index: number, tz: string) {
@@ -86,7 +111,7 @@ export default function TimestampTool() {
     return [
       {
         label: "Epoch (seconds)",
-        value: String(Math.floor(current.getTime() / 1000)),
+        value: formatEpoch(current.getTime(), "s"),
         copyLabel: "Copy epoch seconds",
       },
       {
@@ -94,7 +119,6 @@ export default function TimestampTool() {
         value: String(current.getTime()),
         copyLabel: "Copy epoch milliseconds",
       },
-      { label: "ISO 8601", value: current.toISOString() },
       ...getDerivedTimestampFormats(current),
     ];
   });
@@ -102,49 +126,72 @@ export default function TimestampTool() {
     <ToolContainer>
       <ToolInspectorWorkspace
         isExample={isExample()}
+        error={error()}
+        errorId={errorId}
         input={
-          <div class="grid grid-cols-1 gap-4 items-end sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
-            {/* Epoch input */}
-            <div class="flex flex-col gap-1.5">
-              <Input
-                label="Unix timestamp"
-                name="unix-timestamp"
-                autocomplete="off"
-                inputmode="numeric"
-                type="text"
-                value={epochInput()}
-                onInput={handleEpochInput}
-                placeholder={EXAMPLE_EPOCH}
+          <div class="flex flex-col gap-4">
+            <ToolToolbar
+              label="Timestamp controls"
+              actions={
+                <>
+                  <ToolActionButton onClick={useNow} variant="primary">
+                    Use now
+                  </ToolActionButton>
+                  <ToolActionButton onClick={reset} variant="ghost">
+                    Reset
+                  </ToolActionButton>
+                </>
+              }
+            >
+              <ToolSegmentedControl<EpochUnit>
+                label="Timestamp unit"
+                value={unit()}
+                onChange={changeUnit}
+                options={[
+                  { value: "auto", label: "Auto" },
+                  { value: "s", label: "Seconds" },
+                  { value: "ms", label: "Milliseconds" },
+                ]}
               />
-              <Show when={!isExample() && parsed()}>
-                {(p) => (
+            </ToolToolbar>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div class="flex flex-col gap-1.5">
+                <Input
+                  label="Unix timestamp"
+                  name="unix-timestamp"
+                  autocomplete="off"
+                  inputmode="decimal"
+                  type="text"
+                  value={epochInput()}
+                  onInput={handleEpochInput}
+                  placeholder={EXAMPLE_EPOCH}
+                  error={source() === "epoch" && !!error()}
+                  describedBy={source() === "epoch" && error() ? errorId : undefined}
+                />
+                <Show when={!isExample() && source() === "epoch" && date()}>
                   <span class="text-xs text-[var(--text-muted)]">
-                    Detected: {p().unit === "s" ? "seconds" : "milliseconds"}
+                    Interpreted as {interpretedUnit() === "s" ? "seconds" : "milliseconds"}
                   </span>
-                )}
-              </Show>
-            </div>
-
-            <div class="flex gap-2 items-center">
-              <ToolActionButton onClick={useNow} variant="primary">
-                Use now
-              </ToolActionButton>
-              <ToolActionButton onClick={reset} variant="ghost">
-                Reset
-              </ToolActionButton>
-            </div>
-
-            {/* Datetime-local input */}
-            <div class="flex flex-col gap-1.5">
+                </Show>
+              </div>
               <Input
                 label="Date & time (local)"
                 name="local-datetime"
                 autocomplete="off"
                 type="datetime-local"
+                step="0.001"
                 value={datetimeInput()}
                 onInput={handleDatetimeInput}
+                error={source() === "datetime" && !!error()}
+                describedBy={source() === "datetime" && error() ? errorId : undefined}
               />
             </div>
+            <Show when={unit() === "auto"}>
+              <p class="text-xs text-[var(--text-muted)]">
+                Auto uses milliseconds when the absolute value exceeds 1,000,000,000,000; otherwise
+                seconds. Choose units for early or short millisecond timestamps.
+              </p>
+            </Show>
           </div>
         }
         fields={fields()}
