@@ -2,6 +2,7 @@ import { createMemo, createSignal } from "solid-js";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolInputPanel from "@/components/tool/ToolInputPanel";
 import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
+import { useToolHandoff } from "@/components/toolHandoff";
 import { convertCaseVariants } from "@/lib/caseConverter";
 import { EXAMPLE_CASE_TEXT } from "@/lib/exampleData";
 
@@ -21,6 +22,7 @@ const VARIANT_LABELS = [
 
 export default function CaseConverter() {
   const [input, setInput] = createSignal("");
+  useToolHandoff("case-converter", (handoff) => setInput(handoff.value));
   const isExample = () => input() === "";
   const variants = createMemo(() => convertCaseVariants(input() || EXAMPLE_CASE_TEXT));
   const hasInput = createMemo(() => input().trim().length > 0);

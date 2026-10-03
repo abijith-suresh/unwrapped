@@ -5,12 +5,14 @@ import Input from "@/components/primitives/solid/Input";
 import Label from "@/components/primitives/solid/Label";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolDownloadButton from "@/components/ToolDownloadButton";
+import ToolHandoffButton from "@/components/ToolHandoffButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolInputPanel from "@/components/tool/ToolInputPanel";
 import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
 import ToolOutputPanel from "@/components/tool/ToolOutputPanel";
 import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
+import { useToolHandoff } from "@/components/toolHandoff";
 import { EXAMPLE_REGEX_PATTERN, EXAMPLE_REGEX_REPLACEMENT, EXAMPLE_TEXT } from "@/lib/exampleData";
 import {
   analyzeRegex,
@@ -41,6 +43,7 @@ export default function RegexTester() {
   const [pattern, setPattern] = createSignal("");
   const [flags, setFlags] = createSignal<Set<FlagKey>>(new Set(["g"]));
   const [input, setInput] = createSignal("");
+  useToolHandoff("regex-tester", (handoff) => setInput(handoff.value));
   const [replacement, setReplacement] = createSignal("");
   const executor = createRegexAnalysisExecutor();
   let debounceTimer: ReturnType<typeof setTimeout> | undefined;
@@ -156,6 +159,10 @@ export default function RegexTester() {
   });
 
   const hasCaptures = createMemo(() => result().matches.some((match) => match.groups.length > 0));
+
+  const matchesReport = createMemo(() =>
+    JSON.stringify({ matches: result().matches, summary: result().summary }, null, 2)
+  );
 
   return (
     <ToolContainer>
@@ -286,15 +293,12 @@ export default function RegexTester() {
             </Show>
             <Show when={!isExample()}>
               <ToolDownloadButton
-                value={JSON.stringify(
-                  { matches: result().matches, summary: result().summary },
-                  null,
-                  2
-                )}
+                value={matchesReport()}
                 format="json"
                 fileName="matches.json"
                 label="Download matches"
               />
+              <ToolHandoffButton value={matchesReport()} format="json" />
             </Show>
             <Show when={result().summary.firstMatchIndex !== null}>
               <ToolStatusMessage tone="muted">

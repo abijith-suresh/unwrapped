@@ -1,11 +1,13 @@
 import { createMemo, createSignal } from "solid-js";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolTransformWorkspace from "@/components/tool/ToolTransformWorkspace";
+import { useToolHandoff } from "@/components/toolHandoff";
 import { EXAMPLE_YAML } from "@/lib/exampleData";
 import { convertYamlToJson } from "@/lib/yamlToJson";
 
 export default function YamlToJsonTool() {
   const [input, setInput] = createSignal("");
+  useToolHandoff("yaml-to-json", (handoff) => setInput(handoff.value));
   const isExample = () => input() === "";
   const result = createMemo(() => convertYamlToJson(input() || EXAMPLE_YAML));
   const output = createMemo(() => {

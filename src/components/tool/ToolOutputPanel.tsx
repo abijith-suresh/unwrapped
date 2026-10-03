@@ -1,6 +1,7 @@
 import { type JSX, Show } from "solid-js";
 import CopyButton from "@/components/CopyButton";
 import ToolDownloadButton from "@/components/ToolDownloadButton";
+import ToolHandoffButton from "@/components/ToolHandoffButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolCodeBlock from "@/components/tool/ToolCodeBlock";
 import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
@@ -9,7 +10,7 @@ import ToolPanel, {
   TOOL_EDITOR_PANEL_CLASSES,
 } from "@/components/tool/ToolPanel";
 import type { CodeHighlightSegment } from "@/lib/codeHighlight";
-import type { TextDownloadOptions } from "@/lib/download";
+import type { TextDownloadOptions, TextFormat } from "@/lib/download";
 
 export interface ToolOutputPanelProps {
   title: string;
@@ -20,6 +21,7 @@ export interface ToolOutputPanelProps {
   errorId?: string;
   copyLabel?: string;
   download?: TextDownloadOptions | false;
+  handoff?: TextFormat | false;
   actions?: JSX.Element;
   compact?: boolean;
   segments?: readonly CodeHighlightSegment[];
@@ -44,6 +46,17 @@ export default function ToolOutputPanel(props: ToolOutputPanelProps) {
                 {...(props.download || {})}
                 compact
                 label={`Download ${props.title.toLowerCase()}`}
+              />
+            </Show>
+            <Show when={props.handoff !== false}>
+              <ToolHandoffButton
+                value={props.value}
+                format={
+                  props.handoff ||
+                  (props.download === false ? undefined : props.download?.format) ||
+                  "text"
+                }
+                compact
               />
             </Show>
           </Show>

@@ -3,11 +3,13 @@ import ToolActionButton from "@/components/ToolActionButton";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolToolbar from "@/components/tool/ToolToolbar";
 import ToolTransformWorkspace from "@/components/tool/ToolTransformWorkspace";
+import { useToolHandoff } from "@/components/toolHandoff";
 import { minifyCss } from "@/lib/cssMinifier";
 import { EXAMPLE_CSS } from "@/lib/exampleData";
 
 export default function Tool() {
   const [input, setInput] = createSignal("");
+  useToolHandoff("css-minifier", (handoff) => setInput(handoff.value));
   const isExample = () => input() === "";
 
   const result = createMemo(() => minifyCss(input() || EXAMPLE_CSS));

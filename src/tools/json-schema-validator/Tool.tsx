@@ -4,6 +4,7 @@ import ToolComparerWorkspace from "@/components/tool/ToolComparerWorkspace";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolInputPanel from "@/components/tool/ToolInputPanel";
 import ToolOutputPanel from "@/components/tool/ToolOutputPanel";
+import { useToolHandoff } from "@/components/toolHandoff";
 import { EXAMPLE_JSON_SCHEMA, EXAMPLE_SCHEMA_DOCUMENT } from "@/lib/exampleData";
 import { validateJsonSchema } from "@/lib/jsonSchema";
 import type { TextTransformResult } from "@/lib/text";
@@ -23,6 +24,11 @@ export default function Tool() {
     const current = displayedResult();
     return current && !current.ok ? current.error : "";
   };
+  useToolHandoff("json-schema-validator", (handoff) => {
+    setInput(handoff.value);
+    setResult(null);
+  });
+
   return (
     <ToolContainer>
       <ToolComparerWorkspace

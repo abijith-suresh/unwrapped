@@ -1,7 +1,7 @@
 import { createMemo, createSignal } from "solid-js";
-
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolTransformWorkspace from "@/components/tool/ToolTransformWorkspace";
+import { useToolHandoff } from "@/components/toolHandoff";
 import { EXAMPLE_TEXT } from "@/lib/exampleData";
 import { decodeUrlText, encodeUrlText } from "@/lib/urlEncoding";
 
@@ -22,6 +22,8 @@ export default function UrlEncoderTool() {
     const current = decodedOutput();
     return current.ok ? "" : current.error;
   });
+
+  useToolHandoff("url-encoder", (handoff) => setPlainText(handoff.value));
 
   return (
     <ToolContainer>

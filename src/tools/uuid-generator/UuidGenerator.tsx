@@ -3,6 +3,7 @@ import CopyButton from "@/components/CopyButton";
 import Label from "@/components/primitives/solid/Label";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolDownloadButton from "@/components/ToolDownloadButton";
+import ToolHandoffButton from "@/components/ToolHandoffButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolGeneratorWorkspace from "@/components/tool/ToolGeneratorWorkspace";
@@ -84,6 +85,7 @@ export default function UuidGenerator() {
               fileName="uuids.txt"
               label="Download UUIDs"
             />
+            <ToolHandoffButton value={uuids().map(display).join("\n")} />
             {/* Copy all */}
             <Show when={uuids().length > 1}>
               <ToolActionButton onClick={() => void copyAll()}>Copy all</ToolActionButton>

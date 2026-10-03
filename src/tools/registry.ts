@@ -1,3 +1,5 @@
+import type { TextFormat } from "@/lib/textFormat";
+
 export type ToolCategory =
   | "encoding"
   | "security"
@@ -35,6 +37,7 @@ export interface Tool {
   componentPath: string;
   accent: ToolAccent;
   help?: readonly string[];
+  inputFormats?: readonly TextFormat[];
 }
 
 export const tools: Tool[] = [
@@ -52,6 +55,7 @@ export const tools: Tool[] = [
   },
   {
     id: "diff",
+    inputFormats: ["text"],
     help: [
       "Large and structured comparisons run in a background worker with a ten-second timeout. Edit an input to retry after cancellation or timeout.",
     ],
@@ -80,6 +84,7 @@ export const tools: Tool[] = [
   },
   {
     id: "base64",
+    inputFormats: ["text", "base64"],
     name: "Base64",
     description: "Encode and decode Base64 strings. Supports file drag-and-drop.",
     category: "encoding",
@@ -91,6 +96,7 @@ export const tools: Tool[] = [
   },
   {
     id: "json-schema-validator",
+    inputFormats: ["json"],
     help: [
       "Supports JSON Schema draft-07, standard formats, strict schema checks and local references. External schemas are never fetched.",
       "Data is not coerced or changed. Each input is limited to 100,000 characters.",
@@ -106,6 +112,7 @@ export const tools: Tool[] = [
   },
   {
     id: "json-formatter",
+    inputFormats: ["json"],
     name: "JSON Formatter",
     description: "Format and minify JSON with syntax highlighting.",
     category: "data",
@@ -117,6 +124,7 @@ export const tools: Tool[] = [
   },
   {
     id: "hash-generator",
+    inputFormats: ["text"],
     name: "Hash Generator",
     description: "Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes from text.",
     category: "security",
@@ -152,6 +160,7 @@ export const tools: Tool[] = [
   },
   {
     id: "regex-tester",
+    inputFormats: ["text"],
     help: [
       "User patterns run in a background worker with a two-second timeout and a 10,000-match limit. Edit an input to retry after cancellation or timeout.",
     ],
@@ -166,6 +175,7 @@ export const tools: Tool[] = [
   },
   {
     id: "case-converter",
+    inputFormats: ["text"],
     name: "Case Converter",
     description: "Fan out one input into common case styles for code, paths, and titles.",
     category: "text",
@@ -177,6 +187,7 @@ export const tools: Tool[] = [
   },
   {
     id: "css-minifier",
+    inputFormats: ["css"],
     help: ["Rule order and custom property values are preserved. Input limit: 100,000 characters."],
     name: "CSS Minifier",
     description: "Minify CSS locally while preserving rule order and displaying parser errors.",
@@ -189,6 +200,7 @@ export const tools: Tool[] = [
   },
   {
     id: "text-statistics",
+    inputFormats: ["text"],
     help: ["Byte size is measured as UTF-8."],
     name: "Text Statistics",
     description: "Inspect character, word, line, and byte counts for local text input.",
@@ -227,6 +239,7 @@ export const tools: Tool[] = [
   },
   {
     id: "url-encoder",
+    inputFormats: ["text"],
     name: "URL Encoder / Decoder",
     description: "Percent-encode or decode text locally with clear invalid-input feedback.",
     category: "encoding",
@@ -263,6 +276,7 @@ export const tools: Tool[] = [
   },
   {
     id: "json-to-yaml",
+    inputFormats: ["json"],
     name: "JSON to YAML",
     description: "Convert JSON documents into YAML locally with stable nested key ordering.",
     category: "data",
@@ -274,6 +288,7 @@ export const tools: Tool[] = [
   },
   {
     id: "yaml-to-json",
+    inputFormats: ["yaml"],
     name: "YAML to JSON",
     description: "Convert YAML documents into formatted JSON locally.",
     category: "data",
@@ -285,6 +300,7 @@ export const tools: Tool[] = [
   },
   {
     id: "toml-formatter",
+    inputFormats: ["toml"],
     help: [
       "Formats TOML 1.0. Comments and original whitespace are removed.",
       "Numeric literals and timestamp precision are preserved. Leap-second timestamps are rejected. Input limit: 100,000 characters.",
@@ -300,6 +316,7 @@ export const tools: Tool[] = [
   },
   {
     id: "yaml-formatter",
+    inputFormats: ["yaml"],
     name: "YAML Formatter",
     description: "Format YAML locally with indent controls and optional key sorting.",
     category: "data",
@@ -311,6 +328,7 @@ export const tools: Tool[] = [
   },
   {
     id: "xml-formatter",
+    inputFormats: ["xml"],
     name: "XML Formatter",
     description: "Format XML locally with indentation control and clear invalid-input feedback.",
     category: "data",
@@ -322,6 +340,7 @@ export const tools: Tool[] = [
   },
   {
     id: "markdown-table",
+    inputFormats: ["csv", "markdown"],
     help: [
       "The first CSV or TSV row is the header. Markdown converts to CSV.",
       "Cell newlines use <br>. Literal HTML and entities are escaped to preserve cell text; inline formatting stays as text.",
@@ -338,6 +357,7 @@ export const tools: Tool[] = [
   },
   {
     id: "json-to-csv",
+    inputFormats: ["json"],
     name: "JSON to CSV",
     description: "Convert arrays of JSON objects into CSV locally.",
     category: "data",

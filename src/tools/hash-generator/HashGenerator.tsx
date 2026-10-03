@@ -1,5 +1,4 @@
 import { createMemo, createResource, createSignal, onCleanup, Show } from "solid-js";
-
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
@@ -7,6 +6,7 @@ import ToolDropZone from "@/components/tool/ToolDropZone";
 import ToolFilePicker from "@/components/tool/ToolFilePicker";
 import ToolInputPanel from "@/components/tool/ToolInputPanel";
 import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
+import { useToolHandoff } from "@/components/toolHandoff";
 import { EXAMPLE_TEXT } from "@/lib/exampleData";
 import {
   DEFAULT_IMPORT_MAX_BYTES,
@@ -135,6 +135,8 @@ export default function HashGenerator() {
     invalidateResults();
     clearTimeout(debounceTimer);
   });
+
+  useToolHandoff("hash-generator", (handoff) => handleInput(handoff.value));
 
   return (
     <ToolContainer>
