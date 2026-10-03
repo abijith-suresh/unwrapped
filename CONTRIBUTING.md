@@ -88,6 +88,11 @@ of untrusted markup. Do not repeat heading, panel and placeholder assertions for
 
 Do not add a separate test for every export or wrapper. Each case should cover a distinct behavior,
 boundary or failure. Avoid copying bundled data into expectations just to check that it exists.
+For dependency wrappers, test our configuration, result mapping and error handling. Do not repeat
+the dependency's parser corpus or password rankings. Retain cases for transformations we implement,
+such as numeric preservation, escaping, and cancellation. Check a behavior through one owning
+entry point unless another layer has a distinct failure to catch. The production build already
+validates registry IDs, slugs and component paths.
 Use tables to share setup for independent parser cases, with a name for each regression. For late
 async results, await the operation the component consumes before checking that it was ignored.
 

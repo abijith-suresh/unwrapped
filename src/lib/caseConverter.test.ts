@@ -3,22 +3,6 @@ import { describe, expect, it } from "vitest";
 import { convertCaseVariants } from "./caseConverter";
 
 describe("convertCaseVariants", () => {
-  it("fans out a plain phrase into common case variants", () => {
-    expect(convertCaseVariants("hello world")).toEqual({
-      lowercase: "hello world",
-      uppercase: "HELLO WORLD",
-      camelCase: "helloWorld",
-      pascalCase: "HelloWorld",
-      snakeCase: "hello_world",
-      kebabCase: "hello-world",
-      constantCase: "HELLO_WORLD",
-      dotCase: "hello.world",
-      pathCase: "hello/world",
-      sentenceCase: "Hello world",
-      headerCase: "Hello-World",
-    });
-  });
-
   it("normalizes punctuation-heavy and mixed-style input predictably", () => {
     expect(convertCaseVariants("__hello-world.testValue HTTPStatus200!!")).toEqual({
       lowercase: "hello world test value http status 200",

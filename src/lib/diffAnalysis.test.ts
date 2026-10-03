@@ -63,11 +63,15 @@ describe("diffAnalysis", () => {
       changesOnly: false,
     });
 
-    expect(result.filteredRows.map(({ sourceIndex, row }) => [sourceIndex, row.type])).toEqual([
-      [0, "equal"],
-      [1, "changed"],
-      [2, "added"],
+    expect(result.rows).toEqual([
+      { left: "same", right: "same", leftLineNum: 1, rightLineNum: 1, type: "equal" },
+      { left: "old", right: "new", leftLineNum: 2, rightLineNum: 2, type: "changed" },
+      { left: null, right: "extra", leftLineNum: null, rightLineNum: 3, type: "added" },
     ]);
+    expect(result.filteredRows).toEqual(
+      result.rows.map((row, sourceIndex) => ({ row, sourceIndex }))
+    );
+    expect(result.changeIndices).toEqual([1, 2]);
     expect(result.stats).toEqual({ added: 2, removed: 1 });
   });
 

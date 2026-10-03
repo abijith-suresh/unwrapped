@@ -11,15 +11,6 @@ describe("text downloads", () => {
       new TextEncoder().encode(text)
     );
   });
-  it.each([
-    ["yaml", "yaml"],
-    ["markdown", "md"],
-    ["csv", "csv"],
-    ["base64", "b64"],
-    ["text", "txt"],
-  ] as const)("names %s files appropriately", (format, extension) => {
-    expect(createTextDownload("value", { format }).fileName).toBe(`output.${extension}`);
-  });
   it("retains zero-valued metrics and multiline fields in reports", () => {
     expect(
       serializeResultFields([
