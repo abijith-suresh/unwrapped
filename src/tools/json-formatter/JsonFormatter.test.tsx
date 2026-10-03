@@ -9,7 +9,10 @@ describe("JsonFormatter", () => {
       target: { value: '{"z":1,"a":2}' },
     });
     fireEvent.click(getByRole("radio", { name: "Minified" }));
-    fireEvent.click(getByRole("button", { name: "Sort keys A-Z" }));
+    const sort = getByRole("button", { name: "Sort keys A-Z" });
+    expect(sort).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(sort);
+    expect(sort).toHaveAttribute("aria-pressed", "true");
     expect(container.querySelector("pre")?.textContent).toBe('{"a":2,"z":1}');
     fireEvent.click(getByRole("radio", { name: "4 spaces" }));
     expect(container.querySelector("pre")?.textContent).toBe('{\n    "a": 2,\n    "z": 1\n}');

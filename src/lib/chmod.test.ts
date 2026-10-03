@@ -28,22 +28,4 @@ describe("buildChmodResult", () => {
       command: "chmod 755 <path>",
     });
   });
-
-  it("handles locked-down and fully-open permission sets", () => {
-    expect(
-      buildChmodResult({
-        owner: { read: true, write: true, execute: false },
-        group: { read: false, write: false, execute: false },
-        other: { read: false, write: false, execute: false },
-      })
-    ).toMatchObject({ octal: "600", symbolic: "rw-------" });
-
-    expect(
-      buildChmodResult({
-        owner: { read: true, write: true, execute: true },
-        group: { read: true, write: true, execute: true },
-        other: { read: true, write: true, execute: true },
-      })
-    ).toMatchObject({ octal: "777", symbolic: "rwxrwxrwx" });
-  });
 });

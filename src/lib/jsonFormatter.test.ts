@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  formatJson,
-  parseJsonErrorSourceContext,
-  sortJsonKeys,
-  syntaxHighlightJson,
-} from "./jsonFormatter";
+import { formatJson, sortJsonKeys, syntaxHighlightJson } from "./jsonFormatter";
 
 describe("json formatter utilities", () => {
   it("formats JSON with configurable indentation", () => {
@@ -33,7 +28,12 @@ describe("json formatter utilities", () => {
   });
 
   it("sorts keys recursively when requested", () => {
-    const result = formatJson('{"b":2,"a":{"d":4,"c":3},"z":[{"b":2,"a":1}]}', 2, false, true);
+    const result = formatJson(
+      '{"b":2,"a":{"d":4,"c":3},"z":[{"b":2,"a":1},{"d":4,"c":3}]}',
+      2,
+      false,
+      true
+    );
 
     expect(result.raw).toBe(`{
   "a": {
@@ -45,21 +45,13 @@ describe("json formatter utilities", () => {
     {
       "a": 1,
       "b": 2
+    },
+    {
+      "c": 3,
+      "d": 4
     }
   ]
 }`);
-  });
-
-  it("sortJsonKeys preserves array order while sorting object keys", () => {
-    expect(
-      sortJsonKeys([
-        { b: 2, a: 1 },
-        { d: 4, c: 3 },
-      ])
-    ).toEqual([
-      { a: 1, b: 2 },
-      { c: 3, d: 4 },
-    ]);
   });
 
   it("preserves special object keys while sorting", () => {
@@ -86,21 +78,7 @@ describe("json formatter utilities", () => {
     expect(result.errorLength).toBe(1);
     expect(result.errorLine).toBe(3);
     expect(result.errorColumn).toBe(1);
-    expect(result.errorContext).toContain('2 | "b":');
-    expect(result.errorContext).toContain("3 | }");
-    expect(result.errorContext).toContain("^");
-  });
-
-  it("builds source context from parser positions", () => {
-    expect(parseJsonErrorSourceContext('{"a":1,\n"b":\n}', 13)).toEqual({
-      position: 13,
-      length: 1,
-      line: 3,
-      column: 1,
-      context: `2 | "b":
-3 | }
-    ^`,
-    });
+    expect(result.errorContext).toBe('2 | "b":\n3 | }\n    ^');
   });
 
   it("returns typed highlighted JSON segments without changing the source text", () => {

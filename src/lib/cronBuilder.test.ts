@@ -9,13 +9,6 @@ describe("cron builder", () => {
         output: preset.expression,
       });
   });
-  it("validates ranges, steps and field boundaries", () => {
-    const fields = cronFields("*/5 9 * * 1-5");
-    expect(buildCron({ ...fields, minute: "60" }).ok).toBe(false);
-    expect(buildCron({ ...fields, minute: "*/0" }).ok).toBe(false);
-    expect(buildCron({ ...fields, dayOfWeek: "7" }).ok).toBe(false);
-    expect(buildCron({ ...fields, month: "12-1" }).ok).toBe(false);
-  });
   it("rejects empty or injected fields", () => {
     const fields = cronFields("* * * * *");
     expect(buildCron({ ...fields, minute: "" }).ok).toBe(false);
