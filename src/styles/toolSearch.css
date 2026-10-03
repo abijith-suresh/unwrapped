@@ -21,12 +21,7 @@
   border-color: var(--border-strong);
   color: var(--text-primary);
 }
-.global-search-trigger kbd {
-  padding: 0.15rem 0.3rem;
-  border: 1px solid var(--border);
-  border-radius: 0.25rem;
-  font: 0.65rem var(--font-mono);
-}
+
 .global-search-dialog {
   position: fixed;
   inset: 0;
@@ -155,9 +150,6 @@ html:has(.global-search-dialog[open]) {
   overflow: hidden;
 }
 @media (max-width: 640px) {
-  .global-search-trigger kbd {
-    display: none;
-  }
   .global-search-dialog {
     margin-top: 1rem;
   }

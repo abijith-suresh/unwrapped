@@ -1,15 +1,20 @@
 import { Search, X } from "lucide-solid";
 import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
-
+import FavoriteButton from "@/components/FavoriteButton";
+import { useFavorites } from "@/components/favorites";
+import { useToolRotation } from "@/components/toolOrder";
 import { ICON_MAP } from "@/lib/iconMap";
 import { searchTools } from "@/lib/toolSearch";
 import { getToolRoute } from "@/tools/registry";
 
 export default function GlobalToolSearch() {
+  const favorites = useFavorites();
+  const rotation = useToolRotation();
   const [query, setQuery] = createSignal("");
   const [activeIndex, setActiveIndex] = createSignal(0);
-  const [mac, setMac] = createSignal(false);
-  const results = createMemo(() => searchTools(query()));
+  const results = createMemo(() =>
+    searchTools(query(), { favoriteIds: favorites.ids(), rotation: rotation() })
+  );
   let dialog: HTMLDialogElement | undefined;
   let input: HTMLInputElement | undefined;
   let returnFocus: HTMLElement | undefined;
@@ -44,7 +49,6 @@ export default function GlobalToolSearch() {
   }
 
   onMount(() => {
-    setMac(/Mac|iPhone|iPad/.test(navigator.userAgent));
     function shortcut(event: KeyboardEvent) {
       if (
         event.isComposing ||
@@ -66,7 +70,10 @@ export default function GlobalToolSearch() {
   function onKeyDown(event: KeyboardEvent) {
     if (event.isComposing) return;
     const count = results().length;
-    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      dialog?.close();
+    } else if (event.key === "ArrowDown" || event.key === "ArrowUp") {
       event.preventDefault();
       if (count)
         setActiveIndex((index) => (index + (event.key === "ArrowDown" ? 1 : -1) + count) % count);
@@ -90,7 +97,6 @@ export default function GlobalToolSearch() {
       >
         <Search size={18} aria-hidden="true" />
         <span class="global-search-label">Search</span>
-        <kbd>{mac() ? "⌘K" : "Ctrl K"}</kbd>
       </button>
       <dialog
         ref={dialog}
@@ -145,7 +151,7 @@ export default function GlobalToolSearch() {
               {(tool, index) => {
                 const Icon = ICON_MAP[tool.icon];
                 return (
-                  <li>
+                  <li class="global-search-item">
                     <a
                       id={`global-tool-${tool.slug}`}
                       href={getToolRoute(tool.slug)}
@@ -168,10 +174,12 @@ export default function GlobalToolSearch() {
                         <span class="global-search-name">{tool.name}</span>
                         <span class="global-search-description">{tool.description}</span>
                       </span>
-                      <span class="global-search-arrow" aria-hidden="true">
-                        →
-                      </span>
                     </a>
+                    <FavoriteButton
+                      toolId={tool.id}
+                      toolName={tool.name}
+                      class="global-search-favorite"
+                    />
                   </li>
                 );
               }}

@@ -12,7 +12,11 @@ export interface SessionOptions<T> {
 }
 
 function getBrowserStorage(): Storage | null {
-  return typeof localStorage === "undefined" ? null : localStorage;
+  try {
+    return typeof localStorage === "undefined" ? null : localStorage;
+  } catch {
+    return null;
+  }
 }
 
 export function loadSessionState<T>(options: SessionOptions<T>): T | null {

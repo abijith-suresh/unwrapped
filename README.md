@@ -4,8 +4,8 @@ Browser-only developer utilities for working with text, tokens, configs, URLs, d
 data.
 
 Tool inputs stay in the browser. The app does not upload them or process them on a server. It does
-not store tool inputs or outputs. The diff tool stores only display preferences in one `localStorage`
-record. There are no accounts, ads, analytics, or tracking.
+not store tool inputs or outputs. Favorite tool IDs and Diff display preferences are stored in
+`localStorage`. There are no accounts, ads, analytics, or tracking.
 
 ## Tools
 

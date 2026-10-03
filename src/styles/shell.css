@@ -115,3 +115,42 @@
     transition: none;
   }
 }
+
+.favorite-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.favorite-button:hover,
+.favorite-button[aria-pressed="true"] {
+  color: var(--accent-primary);
+  border-color: color-mix(in srgb, var(--accent-primary) 50%, var(--border));
+}
+.lp-tool-card,
+.global-search-item {
+  position: relative;
+}
+.lp-card-favorite {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  z-index: 1;
+}
+.global-search-favorite {
+  position: absolute;
+  top: 50%;
+  right: 0.6rem;
+  transform: translateY(-50%);
+}
+.global-search-item .global-search-result {
+  padding-right: 4rem;
+}

@@ -19,6 +19,8 @@ describe("site accent bootstrap", () => {
     const interval = 6 * 60 * 60 * 1000;
     expect(startVisit(interval - 1).documentElement.dataset.siteAccent).toBe("blue");
     expect(startVisit(interval).documentElement.dataset.siteAccent).toBe("teal");
+    expect(startVisit(interval - 1).documentElement.dataset.toolRotation).toBe("0");
+    expect(startVisit(interval).documentElement.dataset.toolRotation).toBe("1");
     const accents = Array.from(
       { length: 10 },
       (_, index) => startVisit(index * interval).documentElement.dataset.siteAccent
@@ -34,5 +36,6 @@ describe("site accent bootstrap", () => {
     Object.defineProperty(swap, "newDocument", { value: destination });
     page.dispatchEvent(swap);
     expect(destination.documentElement.dataset.siteAccent).toBe("blue");
+    expect(destination.documentElement.dataset.toolRotation).toBe("0");
   });
 });
