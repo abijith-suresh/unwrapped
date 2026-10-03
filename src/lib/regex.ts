@@ -1,6 +1,8 @@
 import type { CodeHighlightSegment } from "./codeHighlight";
 import { toErrorMessage } from "./text";
 
+export const MAX_REGEX_MATCHES = 10_000;
+
 export type FlagKey = "g" | "i" | "m" | "s";
 
 export interface CaptureGroup {
@@ -64,6 +66,13 @@ export function buildRegexResult(pattern: string, flags: Set<FlagKey>, input: st
   const ranges: [number, number][] = [];
 
   for (const match of input.matchAll(regex)) {
+    if (matches.length >= MAX_REGEX_MATCHES)
+      return {
+        matches: [],
+        highlighted: plainHighlight(input),
+        error: "Too many matches. Narrow the pattern or shorten the test string.",
+        summary: createSummary([]),
+      };
     const groups: CaptureGroup[] = [];
 
     if (match.groups) {
@@ -161,4 +170,31 @@ function countReplacements(pattern: string, flagString: string, input: string): 
   }
 
   return count;
+}
+
+export interface RegexAnalysisInput {
+  pattern: string;
+  flags: FlagKey[];
+  input: string;
+  replacement: string;
+  mode: "match" | "replace";
+}
+
+export interface RegexAnalysisResult {
+  match: RegexResult;
+  replacement: RegexReplaceResult | { error: string };
+}
+
+/** Run user patterns in a worker; bundled examples are safe to evaluate directly. */
+export function analyzeRegex(input: RegexAnalysisInput): RegexAnalysisResult {
+  const flags = new Set(input.flags);
+  const match = buildRegexResult(input.pattern, flags, input.input);
+  return {
+    match,
+    replacement: match.error
+      ? { error: match.error }
+      : input.mode === "replace"
+        ? buildRegexReplaceResult(input.pattern, flags, input.input, input.replacement)
+        : { output: "", replacements: 0 },
+  };
 }

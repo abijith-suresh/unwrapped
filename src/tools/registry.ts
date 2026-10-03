@@ -52,6 +52,9 @@ export const tools: Tool[] = [
   },
   {
     id: "diff",
+    help: [
+      "Large and structured comparisons run in a background worker with a ten-second timeout. Edit an input to retry after cancellation or timeout.",
+    ],
     name: "Text Diff",
     description: "Compare two texts or configs side by side with highlighted differences.",
     category: "text",
@@ -149,6 +152,9 @@ export const tools: Tool[] = [
   },
   {
     id: "regex-tester",
+    help: [
+      "User patterns run in a background worker with a two-second timeout and a 10,000-match limit. Edit an input to retry after cancellation or timeout.",
+    ],
     name: "Regex Tester",
     description: "Test regular expressions with real-time match highlighting.",
     category: "text",

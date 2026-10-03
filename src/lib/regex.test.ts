@@ -53,3 +53,9 @@ describe("regex utilities", () => {
     expect(result.summary.emptyMatchCount).toBeGreaterThan(0);
   });
 });
+
+it("rejects excessive match counts instead of allocating an unbounded report", () => {
+  const result = buildRegexResult("a", new Set(["g"]), "a".repeat(10_001));
+  expect(result.error).toContain("Too many matches");
+  expect(result.matches).toEqual([]);
+});

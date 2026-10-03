@@ -1,8 +1,9 @@
 import { webcrypto } from "node:crypto";
 import { fireEvent, render, waitFor } from "@solidjs/testing-library";
 import { afterEach, describe, expect, it, vi } from "vitest";
-
 import * as hash from "@/lib/hash";
+import { analyzeRegex } from "@/lib/regex";
+import * as regexExecution from "@/lib/regexExecution";
 import Base64Tool from "@/tools/base64/Base64Tool";
 import DiffTool from "@/tools/diff/DiffTool";
 import HashGenerator from "@/tools/hash-generator/HashGenerator";
@@ -86,6 +87,11 @@ describe("Example output", () => {
   });
 
   it("switches regex replacement previews to actual inputs and back", async () => {
+    vi.spyOn(regexExecution, "createRegexAnalysisExecutor").mockReturnValue({
+      cancel: vi.fn(),
+      dispose: vi.fn(),
+      execute: async (input) => ({ requestId: 1, result: analyzeRegex(input) }),
+    });
     const { container, getByRole, queryByRole } = render(() => <RegexTester />);
     fireEvent.click(getByRole("radio", { name: "Replace" }));
     expect(container).toHaveTextContent("[Hello], [world]!");
