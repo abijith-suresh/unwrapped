@@ -1,4 +1,5 @@
 import { sortJsonKeys } from "./jsonFormatter";
+import { JsonNumber, parseJson, stringifyJson } from "./structuredData";
 import type { TextTransformResult } from "./text";
 
 type JsonPrimitive = string | number | boolean | null;
@@ -8,7 +9,12 @@ type JsonRecord = Record<string, JsonValue>;
 export type JsonToCsvResult = TextTransformResult;
 
 function isJsonRecord(value: unknown): value is JsonRecord {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value) &&
+    !(value instanceof JsonNumber)
+  );
 }
 
 function escapeCsvCell(value: string): string {
@@ -28,7 +34,7 @@ function serializeCsvValue(value: JsonValue | undefined): string {
     return String(value);
   }
 
-  return JSON.stringify(sortJsonKeys(value));
+  return stringifyJson(sortJsonKeys(value));
 }
 
 export function convertJsonToCsv(input: string): JsonToCsvResult {
@@ -37,7 +43,7 @@ export function convertJsonToCsv(input: string): JsonToCsvResult {
   }
 
   try {
-    const parsed = JSON.parse(input) as unknown;
+    const parsed = parseJson(input);
 
     if (!Array.isArray(parsed) || !parsed.every(isJsonRecord)) {
       return {
@@ -58,7 +64,13 @@ export function convertJsonToCsv(input: string): JsonToCsvResult {
     const lines = [headers.map(escapeCsvCell).join(",")];
 
     for (const row of parsed) {
-      lines.push(headers.map((header) => escapeCsvCell(serializeCsvValue(row[header]))).join(","));
+      lines.push(
+        headers
+          .map((header) =>
+            escapeCsvCell(serializeCsvValue(Object.hasOwn(row, header) ? row[header] : undefined))
+          )
+          .join(",")
+      );
     }
 
     return {

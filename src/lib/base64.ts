@@ -117,7 +117,7 @@ export function processBase64Input(
   workflow: Base64Workflow,
   options: { sourceName?: string | null } = {}
 ): Base64TransformResult {
-  if (!input.trim()) {
+  if (input.length === 0) {
     return mode === "decode" && workflow === "file"
       ? {
           ok: true,

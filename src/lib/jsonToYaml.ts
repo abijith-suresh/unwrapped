@@ -1,6 +1,7 @@
 import { stringify } from "yaml";
 
 import { sortJsonKeys } from "./jsonFormatter";
+import { JSON_NUMBER_YAML_TAG, parseJson } from "./structuredData";
 import { type TextTransformResult, toErrorMessage } from "./text";
 
 export type JsonToYamlResult = TextTransformResult;
@@ -14,12 +15,13 @@ export function convertJsonToYaml(input: string): JsonToYamlResult {
   }
 
   try {
-    const parsed = JSON.parse(input) as unknown;
+    const parsed = parseJson(input);
     const sorted = sortJsonKeys(parsed);
 
     return {
       ok: true,
       output: stringify(sorted, {
+        customTags: [JSON_NUMBER_YAML_TAG],
         defaultStringType: "PLAIN",
         sortMapEntries: true,
       }).trimEnd(),

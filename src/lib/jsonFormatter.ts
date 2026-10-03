@@ -1,10 +1,8 @@
 import type { CodeHighlightSegment } from "./codeHighlight";
+import { parseJson, sortObjectKeys, stringifyJson } from "./structuredData";
 import { normalizeNewlines, toErrorMessage } from "./text";
 
 export type IndentSize = 2 | 4;
-
-type JsonPrimitive = null | boolean | number | string;
-type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue };
 
 export interface JsonFormatResult {
   segments: CodeHighlightSegment[];
@@ -60,19 +58,7 @@ export function syntaxHighlightJson(json: string): CodeHighlightSegment[] {
 }
 
 export function sortJsonKeys<T>(value: T): T {
-  if (Array.isArray(value)) {
-    return value.map((item) => sortJsonKeys(item)) as T;
-  }
-
-  if (typeof value === "object" && value !== null) {
-    return Object.fromEntries(
-      Object.keys(value)
-        .sort((left, right) => left.localeCompare(right))
-        .map((key) => [key, sortJsonKeys((value as Record<string, unknown>)[key])])
-    ) as T;
-  }
-
-  return value;
+  return sortObjectKeys(value);
 }
 
 export function parseJsonErrorSourceContext(
@@ -154,9 +140,9 @@ export function formatJson(
     };
   }
 
-  let parsed: JsonValue;
+  let parsed: unknown;
   try {
-    parsed = JSON.parse(input) as JsonValue;
+    parsed = parseJson(input);
   } catch (error) {
     const message = toErrorMessage(error, String(error));
     const errorContext = parseJsonErrorContext(input, message);
@@ -177,7 +163,7 @@ export function formatJson(
   }
 
   const output = sortKeys ? sortJsonKeys(parsed) : parsed;
-  const raw = minify ? JSON.stringify(output) : JSON.stringify(output, null, indent);
+  const raw = stringifyJson(output, minify ? undefined : indent);
   return {
     segments: syntaxHighlightJson(raw),
     raw,
