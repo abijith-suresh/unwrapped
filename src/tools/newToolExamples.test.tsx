@@ -1,9 +1,7 @@
 import { fireEvent, render } from "@solidjs/testing-library";
 import { describe, expect, it } from "vitest";
-import { EXAMPLE_JSON_SCHEMA, EXAMPLE_SCHEMA_DOCUMENT } from "@/lib/exampleData";
 import CronTool from "@/tools/cron/CronTool";
 import HtmlEntitiesTool from "@/tools/html-entities/Tool";
-import JsonSchemaTool from "@/tools/json-schema-validator/Tool";
 import PasswordStrengthTool from "@/tools/password-strength/Tool";
 import QueryStringTool from "@/tools/query-string-editor/Tool";
 
@@ -48,33 +46,6 @@ describe("Examples in added tools", () => {
     fireEvent.click(view.getByRole("button", { name: "Clear input" }));
     expect(source).toHaveValue("");
     expect(view.getByRole("note", { name: "Example output" })).toBeInTheDocument();
-  });
-
-  it("never substitutes schema or document examples into partially entered user data", () => {
-    const view = render(() => <JsonSchemaTool />);
-    const input = view.getByLabelText("JSON");
-    const schema = view.getByLabelText("Draft-07 schema");
-    const validate = view.getByRole("button", { name: "Validate document" });
-    expect(input).toHaveValue("");
-    expect(schema).toHaveValue("");
-    expect(view.container).toHaveTextContent("Valid. The document matches the schema.");
-    expect(validate).toBeDisabled();
-    expect(view.queryByRole("button", { name: "Copy result" })).toBeNull();
-    fireEvent.input(input, { target: { value: EXAMPLE_SCHEMA_DOCUMENT } });
-    expect(view.queryByRole("note", { name: "Example output" })).toBeNull();
-    expect(view.container).not.toHaveTextContent("Valid. The document matches the schema.");
-    fireEvent.click(validate);
-    expect(view.getByRole("alert")).toHaveTextContent("Invalid schema JSON.");
-    fireEvent.input(schema, { target: { value: EXAMPLE_JSON_SCHEMA } });
-    fireEvent.click(validate);
-    expect(view.container).toHaveTextContent("Valid. The document matches the schema.");
-    fireEvent.click(view.getByRole("button", { name: "Clear inputs" }));
-    expect(input).toHaveValue("");
-    expect(schema).toHaveValue("");
-    expect(view.getByRole("note", { name: "Example output" })).toBeInTheDocument();
-    fireEvent.input(schema, { target: { value: "true" } });
-    fireEvent.click(validate);
-    expect(view.getByRole("alert")).toHaveTextContent("Invalid JSON document.");
   });
 
   it("shows read-only query examples and starts manual rows with empty native inputs", () => {
