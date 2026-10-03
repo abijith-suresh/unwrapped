@@ -88,7 +88,7 @@ export default function ToolSegmentedControl<Value extends string = string>(
             role="radio"
             disabled={option.disabled}
             onClick={() => local.onChange(option.value)}
-            class="min-h-11 min-w-0 flex-1 !whitespace-normal sm:flex-none"
+            class="min-h-[2.375rem] min-w-0 flex-1 !whitespace-normal sm:flex-none"
           >
             {option.label}
           </ToolActionButton>
