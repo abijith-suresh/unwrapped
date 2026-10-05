@@ -6,14 +6,21 @@ export const MAX_REGEX_MATCHES = 10_000;
 export type FlagKey = "g" | "i" | "m" | "s";
 
 export interface CaptureGroup {
-  name: string | null;
-  value: string;
+  number: number;
+  value: string | null;
+}
+
+export interface NamedCaptureGroup {
+  name: string;
+  value: string | null;
 }
 
 export interface MatchResult {
   index: number;
   fullMatch: string;
   groups: CaptureGroup[];
+  /** Named aliases of numbered captures; excluded from captureGroupCount. */
+  namedGroups: NamedCaptureGroup[];
 }
 
 export interface RegexSummary {
@@ -75,23 +82,20 @@ export function buildRegexResult(pattern: string, flags: Set<FlagKey>, input: st
       };
     const groups: CaptureGroup[] = [];
 
-    if (match.groups) {
-      for (const [name, value] of Object.entries(match.groups)) {
-        groups.push({ name, value: value ?? "" });
-      }
-    }
-
+    // RegExp numbers every capture, including named and unmatched groups.
+    // Equal values (or spans) cannot identify which numbered capture has a name.
     for (let index = 1; index < match.length; index++) {
-      const alreadyNamed = match.groups && Object.values(match.groups).includes(match[index]);
-      if (!alreadyNamed && match[index] !== undefined) {
-        groups.push({ name: null, value: match[index] ?? "" });
-      }
+      groups.push({ number: index, value: match[index] ?? null });
     }
 
     matches.push({
       index: match.index,
       fullMatch: match[0],
       groups,
+      namedGroups: Object.entries(match.groups ?? {}).map(([name, value]) => ({
+        name,
+        value: value ?? null,
+      })),
     });
     ranges.push([match.index, match.index + match[0].length]);
 

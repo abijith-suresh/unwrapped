@@ -38,6 +38,24 @@ const ALL_FLAGS: Flag[] = [
 
 type RegexMode = "match" | "replace";
 
+function CaptureCell(props: { value: string | null | undefined }) {
+  return (
+    <td class="px-4 py-1.5 text-[var(--text-primary)] border-b border-[var(--border)] whitespace-nowrap">
+      <Show
+        when={props.value !== null && props.value !== undefined}
+        fallback={<span class="text-[var(--text-muted)]">Unmatched</span>}
+      >
+        <Show
+          when={props.value !== ""}
+          fallback={<span class="text-[var(--text-muted)]">Empty string</span>}
+        >
+          {props.value}
+        </Show>
+      </Show>
+    </td>
+  );
+}
+
 export default function RegexTester() {
   const [mode, setMode] = createSignal<RegexMode>("match");
   const [pattern, setPattern] = createSignal("");
@@ -148,17 +166,13 @@ export default function RegexTester() {
     return "error" in current ? 0 : current.replacements;
   });
 
-  const namedGroupNames = createMemo((): string[] => {
-    const names = new Set<string>();
-    for (const match of result().matches) {
-      for (const group of match.groups) {
-        if (group.name) names.add(group.name);
-      }
-    }
-    return [...names];
-  });
-
-  const hasCaptures = createMemo(() => result().matches.some((match) => match.groups.length > 0));
+  const numberedGroups = createMemo(
+    () => result().matches[0]?.groups.map((group) => group.number) ?? []
+  );
+  const namedGroupNames = createMemo(
+    () => result().matches[0]?.namedGroups.map((group) => group.name) ?? []
+  );
+  const hasCaptures = () => numberedGroups().length > 0;
 
   const matchesReport = createMemo(() =>
     JSON.stringify({ matches: result().matches, summary: result().summary }, null, 2)
@@ -292,6 +306,7 @@ export default function RegexTester() {
               </ToolStatusMessage>
             </Show>
             <Show when={!isExample()}>
+              <CopyButton text={matchesReport()} label="Copy matches report" />
               <ToolDownloadButton
                 value={matchesReport()}
                 format="json"
@@ -374,8 +389,9 @@ export default function RegexTester() {
               <Label>Capture groups</Label>
             </div>
 
-            <div class="overflow-auto">
-              <table class="w-full border-collapse font-mono text-sm">
+            {/* biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users must be able to scroll the capture table. */}
+            <section class="overflow-auto" aria-label="Capture groups table" tabIndex={0}>
+              <table aria-label="Capture groups" class="w-full border-collapse font-mono text-sm">
                 <thead>
                   <tr>
                     <th class="px-4 py-2 text-left text-[var(--text-muted)] font-semibold border-b border-[var(--border)] whitespace-nowrap">
@@ -384,24 +400,26 @@ export default function RegexTester() {
                     <th class="px-4 py-2 text-left text-[var(--text-muted)] font-semibold border-b border-[var(--border)]">
                       Full match
                     </th>
-                    <Show when={namedGroupNames().length > 0}>
-                      <For each={namedGroupNames()}>
-                        {(name) => (
-                          <th class="px-4 py-2 text-left text-[var(--accent-primary)] font-semibold border-b border-[var(--border)] whitespace-nowrap">
-                            {name}
-                          </th>
-                        )}
-                      </For>
-                    </Show>
-                    <Show
-                      when={result().matches.some((match) =>
-                        match.groups.some((group) => group.name === null)
+                    <For each={numberedGroups()}>
+                      {(number) => (
+                        <th
+                          scope="col"
+                          class="px-4 py-2 text-left text-[var(--text-muted)] font-semibold border-b border-[var(--border)] whitespace-nowrap"
+                        >
+                          Group {number}
+                        </th>
                       )}
-                    >
-                      <th class="px-4 py-2 text-left text-[var(--text-muted)] font-semibold border-b border-[var(--border)]">
-                        Groups
-                      </th>
-                    </Show>
+                    </For>
+                    <For each={namedGroupNames()}>
+                      {(name) => (
+                        <th
+                          scope="col"
+                          class="px-4 py-2 text-left text-[var(--accent-primary)] font-semibold border-b border-[var(--border)] whitespace-nowrap"
+                        >
+                          {name} (alias)
+                        </th>
+                      )}
+                    </For>
                   </tr>
                 </thead>
                 <tbody>
@@ -424,40 +442,22 @@ export default function RegexTester() {
                             </Show>
                           </div>
                         </td>
-                        <Show when={namedGroupNames().length > 0}>
-                          <For each={namedGroupNames()}>
-                            {(name) => {
-                              const group = match.groups.find(
-                                (candidate) => candidate.name === name
-                              );
-                              return (
-                                <td
-                                  class="px-4 py-1.5 border-b border-[var(--border)]"
-                                  classList={{
-                                    "text-[var(--accent-success)]": !!group,
-                                    "text-[var(--text-muted)]": !group,
-                                  }}
-                                >
-                                  {group ? group.value : "—"}
-                                </td>
-                              );
-                            }}
-                          </For>
-                        </Show>
-                        <Show when={match.groups.some((group) => group.name === null)}>
-                          <td class="px-4 py-1.5 text-[var(--text-primary)] border-b border-[var(--border)]">
-                            {match.groups
-                              .filter((group) => group.name === null)
-                              .map((group) => group.value)
-                              .join(", ")}
-                          </td>
-                        </Show>
+                        <For each={numberedGroups()}>
+                          {(number) => <CaptureCell value={match.groups[number - 1]?.value} />}
+                        </For>
+                        <For each={namedGroupNames()}>
+                          {(name) => (
+                            <CaptureCell
+                              value={match.namedGroups.find((group) => group.name === name)?.value}
+                            />
+                          )}
+                        </For>
                       </tr>
                     )}
                   </For>
                 </tbody>
               </table>
-            </div>
+            </section>
           </Card>
         </Show>
       </ToolInspectorWorkspace>
