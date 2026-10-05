@@ -8,12 +8,14 @@ it("previews edited builder fields and recovers from validation errors", () => {
   const minute = getByRole("textbox", { name: "Minute (0-59)" });
   const preview = getByRole("button", { name: "Preview built schedule" });
 
+  expect(minute).toHaveValue("");
+  expect(preview).toBeDisabled();
   fireEvent.click(getByRole("button", { name: "Every 5 minutes" }));
   expect(expression).toHaveValue("*/5 * * * *");
   expect(minute).toHaveValue("*/5");
   fireEvent.input(minute, { target: { value: "60" } });
   expect(preview).toBeDisabled();
-  expect(getByRole("alert").style.color).toBe("var(--accent-error)");
+  expect(getByRole("alert")).toHaveTextContent("Minute must be between 0 and 59.");
   expect(getByRole("button", { name: "Copy built expression" })).toBeDisabled();
 
   fireEvent.input(minute, { target: { value: "15" } });

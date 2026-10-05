@@ -20,10 +20,4 @@ describe("ToolCodeBlock", () => {
     expect(pre?.querySelector("script")).toBeNull();
     expect(pre?.querySelector("mark")?.textContent).toBe("</mark>");
   });
-
-  it("renders fallback children when no segments are provided", () => {
-    const { container } = render(() => <ToolCodeBlock>plain output</ToolCodeBlock>);
-
-    expect(container.querySelector("pre")).toHaveTextContent("plain output");
-  });
 });

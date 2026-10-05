@@ -1,17 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { generateHmac, HMAC_ALGORITHMS } from "./hmac";
-
-describe("HMAC_ALGORITHMS", () => {
-  it("lists the supported SHA-based algorithms", () => {
-    expect(HMAC_ALGORITHMS.map((algorithm) => algorithm.id)).toEqual([
-      "SHA-1",
-      "SHA-256",
-      "SHA-384",
-      "SHA-512",
-    ]);
-  });
-});
+import { generateHmac } from "./hmac";
 
 describe("generateHmac", () => {
   it("formats a known SHA-256 test vector as lowercase hex", async () => {

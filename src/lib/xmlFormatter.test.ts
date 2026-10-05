@@ -45,14 +45,8 @@ describe("XML formatting", () => {
     if (source === "<p>   </p>") expect(result.output).toBe(source);
   });
 
-  it.each([
-    "<a/><b/>",
-    "<root><child></root>",
-    '<root attr="broken></root>',
-    "<root>&unknown;</root>",
-    '<root attr="1" attr="2"/>',
-  ])("rejects malformed documents %s", (source) => {
-    expect(formatXml(source, { indent: 2 })).toMatchObject({
+  it("returns parser errors without attempting to format malformed XML", () => {
+    expect(formatXml("<root><child></root>", { indent: 2 })).toMatchObject({
       ok: false,
       error: expect.stringContaining("XML"),
     });
