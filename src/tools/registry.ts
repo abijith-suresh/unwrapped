@@ -163,6 +163,7 @@ export const tools: Tool[] = [
     inputFormats: ["text"],
     help: [
       "User patterns run in a background worker with a two-second timeout and a 10,000-match limit. Edit an input to retry after cancellation or timeout.",
+      'Capture counts total numbered group slots across matches, including unmatched groups. Named groups are separate aliases, not extra captures. Reports use null for unmatched groups and "" for matched empty strings.',
     ],
     name: "Regex Tester",
     description: "Test regular expressions with real-time match highlighting.",
