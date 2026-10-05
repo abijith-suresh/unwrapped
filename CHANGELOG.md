@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.0.7](https://github.com/abijith-suresh/unwrapped/compare/0.0.6...0.0.7) (2026-10-05)
+
+
+### Bug Fixes
+
+* bound JSON Schema validation and reject rounded numbers ([#281](https://github.com/abijith-suresh/unwrapped/issues/281)) ([7f66e90](https://github.com/abijith-suresh/unwrapped/commit/7f66e90657db49f18f04958f7c7f09177776e54f))
+* preserve JWT claims and report expiration accurately ([#280](https://github.com/abijith-suresh/unwrapped/issues/280)) ([ffb0149](https://github.com/abijith-suresh/unwrapped/commit/ffb0149fd2b5763c4a920b949e35565f92ae3f31))
+* preserve regex capture group identity ([#278](https://github.com/abijith-suresh/unwrapped/issues/278)) ([6e1e875](https://github.com/abijith-suresh/unwrapped/commit/6e1e875fd3d967c06e3f84ca27366ca90d245ca8))
+* preserve timestamp precision and make epoch units explicit ([#279](https://github.com/abijith-suresh/unwrapped/issues/279)) ([41a73fb](https://github.com/abijith-suresh/unwrapped/commit/41a73fb00cf2d874c0e2d58a9a98c30c77961aa8))
+
 ## [0.0.6](https://github.com/abijith-suresh/unwrapped/compare/0.0.5...0.0.6) (2026-10-03)
 
 
