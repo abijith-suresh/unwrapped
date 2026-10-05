@@ -43,7 +43,11 @@ export interface Tool {
 export const tools: Tool[] = [
   {
     id: "jwt-decoder",
-    help: ["Decoding shows token contents. It does not verify the signature."],
+    help: [
+      "Decoding shows token contents. It does not verify the signature or authenticate claims. Unsecured alg:none tokens use an empty signature.",
+      "Header and payload must be UTF-8 JSON objects with unique keys. Decoded JSON preserves numeric tokens, including large integers.",
+      "NumericDate claims are seconds since the Unix epoch and may include fractions. Expiration occurs at or after exp, with no clock-skew allowance. Dates use your local timezone and the browser's date range and precision.",
+    ],
     name: "JWT Decoder",
     description: "Decode and inspect JSON Web Tokens. View header, payload, expiry.",
     category: "security",
