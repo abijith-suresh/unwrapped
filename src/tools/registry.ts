@@ -104,6 +104,8 @@ export const tools: Tool[] = [
     help: [
       "Supports JSON Schema draft-07, standard formats, strict schema checks and local references. External schemas are never fetched.",
       "Data is not coerced or changed. Each input is limited to 100,000 characters.",
+      "Duplicate keys are rejected in both inputs. Numbers must retain their exact decimal value after JavaScript Number serialization; rounded integers and decimals, overflow and underflow are rejected. Ordinary decimals, scientific notation and insignificant trailing zeros are supported. Ajv still uses Number arithmetic.",
+      "User schema compilation and validation run in a cancellable background worker with a 5-second deadline, including startup and parsing. Editing or clearing inputs stops active work. Background validation must be available; there is no synchronous fallback.",
     ],
     name: "JSON Schema Validator",
     description: "Validate JSON against draft-07 schemas and inspect errors by document path.",
