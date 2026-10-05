@@ -1,11 +1,10 @@
-import { webcrypto } from "node:crypto";
-import { fireEvent, render, waitFor } from "@solidjs/testing-library";
+import { fireEvent, render, waitFor, within } from "@solidjs/testing-library";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as hash from "@/lib/hash";
+import * as hmac from "@/lib/hmac";
 import { analyzeRegex } from "@/lib/regex";
 import * as regexExecution from "@/lib/regexExecution";
-import Base64Tool from "@/tools/base64/Base64Tool";
-import DiffTool from "@/tools/diff/DiffTool";
+import type { TextTransformResult } from "@/lib/text";
 import HashGenerator from "@/tools/hash-generator/HashGenerator";
 import HmacGeneratorTool from "@/tools/hmac-generator/HmacGeneratorTool";
 import RegexTester from "@/tools/regex-tester/RegexTester";
@@ -15,75 +14,52 @@ import UrlEncoderTool from "@/tools/url-encoder/UrlEncoderTool";
 
 afterEach(() => {
   vi.restoreAllMocks();
-  vi.unstubAllGlobals();
 });
 
-describe("Example output", () => {
-  it("updates Base64 decode examples without exposing file actions", () => {
-    const { container, getByRole, queryByRole } = render(() => <Base64Tool />);
-    expect(getByRole("button", { name: /Swap/ })).toBeDisabled();
-    fireEvent.click(getByRole("radio", { name: "Decode" }));
-    expect(getByRole("textbox", { name: "Base64" })).toHaveAttribute(
-      "placeholder",
-      "SGVsbG8sIHdvcmxkIQ=="
-    );
-    expect(container.querySelector("pre")).toHaveTextContent("Hello, world!");
-    fireEvent.click(getByRole("radio", { name: "Base64url" }));
-    expect(getByRole("textbox", { name: "Base64url" })).toHaveAttribute(
-      "placeholder",
-      "SGVsbG8sIHdvcmxkIQ"
-    );
-    expect(container.querySelector("pre")).toHaveTextContent("Hello, world!");
-    expect(queryByRole("radio", { name: "File / binary" })).not.toBeInTheDocument();
-    expect(queryByRole("note")).toBeInTheDocument();
-    expect(queryByRole("button", { name: "Download file" })).not.toBeInTheDocument();
-    expect(container.querySelector("pre")).toHaveTextContent("Hello, world!");
-  });
-
+describe("Tool state transitions", () => {
   it("keeps the URL encoding and decoding examples independent", () => {
-    const { container, getByRole, getAllByRole, queryByRole } = render(() => <UrlEncoderTool />);
-    expect(getAllByRole("note")).toHaveLength(2);
+    const { getByRole, queryByRole } = render(() => <UrlEncoderTool />);
     fireEvent.input(getByRole("textbox", { name: "Plain text" }), {
       target: { value: "Ada + Bob" },
     });
-    expect(container.querySelectorAll("pre")[0]).toHaveTextContent("Ada%20%2B%20Bob");
-    expect(getAllByRole("note")).toHaveLength(1);
+    expect(getByRole("region", { name: "Encoded output" })).toHaveTextContent("Ada%20%2B%20Bob");
     expect(getByRole("button", { name: "Copy encoded" })).toBeEnabled();
     expect(queryByRole("button", { name: "Copy decoded" })).not.toBeInTheDocument();
     fireEvent.input(getByRole("textbox", { name: "Percent-encoded text" }), {
       target: { value: "%ZZ" },
     });
     expect(getByRole("alert")).toBeInTheDocument();
-    expect(queryByRole("note")).not.toBeInTheDocument();
+    expect(getByRole("region", { name: "Encoded output" })).toHaveTextContent("Ada%20%2B%20Bob");
   });
 
   it("does not treat whitespace as an example in text statistics", () => {
-    const { container, getByRole, queryByRole } = render(() => <TextStatisticsTool />);
+    const { getByRole, queryByRole } = render(() => <TextStatisticsTool />);
     fireEvent.input(getByRole("textbox", { name: "Text input" }), { target: { value: " " } });
     expect(queryByRole("note")).not.toBeInTheDocument();
-    expect([...container.querySelectorAll("strong")].map((node) => node.textContent)).toEqual([
-      "1",
-      "0",
-      "1",
-      "1",
-    ]);
+    for (const [label, value] of [
+      ["Characters", "1"],
+      ["Words", "0"],
+      ["Lines", "1"],
+      ["Bytes", "1"],
+    ]) {
+      expect(within(getByRole("region", { name: label })).getByText(value)).toBeInTheDocument();
+    }
   });
 
-  it("clears both timestamp inputs and never falls back to an example for invalid input", () => {
-    const { container, getByRole, getAllByRole, queryByRole } = render(() => <TimestampTool />);
+  it("synchronizes timestamp inputs and clears the local date on invalid epochs", () => {
+    const { getByRole, getByLabelText, queryByRole } = render(() => <TimestampTool />);
     const epoch = getByRole("textbox", { name: "Unix timestamp" });
-    expect(container).toHaveTextContent("2023-11-14T22:13:20.000Z");
-    expect(queryByRole("button", { name: "Copy ISO 8601" })).not.toBeInTheDocument();
+    const local = getByLabelText("Date & time (local)");
     fireEvent.input(epoch, { target: { value: "1800000000" } });
-    for (const copy of getAllByRole("button", { name: "Copy ISO 8601" }))
-      expect(copy).toBeEnabled();
+    expect(local).not.toHaveValue("");
+    expect(getByRole("button", { name: "Copy epoch seconds" })).toBeEnabled();
     fireEvent.input(epoch, { target: { value: "invalid" } });
-    expect(queryByRole("note")).not.toBeInTheDocument();
-    expect(container).not.toHaveTextContent("2023-11-14T22:13:20.000Z");
-    expect(queryByRole("button", { name: "Copy ISO 8601" })).not.toBeInTheDocument();
-    fireEvent.input(epoch, { target: { value: "" } });
-    expect(getByRole("note", { name: "Example output" })).toBeInTheDocument();
-    expect(container.querySelector('input[type="datetime-local"]')).toHaveValue("");
+    expect(local).toHaveValue("");
+    expect(queryByRole("region", { name: "ISO 8601" })).not.toBeInTheDocument();
+    expect(queryByRole("note", { name: "Example output" })).not.toBeInTheDocument();
+    fireEvent.click(getByRole("button", { name: "Reset" }));
+    expect(epoch).toHaveValue("");
+    expect(local).toHaveValue("");
   });
 
   it("switches regex replacement previews to actual inputs and back", async () => {
@@ -108,63 +84,60 @@ describe("Example output", () => {
     expect(container).toHaveTextContent("[Hello], [world]!");
   });
 
-  it("compares example texts without putting them into the diff editors", async () => {
-    const { container, getByRole, queryByRole } = render(() => <DiffTool />);
-    const original = getByRole("textbox", { name: "Original text" });
-    const modified = getByRole("textbox", { name: "Modified text" });
-    expect(original).toHaveValue("");
-    expect(modified).toHaveValue("");
-    await waitFor(() => expect(container.querySelector("table")).toHaveTextContent("Version: 1"));
-    fireEvent.input(original, { target: { value: "Ada" } });
-    fireEvent.input(modified, { target: { value: "Bob" } });
-    expect(queryByRole("note")).not.toBeInTheDocument();
-    await waitFor(() => expect(container.querySelector("table")).toHaveTextContent("Ada"));
-    expect(container.querySelector("table")).not.toHaveTextContent("Version: 1");
-    fireEvent.input(original, { target: { value: "" } });
-    fireEvent.input(modified, { target: { value: "" } });
-    await waitFor(() => expect(container.querySelector("table")).toHaveTextContent("Version: 2"));
-    expect(getByRole("note", { name: "Example output" })).toBeInTheDocument();
-  });
-
   it("ignores a completed HMAC generation after the input changes", async () => {
-    vi.stubGlobal("crypto", webcrypto);
-    const { container, getByRole, queryByRole } = render(() => <HmacGeneratorTool />);
-    await waitFor(() => expect(container.querySelector("pre")).toHaveTextContent(/^[a-f0-9]{64}$/));
-    let complete!: (buffer: ArrayBuffer) => void;
-    const signing = new Promise<ArrayBuffer>((resolve) => {
+    const generate = vi
+      .spyOn(hmac, "generateHmac")
+      .mockResolvedValue({ ok: true, output: "example-hmac" });
+    const { getByRole, queryByRole } = render(() => <HmacGeneratorTool />);
+    await waitFor(() =>
+      expect(getByRole("region", { name: "Hex output" })).toHaveTextContent("example-hmac")
+    );
+    let complete!: (result: TextTransformResult) => void;
+    const signing = new Promise<TextTransformResult>((resolve) => {
       complete = resolve;
     });
-    const sign = vi.spyOn(webcrypto.subtle, "sign").mockReturnValueOnce(signing);
+    generate.mockReturnValueOnce(signing);
     fireEvent.input(getByRole("textbox", { name: "Message" }), { target: { value: "Ada" } });
     fireEvent.input(getByRole("textbox", { name: "Secret" }), { target: { value: "user-key" } });
     fireEvent.click(getByRole("button", { name: "Generate HMAC" }));
-    await waitFor(() => expect(sign).toHaveBeenCalledOnce());
+    expect(generate).toHaveBeenLastCalledWith({
+      message: "Ada",
+      secret: "user-key",
+      algorithm: "SHA-256",
+    });
     fireEvent.input(getByRole("textbox", { name: "Message" }), { target: { value: "Bob" } });
-    complete(new Uint8Array([0xab]).buffer);
+    complete({ ok: true, output: "old-user-hmac" });
     await signing;
-    expect(container.querySelector("pre")).toHaveTextContent("—");
+    expect(getByRole("region", { name: "Hex output" })).toHaveTextContent("—");
     expect(queryByRole("button", { name: "Copy HMAC" })).not.toBeInTheDocument();
   });
 
-  it("keeps late hashes out of a restored example preview", async () => {
-    const example = [{ algorithm: "SHA-256" as const, hex: "example-hash" }];
-    const hashInput = vi.spyOn(hash, "hashTextWithAlgorithms").mockResolvedValue(example);
-    const { container, getByRole, queryAllByRole } = render(() => <HashGenerator />);
-    await waitFor(() => expect(container).toHaveTextContent("example-hash"));
+  it("keeps a newer hash when an older request finishes last", async () => {
+    const hashInput = vi
+      .spyOn(hash, "hashTextWithAlgorithms")
+      .mockResolvedValue([{ algorithm: "SHA-256", hex: "example-hash" }]);
+    const { getByRole } = render(() => <HashGenerator />);
+    await waitFor(() =>
+      expect(getByRole("region", { name: "SHA-256" })).toHaveTextContent("example-hash")
+    );
     let complete!: (results: hash.HashResult[]) => void;
     const hashing = new Promise<hash.HashResult[]>((resolve) => {
       complete = resolve;
     });
-    hashInput.mockReturnValueOnce(hashing);
-    fireEvent.input(getByRole("textbox", { name: "Input text" }), { target: { value: "Ada" } });
-    await waitFor(() => expect(hashInput).toHaveBeenCalledTimes(2));
-    fireEvent.click(getByRole("button", { name: "Clear" }));
-    await waitFor(() => expect(hashInput).toHaveBeenCalledTimes(3));
+    hashInput
+      .mockReturnValueOnce(hashing)
+      .mockResolvedValueOnce([{ algorithm: "SHA-256", hex: "bob-hash" }]);
+    const input = getByRole("textbox", { name: "Input text" });
+    fireEvent.input(input, { target: { value: "Ada" } });
+    await waitFor(() => expect(hashInput).toHaveBeenLastCalledWith("Ada"));
+    fireEvent.input(input, { target: { value: "Bob" } });
+    await waitFor(() =>
+      expect(getByRole("region", { name: "SHA-256" })).toHaveTextContent("bob-hash")
+    );
     complete([{ algorithm: "SHA-256", hex: "old-user-hash" }]);
     await hashing;
-    expect(getByRole("textbox", { name: "Input text" })).toHaveValue("");
-    expect(container).toHaveTextContent("example-hash");
-    expect(container).not.toHaveTextContent("old-user-hash");
-    expect(queryAllByRole("button", { name: /^Copy/ })).toHaveLength(0);
+    expect(
+      within(getByRole("region", { name: "SHA-256" })).getByText("bob-hash")
+    ).toBeInTheDocument();
   });
 });

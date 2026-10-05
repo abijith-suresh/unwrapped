@@ -16,6 +16,20 @@ import { convertYamlToJson } from "@/lib/yamlToJson";
 describe("structured data preservation", () => {
   const numbers = "[9007199254740993,1.234567890123456789,1e500,1e-500,-0,2.370]";
 
+  it("sorts nested keys when converting between JSON and YAML", () => {
+    const yaml = convertJsonToYaml('{"z":true,"a":{"c":2,"b":1},"items":[null]}');
+    expect(yaml).toEqual({
+      ok: true,
+      output: "a:\n  b: 1\n  c: 2\nitems:\n  - null\nz: true",
+    });
+    if (!yaml.ok) throw new Error("Expected conversion to succeed");
+    expect(convertYamlToJson(yaml.output)).toEqual({
+      ok: true,
+      output:
+        '{\n  "a": {\n    "b": 1,\n    "c": 2\n  },\n  "items": [\n    null\n  ],\n  "z": true\n}',
+    });
+  });
+
   it("preserves numeric tokens through formatting, sorting and JSON/YAML conversion", () => {
     expect(formatJson(numbers, 2, true, true).raw).toBe(numbers);
     const yaml = convertJsonToYaml(numbers);
