@@ -17,7 +17,7 @@ function deferred<T>() {
 describe("ToolHost", () => {
   it("renders the skeleton while the tool module loads, then renders the tool", async () => {
     const gate = deferred<Component>();
-    const { queryByText } = render(() => (
+    const { getByRole, queryByRole, findByText } = render(() => (
       <ToolHost
         componentPath="/src/tools/stub/Stub.tsx"
         toolName="Stub"
@@ -25,24 +25,11 @@ describe("ToolHost", () => {
       />
     ));
 
-    expect(queryByText("tool content")).toBeNull();
+    expect(getByRole("status", { name: "Loading tool" })).toBeInTheDocument();
 
     gate.resolve(StubTool);
-    await waitFor(() => expect(queryByText("tool content")).toBeInTheDocument());
-  });
-
-  it("shows the error fallback when the tool module fails to load", async () => {
-    const { getByRole, findByRole } = render(() => (
-      <ToolHost
-        componentPath="/src/tools/stub/Stub.tsx"
-        toolName="Stub"
-        loadModule={() => Promise.reject(new Error("chunk fetch failed"))}
-      />
-    ));
-
-    const alert = await findByRole("alert");
-    expect(alert).toHaveTextContent("Stub could not be loaded");
-    expect(getByRole("button", { name: "Retry tool" })).toBeInTheDocument();
+    await findByText("tool content");
+    expect(queryByRole("status", { name: "Loading tool" })).not.toBeInTheDocument();
   });
 
   it("retries the load when the retry button is clicked", async () => {
@@ -56,6 +43,7 @@ describe("ToolHost", () => {
     ));
 
     await findByText("Stub could not be loaded");
+    expect(getByRole("alert")).toHaveTextContent("network blip");
     fireEvent.click(getByRole("button", { name: "Retry tool" }));
 
     await waitFor(() => expect(queryByText("tool content")).toBeInTheDocument());

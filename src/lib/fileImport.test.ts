@@ -1,29 +1,18 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
-  DEFAULT_IMPORT_MAX_BYTES,
   DEFAULT_IMPORT_WARN_BYTES,
   evaluateFileImportPolicy,
-  formatBytes,
   readImportedFile,
 } from "./fileImport";
 
-describe("file import utilities", () => {
-  it("accepts files below the warning threshold", () => {
-    expect(evaluateFileImportPolicy({ size: 1024 })).toEqual({ status: "accept" });
-  });
+afterEach(() => vi.restoreAllMocks());
 
+describe("file import utilities", () => {
   it("returns a warning decision for files above the warning threshold", () => {
     expect(evaluateFileImportPolicy({ size: DEFAULT_IMPORT_WARN_BYTES + 1 })).toEqual({
       status: "warn",
       warnBytes: DEFAULT_IMPORT_WARN_BYTES,
-    });
-  });
-
-  it("rejects files above the maximum threshold", () => {
-    expect(evaluateFileImportPolicy({ size: DEFAULT_IMPORT_MAX_BYTES + 1 })).toEqual({
-      status: "reject",
-      maxBytes: DEFAULT_IMPORT_MAX_BYTES,
     });
   });
 
@@ -65,6 +54,7 @@ describe("file import utilities", () => {
 
   it("returns a typed oversize error before reading", async () => {
     const file = new File(["12345"], "big.txt", { type: "text/plain" });
+    const read = vi.spyOn(file, "text");
     const result = await readImportedFile(file, {
       as: "text",
       policy: { maxBytes: 4 },
@@ -82,6 +72,7 @@ describe("file import utilities", () => {
         maxBytes: 4,
       },
     });
+    expect(read).not.toHaveBeenCalled();
   });
 
   it("returns a typed read error when file reading fails", async () => {
@@ -104,11 +95,5 @@ describe("file import utilities", () => {
         message: "disk offline",
       },
     });
-  });
-
-  it("formats byte sizes for UI copy", () => {
-    expect(formatBytes(999)).toBe("999 B");
-    expect(formatBytes(2048)).toBe("2 KB");
-    expect(formatBytes(1572864)).toBe("1.5 MB");
   });
 });

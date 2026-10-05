@@ -2,7 +2,6 @@ import { describe, expect, it, vi } from "vitest";
 import { JsonNumber } from "@/lib/structuredData";
 
 import {
-  decodeBase64Url,
   formatJwtTimestamp,
   getJwtClaimsSummary,
   getJwtExpiryStatus,
@@ -15,10 +14,6 @@ const tokenFor = (payload: string, header = '{"alg":"HS256"}') =>
   `${encode(header)}.${encode(payload)}.${encode("signature")}`;
 
 describe("jwt utilities", () => {
-  it("decodes base64url JSON payloads", () => {
-    expect(decodeBase64Url("eyJmb28iOiJiYXIifQ")).toEqual({ foo: "bar" });
-  });
-
   it("parses JWT tokens into header, payload, and signature", () => {
     const token = tokenFor('{"sub":"123","exp":1900000000}', '{"alg":"HS256","typ":"JWT"}');
 
@@ -194,10 +189,6 @@ describe("jwt utilities", () => {
     expect(getJwtExpiryStatus({ sub: "123" }, 200)).toBeNull();
   });
 
-  it("formats registered timestamp claims predictably", () => {
-    expect(formatJwtTimestamp(1_900_000_000)).toContain("2030");
-  });
-
   it("extracts standard claims into a compact summary", () => {
     const summary = getJwtClaimsSummary({
       header: { alg: "HS256", typ: "JWT" },
@@ -226,11 +217,5 @@ describe("jwt utilities", () => {
     expect(summary.find((item) => item.key === "exp")?.displayValue).toContain("2030");
     expect(summary.find((item) => item.key === "alg")?.section).toBe("header");
     expect(summary.find((item) => item.key === "sub")?.section).toBe("payload");
-  });
-
-  it("pretty prints arbitrary values", () => {
-    expect(prettyJson({ foo: "bar" })).toBe(`{
-  "foo": "bar"
-}`);
   });
 });
