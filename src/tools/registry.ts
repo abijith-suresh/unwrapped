@@ -43,7 +43,11 @@ export interface Tool {
 export const tools: Tool[] = [
   {
     id: "jwt-decoder",
-    help: ["Decoding shows token contents. It does not verify the signature."],
+    help: [
+      "Decoding shows token contents. It does not verify the signature or authenticate claims. Unsecured alg:none tokens use an empty signature.",
+      "Header and payload must be UTF-8 JSON objects with unique keys. Decoded JSON preserves numeric tokens, including large integers.",
+      "NumericDate claims are seconds since the Unix epoch and may include fractions. Expiration occurs at or after exp, with no clock-skew allowance. Dates use your local timezone and the browser's date range and precision.",
+    ],
     name: "JWT Decoder",
     description: "Decode and inspect JSON Web Tokens. View header, payload, expiry.",
     category: "security",
@@ -150,7 +154,12 @@ export const tools: Tool[] = [
   },
   {
     id: "timestamp",
-    help: ["Unix timestamp units are detected as seconds or milliseconds."],
+    help: [
+      "Choose Auto, Seconds, or Milliseconds. Auto interprets absolute values greater than 1,000,000,000,000 as milliseconds and all others as seconds. Choose Milliseconds for early, negative, or short millisecond epochs.",
+      "Timestamps accept decimal digits, an optional leading sign, and an optional fractional part, such as -1.123 seconds. Hexadecimal, exponent notation, non-finite values, sub-millisecond precision, and values outside ±8,640,000,000,000,000 milliseconds are rejected.",
+      "Local datetime input supports seconds and milliseconds in your browser timezone. Years before 1 cannot be shown in the local date control; use epoch input for those dates. Ambiguous daylight-saving times follow the browser's local-time rules.",
+      "Mongo ObjectID seeds are shown only for unsigned 32-bit epoch seconds, from 0 through 4,294,967,295.",
+    ],
     name: "Timestamp Converter",
     description: "Convert Unix timestamps to human-readable dates across timezones.",
     category: "time",
@@ -165,6 +174,7 @@ export const tools: Tool[] = [
     inputFormats: ["text"],
     help: [
       "User patterns run in a background worker with a two-second timeout and a 10,000-match limit. Edit an input to retry after cancellation or timeout.",
+      'Capture counts total numbered group slots across matches, including unmatched groups. Named groups are separate aliases, not extra captures. Reports use null for unmatched groups and "" for matched empty strings.',
     ],
     name: "Regex Tester",
     description: "Test regular expressions with real-time match highlighting.",
