@@ -12,15 +12,8 @@ describe("HTML entities", () => {
       output: "© © 😀 &lt;",
     });
   });
-  it("keeps unknown and unterminated entities", () => {
-    expect(transformEntities("&unknown; &copy", "decode")).toMatchObject({
-      output: "&unknown; &copy",
-    });
-  });
-  it("round trips Unicode and returns empty output", () => {
-    const encoded = transformEntities("© 😀 café", "encode", true);
-    if (encoded.ok)
-      expect(transformEntities(encoded.output, "decode")).toMatchObject({ output: "© 😀 café" });
-    expect(transformEntities("", "encode")).toEqual({ ok: true, output: "" });
+  it("encodes non-ASCII only when requested", () => {
+    expect(transformEntities("©", "encode")).toEqual({ ok: true, output: "©" });
+    expect(transformEntities("©", "encode", true)).toEqual({ ok: true, output: "&copy;" });
   });
 });

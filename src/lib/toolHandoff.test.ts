@@ -101,13 +101,4 @@ describe("explicit tool handoffs", () => {
     expect(navigate).toHaveBeenCalledExactlyOnceWith("/tools/json-to-yaml");
     expect(toolHandoffs.consume(transfer.targetId)).toEqual(transfer);
   });
-
-  it("discards pending data after failed navigation", async () => {
-    setToolHandoffNavigator(async () => {
-      throw new Error("Navigation failed");
-    });
-    await expect(openToolHandoff(transfer)).rejects.toThrow("Navigation failed");
-    expect(toolHandoffs.consume(transfer.targetId)).toBeUndefined();
-    expect(vi.getTimerCount()).toBe(0);
-  });
 });

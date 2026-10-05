@@ -1,6 +1,9 @@
 import { fireEvent, render, waitFor } from "@solidjs/testing-library";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import * as fileImport from "@/lib/fileImport";
 import Base64Tool from "./Base64Tool";
+
+afterEach(() => vi.restoreAllMocks());
 
 describe("Base64 composed controls and panels", () => {
   it("opens a file directly and removes it to return to typed input", async () => {
@@ -29,6 +32,7 @@ describe("Base64 composed controls and panels", () => {
   });
 
   it("ignores a pending file read after reset", async () => {
+    const read = vi.spyOn(fileImport, "readImportedFile");
     const view = render(() => <Base64Tool />);
     let finish!: (value: ArrayBuffer) => void;
     const file = new File(["Ada"], "pending.txt");
@@ -43,7 +47,7 @@ describe("Base64 composed controls and panels", () => {
     });
     fireEvent.click(view.getByRole("button", { name: "Reset" }));
     finish(new TextEncoder().encode("Ada").buffer);
-    await Promise.resolve();
+    await read.mock.results[0].value;
     expect(view.getByRole("textbox", { name: "Plain text" })).toHaveValue("");
     expect(view.getByRole("note")).toBeInTheDocument();
     expect(view.queryByRole("button", { name: "Remove file" })).not.toBeInTheDocument();

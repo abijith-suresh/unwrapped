@@ -18,6 +18,8 @@ describe("ToolSegmentedControl", () => {
     const json = getByRole("radio", { name: "JSON" });
     const yaml = getByRole("radio", { name: "YAML" });
     expect(json).toHaveAttribute("aria-checked", "true");
+    expect(json).toHaveAttribute("type", "button");
+    expect(json).not.toHaveAttribute("aria-pressed");
     expect(yaml).toHaveAttribute("aria-checked", "false");
 
     fireEvent.click(yaml);

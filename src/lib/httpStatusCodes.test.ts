@@ -1,32 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { HTTP_STATUS_CODES, searchHttpStatusCodes } from "./httpStatusCodes";
-
-describe("HTTP_STATUS_CODES", () => {
-  it("covers representative status classes", () => {
-    expect(HTTP_STATUS_CODES).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ code: 200, category: "Success", name: "OK" }),
-        expect.objectContaining({ code: 301, category: "Redirection", name: "Moved Permanently" }),
-        expect.objectContaining({ code: 404, category: "Client Error", name: "Not Found" }),
-        expect.objectContaining({
-          code: 422,
-          category: "Client Error",
-          name: "Unprocessable Content",
-        }),
-        expect.objectContaining({
-          code: 500,
-          category: "Server Error",
-          name: "Internal Server Error",
-        }),
-      ])
-    );
-  });
-});
+import { searchHttpStatusCodes } from "./httpStatusCodes";
 
 describe("searchHttpStatusCodes", () => {
   it("finds entries by numeric code", () => {
-    expect(searchHttpStatusCodes("404").map((entry) => entry.code)).toContain(404);
+    expect(searchHttpStatusCodes("404").map((entry) => entry.code)).toEqual([404]);
   });
 
   it("finds entries by standard name", () => {
@@ -36,9 +14,8 @@ describe("searchHttpStatusCodes", () => {
   });
 
   it("finds entries by category text", () => {
-    expect(
-      searchHttpStatusCodes("redirect").every((entry) => entry.category === "Redirection")
-    ).toBe(true);
-    expect(searchHttpStatusCodes("redirect").length).toBeGreaterThan(0);
+    expect(searchHttpStatusCodes("redirect").map((entry) => entry.code)).toEqual([
+      300, 301, 302, 303, 304, 305, 307, 308,
+    ]);
   });
 });

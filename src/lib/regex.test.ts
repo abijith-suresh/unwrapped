@@ -7,9 +7,15 @@ describe("regex utilities", () => {
     const result = buildRegexResult("foo", new Set(["g"]), "foo bar foo");
 
     expect(result.error).toBeNull();
-    expect(result.matches).toHaveLength(2);
-    expect(result.highlighted.map((segment) => segment.text).join("")).toBe("foo bar foo");
-    expect(result.highlighted.some((segment) => segment.kind === "match")).toBe(true);
+    expect(result.matches).toEqual([
+      { index: 0, fullMatch: "foo", groups: [], namedGroups: [] },
+      { index: 8, fullMatch: "foo", groups: [], namedGroups: [] },
+    ]);
+    expect(result.highlighted).toEqual([
+      { text: "foo", kind: "match" },
+      { text: " bar ", kind: "plain" },
+      { text: "foo", kind: "match" },
+    ]);
     expect(result.summary.firstMatchIndex).toBe(0);
   });
 
@@ -18,7 +24,10 @@ describe("regex utilities", () => {
     const result = buildRegexResult("script", new Set(["g"]), input);
 
     expect(result.highlighted.map((segment) => segment.text).join("")).toBe(input);
-    expect(result.highlighted.some((segment) => segment.kind === "match")).toBe(true);
+    expect(result.highlighted.filter((segment) => segment.kind === "match")).toEqual([
+      { text: "script", kind: "match" },
+      { text: "script", kind: "match" },
+    ]);
   });
 
   it("captures named and unnamed groups", () => {
@@ -142,19 +151,21 @@ describe("regex utilities", () => {
   });
 
   it("builds replacement results", () => {
-    const result = buildRegexReplaceResult("foo", new Set(["g"]), "foo bar foo", "baz");
-
-    expect("error" in result).toBe(false);
-    if (!("error" in result)) {
-      expect(result.output).toBe("baz bar baz");
-      expect(result.replacements).toBe(2);
-    }
+    expect(buildRegexReplaceResult("foo", new Set(["g"]), "foo bar foo", "baz")).toEqual({
+      output: "baz bar baz",
+      replacements: 2,
+    });
   });
 
   it("tracks empty matches in the summary", () => {
     const result = buildRegexResult("^", new Set(["g", "m"]), "foo\nbar");
 
-    expect(result.summary.emptyMatchCount).toBeGreaterThan(0);
+    expect(result.error).toBeNull();
+    expect(result.matches).toEqual([
+      { index: 0, fullMatch: "", groups: [], namedGroups: [] },
+      { index: 4, fullMatch: "", groups: [], namedGroups: [] },
+    ]);
+    expect(result.summary.emptyMatchCount).toBe(2);
   });
 });
 
