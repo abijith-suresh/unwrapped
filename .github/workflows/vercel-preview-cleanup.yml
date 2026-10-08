@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   cleanup:
-    uses: abijith-suresh/workflows/.github/workflows/vercel-preview-cleanup.yml@e3b24cdfa19cbad682b66bc63f1c317934478c3a # PR #28, unreleased
+    uses: abijith-suresh/workflows/.github/workflows/vercel-preview-cleanup.yml@a53b4c876bca362ca058c99c01c4c0a955d71c9d # 0.7.0
     with:
       vercel_project: unwrapped-tools
       vercel_scope: abijiths-projects-1
