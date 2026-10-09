@@ -43,3 +43,8 @@ Thumbs.db
 # TypeScript
 *.tsbuildinfo
 .vercel
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
