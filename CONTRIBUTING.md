@@ -114,5 +114,5 @@ flows and limitations in the PR. Avoid DOM snapshots and tests that assert utili
 
 ## Git workflow
 
-Create a branch from the latest `main`. Keep each PR focused. Use a Conventional Commit type such
-as `feat`, `fix`, `docs`, `refactor`, `chore`, `test`, `ci`, or `build`.
+Create a branch from the latest `main`. Keep each PR focused. Use a Conventional Commit; the
+allowed types live in `commitlint.config.ts`.
