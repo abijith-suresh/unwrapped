@@ -114,5 +114,14 @@ flows and limitations in the PR. Avoid DOM snapshots and tests that assert utili
 
 ## Git workflow
 
-Create a branch from the latest `main`. Keep each PR focused. Use a Conventional Commit; the
-allowed types live in `commitlint.config.ts`.
+- Create a branch from the latest `main`; never commit directly to `main`.
+- Keep each PR focused and leave merging to the owner. The expected merge strategy is squash.
+- Use Conventional Commits; allowed types live in `commitlint.config.ts`.
+- Run `bun run verify` before handoff and add focused tests for what you touched; CI owns the full
+  suite.
+
+## Traps
+
+- `src/tools/registry.ts` is the single tool catalog: metadata, route, slug, icon, accent, and
+  help live there. Never maintain a second catalog in docs or scripts.
+- Keep product and privacy claims in `README.md` and `/privacy` accurate.
