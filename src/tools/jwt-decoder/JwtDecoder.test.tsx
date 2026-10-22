@@ -58,9 +58,11 @@ describe("JWT inspector integration", () => {
     });
     expect(downloaded).toContain(`Payload\n${expected}`);
 
-    fireEvent.change(view.getAllByRole("combobox", { name: "Open output in another tool" })[1], {
-      target: { value: "json-formatter" },
+    const handoffButtons = view.getAllByRole("button", {
+      name: "Open output in another tool",
     });
+    fireEvent.click(handoffButtons[1]);
+    fireEvent.click(view.getByRole("menuitem", { name: "JSON Formatter" }));
     await waitFor(() => expect(navigate).toHaveBeenCalledWith("/tools/json-formatter"));
     view.unmount();
     const destination = render(() => <JsonFormatter />);

@@ -6,6 +6,10 @@ import { setToolHandoffNavigator, toolHandoffs } from "@/lib/toolHandoff";
 
 afterEach(() => toolHandoffs.clear());
 
+function openMenu(getByRole: ReturnType<typeof render>["getByRole"]) {
+  fireEvent.click(getByRole("button", { name: "Open output in another tool" }));
+}
+
 describe("output handoff controls", () => {
   it("offers only compatible tools for real successful results", () => {
     const { getByRole, queryByRole } = render(() => {
@@ -27,14 +31,15 @@ describe("output handoff controls", () => {
         </div>
       );
     });
-    expect(queryByRole("combobox")).not.toBeInTheDocument();
+    expect(queryByRole("button", { name: "Open output in another tool" })).not.toBeInTheDocument();
     fireEvent.input(getByRole("textbox"), { target: { value: '{"n":9007199254740993}' } });
-    expect(getByRole("combobox", { name: "Open output in another tool" })).toBeEnabled();
-    expect(getByRole("option", { name: "JSON to YAML" })).toBeInTheDocument();
-    expect(queryByRole("option", { name: "YAML to JSON" })).not.toBeInTheDocument();
-    expect(queryByRole("option", { name: "JSON Formatter" })).not.toBeInTheDocument();
+    expect(getByRole("button", { name: "Open output in another tool" })).toBeInTheDocument();
+    openMenu(getByRole);
+    expect(getByRole("menuitem", { name: "JSON to YAML" })).toBeEnabled();
+    expect(queryByRole("menuitem", { name: "YAML to JSON" })).not.toBeInTheDocument();
+    expect(queryByRole("menuitem", { name: "JSON Formatter" })).not.toBeInTheDocument();
     fireEvent.input(getByRole("textbox"), { target: { value: "bad" } });
-    expect(queryByRole("combobox")).not.toBeInTheDocument();
+    expect(queryByRole("button", { name: "Open output in another tool" })).not.toBeInTheDocument();
   });
 
   it("keeps the source result and clears the transfer when navigation fails", async () => {
@@ -50,11 +55,12 @@ describe("output handoff controls", () => {
         />
       </div>
     ));
-    fireEvent.change(getByRole("combobox"), { target: { value: "json-to-yaml" } });
+    openMenu(getByRole);
+    fireEvent.click(getByRole("menuitem", { name: "JSON to YAML" }));
     await waitFor(() => expect(getByRole("alert")).toHaveTextContent("Could not open the tool"));
     expect(getByText('{"private":"unchanged"}')).toBeInTheDocument();
     expect(toolHandoffs.consume("json-to-yaml")).toBeUndefined();
-    expect(getByRole("combobox")).toBeEnabled();
+    expect(getByRole("button", { name: "Open output in another tool" })).toBeEnabled();
   });
 
   it("omits handoffs when output is marked as binary", () => {
@@ -68,6 +74,6 @@ describe("output handoff controls", () => {
         />
       </div>
     ));
-    expect(queryByRole("combobox")).not.toBeInTheDocument();
+    expect(queryByRole("button", { name: "Open output in another tool" })).not.toBeInTheDocument();
   });
 });

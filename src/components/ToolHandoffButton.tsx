@@ -1,6 +1,8 @@
 import { ArrowRight, CircleAlert } from "lucide-solid";
-import { createMemo, createSignal, For, onMount, Show } from "solid-js";
+import { createMemo, createSignal, onMount, Show } from "solid-js";
+import ToolMenu from "@/components/tool/ToolMenu";
 import type { TextFormat } from "@/lib/download";
+import { ICON_MAP } from "@/lib/iconMap";
 import { getHandoffTargets, openToolHandoff } from "@/lib/toolHandoff";
 
 interface Props {
@@ -18,16 +20,26 @@ export default function ToolHandoffButton(props: Props) {
     setSourceId(document.querySelector<HTMLElement>("[data-tool-id]")?.dataset.toolId ?? "");
   });
   const targets = createMemo(() => getHandoffTargets(sourceId(), props.format ?? "text"));
-  async function open(select: HTMLSelectElement) {
-    const targetId = select.value;
-    select.value = "";
-    if (!targetId || pending()) return;
+  const items = createMemo(() =>
+    targets().map((tool) => {
+      const Icon = ICON_MAP[tool.icon];
+      return {
+        id: tool.id,
+        label: tool.name,
+        icon: Icon ? (
+          <Icon size={16} class="text-[var(--text-secondary)]" aria-hidden="true" />
+        ) : undefined,
+      };
+    })
+  );
+
+  async function handoff(id: string) {
     setPending(true);
     setFailed(false);
     try {
       await openToolHandoff({
         sourceId: sourceId(),
-        targetId,
+        targetId: id,
         value: props.value,
         format: props.format ?? "text",
       });
@@ -37,31 +49,23 @@ export default function ToolHandoffButton(props: Props) {
       setPending(false);
     }
   }
+
   return (
     <Show when={props.value && targets().length > 0}>
-      <div class="relative inline-flex min-h-[var(--size-control)] min-w-[var(--size-control)] shrink-0 items-center justify-center gap-2 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-[var(--fs-control)] font-semibold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--focus-ring)]">
-        {failed() ? (
-          <CircleAlert size={16} aria-hidden="true" />
-        ) : (
+      <ToolMenu
+        label={props.label ?? "Open output in another tool"}
+        title={failed() ? "Could not open the tool. Try again." : "Open in another tool"}
+        disabled={pending()}
+        items={items()}
+        onSelect={(item) => void handoff(item.id)}
+      >
+        <Show when={!failed()} fallback={<CircleAlert size={16} aria-hidden="true" />}>
           <ArrowRight size={16} aria-hidden="true" />
-        )}
+        </Show>
         <span class={props.compact ? "hidden sm:inline" : undefined}>
           {failed() ? "Retry open…" : "Open in…"}
         </span>
-        <select
-          value=""
-          aria-label={props.label ?? "Open output in another tool"}
-          title={failed() ? "Could not open the tool. Try again." : "Open in another tool"}
-          disabled={pending()}
-          onChange={(event) => void open(event.currentTarget)}
-          class="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-        >
-          <option value="" disabled>
-            Open in…
-          </option>
-          <For each={targets()}>{(tool) => <option value={tool.id}>{tool.name}</option>}</For>
-        </select>
-      </div>
+      </ToolMenu>
       <Show when={failed()}>
         <span role="alert" class="sr-only">
           Could not open the tool. Try again.

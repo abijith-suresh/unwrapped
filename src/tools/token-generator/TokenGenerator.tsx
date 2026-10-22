@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js";
+import { createSignal, Show } from "solid-js";
 import Input from "@/components/primitives/solid/Input";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolContainer from "@/components/tool/ToolContainer";
@@ -24,6 +24,8 @@ export default function TokenGenerator() {
   const [options, setOptions] = createSignal<TokenGeneratorOptions>(DEFAULT_TOKEN_OPTIONS);
   const [token, setToken] = createSignal(initial.token);
   const [error, setError] = createSignal(initial.error);
+  const canGenerate = () =>
+    options().uppercase || options().lowercase || options().digits || options().symbols;
 
   function regenerate(nextOptions: TokenGeneratorOptions = options()) {
     const result = generateToken(nextOptions);
@@ -43,7 +45,12 @@ export default function TokenGenerator() {
   ) {
     const next = { ...options(), [key]: value };
     setOptions(next);
+    if (!canGenerateFrom(next)) return;
     regenerate(next);
+  }
+
+  function canGenerateFrom(next: TokenGeneratorOptions) {
+    return Boolean(next.uppercase || next.lowercase || next.digits || next.symbols);
   }
 
   return (
@@ -59,24 +66,33 @@ export default function TokenGenerator() {
               max={MAX_TOKEN_LENGTH}
               value={String(options().length)}
               onInput={(value) => updateOption("length", Number(value) || 0)}
-              controlClass="!w-24"
+              controlClass="w-[var(--size-numeric-field)]"
             />
-            <div class="flex flex-wrap gap-2">
-              {(["uppercase", "lowercase", "digits", "symbols"] as const).map((key) => (
-                <ToolActionButton
-                  active={options()[key]}
-                  onClick={() => updateOption(key, !options()[key])}
-                >
-                  {key[0].toUpperCase() + key.slice(1)}
-                </ToolActionButton>
-              ))}
+            <div class="flex flex-col gap-1.5">
+              <div class="flex flex-wrap gap-2">
+                {(["uppercase", "lowercase", "digits", "symbols"] as const).map((key) => (
+                  <ToolActionButton
+                    active={options()[key]}
+                    onClick={() => updateOption(key, !options()[key])}
+                  >
+                    {key[0].toUpperCase() + key.slice(1)}
+                  </ToolActionButton>
+                ))}
+              </div>
+              <Show when={!canGenerate()}>
+                <p class="m-0 text-[var(--fs-label)] text-[var(--accent-error)]" aria-live="polite">
+                  Select at least one character set.
+                </p>
+              </Show>
             </div>
           </>
         }
         actions={
-          <ToolActionButton onClick={() => regenerate()} variant="primary">
-            Regenerate
-          </ToolActionButton>
+          <Show when={canGenerate()}>
+            <ToolActionButton onClick={() => regenerate()} variant="primary">
+              Regenerate
+            </ToolActionButton>
+          </Show>
         }
         error={error()}
         fields={[{ label: "Generated token", value: token(), copyLabel: "Copy token" }]}
