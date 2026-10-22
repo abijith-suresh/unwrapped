@@ -39,7 +39,7 @@ export default function ToolHandoffButton(props: Props) {
   }
   return (
     <Show when={props.value && targets().length > 0}>
-      <div class="relative inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-[0.8125rem] font-semibold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--focus-ring)]">
+      <div class="relative inline-flex min-h-[var(--size-control)] min-w-[var(--size-control)] shrink-0 items-center justify-center gap-2 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-[var(--fs-control)] font-semibold text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--focus-ring)]">
         {failed() ? (
           <CircleAlert size={16} aria-hidden="true" />
         ) : (
