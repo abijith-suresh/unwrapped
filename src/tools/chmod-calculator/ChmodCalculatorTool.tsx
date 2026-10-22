@@ -1,9 +1,9 @@
 import { createMemo, createSignal, For } from "solid-js";
 
-import Card from "@/components/primitives/solid/Card";
-import Label from "@/components/primitives/solid/Label";
+import ToolActionButton from "@/components/ToolActionButton";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
+import ToolPanel from "@/components/tool/ToolPanel";
 import { buildChmodResult, type ChmodPermissions } from "@/lib/chmod";
 
 const SUBJECTS = [
@@ -50,46 +50,32 @@ export default function ChmodCalculatorTool() {
           { label: "Command", value: result().command, copyLabel: "Copy command" },
         ]}
         input={
-          <Card class="overflow-auto">
-            <table class="w-full border-collapse">
-              <thead>
-                <tr>
-                  <th class="px-4 py-3 text-left">
-                    <Label>Scope</Label>
-                  </th>
-                  <For each={PERMISSIONS}>
-                    {([_, label]) => (
-                      <th class="px-4 py-3 text-left">
-                        <Label>{label}</Label>
-                      </th>
-                    )}
-                  </For>
-                </tr>
-              </thead>
-              <tbody>
-                <For each={SUBJECTS}>
-                  {([subject, label]) => (
-                    <tr>
-                      <td class="px-4 py-3 text-[var(--text-primary)]">{label}</td>
-                      <For each={PERMISSIONS}>
-                        {([permission]) => (
-                          <td class="px-4 py-3">
-                            <input
-                              aria-label={`${label} ${permission}`}
-                              name={`chmod-${subject}-${permission}`}
-                              type="checkbox"
-                              checked={permissions()[subject][permission]}
-                              onChange={() => togglePermission(subject, permission)}
-                            />
-                          </td>
-                        )}
-                      </For>
-                    </tr>
-                  )}
-                </For>
-              </tbody>
-            </table>
-          </Card>
+          <ToolPanel title="Permissions">
+            <div class="grid gap-1.5">
+              <For each={SUBJECTS}>
+                {([subject, label]) => (
+                  <div class="grid grid-cols-[minmax(3.5rem,auto)_repeat(3,minmax(0,1fr))] items-center gap-1.5">
+                    <span class="text-[var(--fs-label)] font-semibold text-[var(--text-secondary)]">
+                      {label}
+                    </span>
+                    <For each={PERMISSIONS}>
+                      {([permission, permissionLabel]) => (
+                        <ToolActionButton
+                          variant="toggle"
+                          active={permissions()[subject][permission]}
+                          onClick={() => togglePermission(subject, permission)}
+                          aria-label={`${label} ${permissionLabel}`}
+                          class="w-full px-2"
+                        >
+                          {permissionLabel}
+                        </ToolActionButton>
+                      )}
+                    </For>
+                  </div>
+                )}
+              </For>
+            </div>
+          </ToolPanel>
         }
       />
     </ToolContainer>
