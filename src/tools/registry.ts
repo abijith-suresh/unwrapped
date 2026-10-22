@@ -267,7 +267,7 @@ export const tools: Tool[] = [
       "Bundled reference checked on October 1, 2026. No DNS queries or HTTP requests are made. Source links open external documentation.",
     ],
     name: "DNS & HTTP Headers Reference",
-    description: "Search bundled DNS record types and HTTP headers with copyable examples.",
+    description: "Search grouped DNS and HTTP reference tables with copyable examples.",
     category: "network",
     keywords: ["network", "reference"],
     icon: "BadgeInfo",

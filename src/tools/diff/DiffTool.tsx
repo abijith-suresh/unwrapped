@@ -13,6 +13,7 @@ import ToolActionButton from "@/components/ToolActionButton";
 import ToolDownloadButton from "@/components/ToolDownloadButton";
 import ToolHandoffButton from "@/components/ToolHandoffButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolBadge from "@/components/tool/ToolBadge";
 import ToolComparerWorkspace from "@/components/tool/ToolComparerWorkspace";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolDropZone from "@/components/tool/ToolDropZone";
@@ -541,32 +542,24 @@ export default function DiffTool() {
             titleAddon={
               <>
                 <Show when={pending()}>
-                  <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-2 py-0.5 text-[var(--fs-2xs)] font-medium leading-none text-[var(--text-muted)]">
-                    <span
-                      aria-hidden="true"
-                      class="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--accent-primary)]"
-                    />
+                  <ToolBadge tone="muted" pulse>
                     Comparing…
-                  </span>
+                  </ToolBadge>
                 </Show>
                 <Show when={analysis() !== null && !isExample()}>
-                  <span class="inline-flex items-center rounded-full border border-[var(--border)] px-2 py-0.5 text-[var(--fs-2xs)] font-semibold uppercase tracking-[0.12em] leading-none text-[var(--text-muted)]">
-                    {STRATEGY_LABELS[strategy()] ?? "Text"}
-                  </span>
+                  <ToolBadge tone="muted">{STRATEGY_LABELS[strategy()] ?? "Text"}</ToolBadge>
                 </Show>
                 <Show when={analysis() !== null && !pending()}>
                   <Show
                     when={isIdentical()}
                     fallback={
-                      <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-2 py-0.5 text-[var(--fs-2xs)] font-semibold tabular-nums leading-none">
+                      <ToolBadge tone="muted" class="tabular-nums">
                         <span class="text-[var(--accent-success)]">+{stats().added}</span>
                         <span class="text-[var(--accent-error)]">−{stats().removed}</span>
-                      </span>
+                      </ToolBadge>
                     }
                   >
-                    <span class="inline-flex items-center rounded-full border border-[var(--accent-success)] px-2 py-0.5 text-[var(--fs-2xs)] font-semibold leading-none text-[var(--accent-success)]">
-                      Identical
-                    </span>
+                    <ToolBadge tone="success">Identical</ToolBadge>
                   </Show>
                 </Show>
               </>
@@ -624,11 +617,7 @@ export default function DiffTool() {
                     <ToolStatusMessage>
                       <span class="flex items-center justify-between gap-3">
                         Comparing…
-                        <ToolActionButton
-                          variant="ghost"
-                          onClick={cancelComparison}
-                          class="!min-h-0 !px-2.5 !py-1"
-                        >
+                        <ToolActionButton variant="ghost" onClick={cancelComparison} compact>
                           Cancel
                         </ToolActionButton>
                       </span>
