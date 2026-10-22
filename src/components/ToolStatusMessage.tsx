@@ -1,5 +1,7 @@
 import { type JSX, splitProps } from "solid-js";
 
+import { cn } from "@/lib/cn";
+
 type ToolStatusTone = "muted" | "success" | "warning" | "error";
 
 interface ToolStatusMessageProps extends JSX.HTMLAttributes<HTMLDivElement> {
@@ -30,7 +32,7 @@ const TONE_STYLES: Record<ToolStatusTone, JSX.CSSProperties> = {
 };
 
 export default function ToolStatusMessage(props: ToolStatusMessageProps) {
-  const [local, rest] = splitProps(props, ["children", "style", "tone"]);
+  const [local, rest] = splitProps(props, ["children", "class", "style", "tone"]);
   const tone = () => local.tone ?? "muted";
   const style = () => (typeof local.style === "object" && local.style !== null ? local.style : {});
 
@@ -39,10 +41,11 @@ export default function ToolStatusMessage(props: ToolStatusMessageProps) {
       {...rest}
       aria-live={tone() === "error" ? "assertive" : "polite"}
       role={tone() === "error" ? "alert" : "status"}
+      class={cn("tool-appear", local.class)}
       style={{
-        padding: "0.75rem 1rem",
-        "border-radius": "0.5rem",
-        "font-size": "0.8125rem",
+        padding: "var(--space-3) var(--space-4)",
+        "border-radius": "var(--radius-control)",
+        "font-size": "var(--fs-control)",
         ...TONE_STYLES[tone()],
         ...style(),
       }}

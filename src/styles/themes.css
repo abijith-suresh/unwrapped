@@ -50,6 +50,11 @@
   --fs-section: 1.35rem;
   --fs-metric: 1.625rem;
 
+  /* Panel geometry: header band and the editor viewport height used by
+     code-editor panels and the loading skeleton (no hydration shift). */
+  --tool-panel-header: 4.25rem;
+  --editor-panel-height: clamp(14rem, 30dvh, 20rem);
+
   /* Elevation: cards, popovers/dialogs/dropdowns. */
   --shadow-card: 0 0.8rem 2.2rem rgb(0 0 0 / 18%);
   --shadow-pop: 0 12px 32px rgb(0 0 0 / 25%);
@@ -70,6 +75,13 @@
   --radius-control: 0.5rem;
   --radius-panel: 0.75rem;
   --focus-ring: var(--accent-primary);
+}
+
+/* Editor panels grow taller on lg screens and above. */
+@media (min-width: 1024px) {
+  :root {
+    --editor-panel-height: clamp(18rem, 44dvh, 28rem);
+  }
 }
 
 /* Site accents are chosen once per visit. Tool accents override the inherited
