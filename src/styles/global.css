@@ -108,7 +108,6 @@ body {
 .tool-appear {
   animation: tool-appear var(--motion-base) var(--motion-ease-emphasized) both;
 }
-
 /* Reduced motion: one global policy. Every transition and animation collapses
    to its end state; no component needs its own media query. !important is
    required here: the reset must win over component and utility specificity. */
