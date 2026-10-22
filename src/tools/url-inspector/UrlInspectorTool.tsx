@@ -1,8 +1,8 @@
 import { createMemo, createSignal, createUniqueId, For, Show } from "solid-js";
 
 import Card from "@/components/primitives/solid/Card";
-import Label from "@/components/primitives/solid/Label";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
+import ToolBadge from "@/components/tool/ToolBadge";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolInputPanel from "@/components/tool/ToolInputPanel";
 import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
@@ -57,39 +57,41 @@ export default function UrlInspectorTool() {
         fields={SECTION_LABELS.map(([key, label]) => ({ label, value: inspection()?.[key] ?? "" }))}
       >
         <Card class="flex flex-col gap-3">
-          <div class="flex justify-between gap-3">
-            <Label>Decoded query params</Label>
-            <Show when={inspection()?.normalized}>
-              <span class="text-xs px-1.5 py-1 rounded bg-[var(--bg-tertiary)] text-[var(--text-secondary)]">
-                {inspection()?.kind === "query" ? "raw query" : "full url"}
-              </span>
-            </Show>
+          <div class="flex items-center justify-between gap-3">
+            <h3 class="m-0 text-[var(--fs-label)] font-semibold uppercase tracking-[0.12em] text-[var(--text-secondary)]">
+              Decoded query params
+            </h3>
+            <ToolBadge tone="muted">
+              {inspection()?.kind === "query" ? "raw query" : "full url"}
+            </ToolBadge>
           </div>
 
           <div class="overflow-auto">
-            <table class="w-full border-collapse">
+            <table class="w-full table-fixed border-collapse">
               <thead>
-                <tr>
-                  <th class="px-3 py-2 text-left">
-                    <Label>#</Label>
+                <tr class="border-b border-[var(--border)]">
+                  <th class="w-[var(--space-8)] px-[var(--space-3)] py-[var(--space-2)] text-left text-[var(--fs-label)] font-semibold uppercase tracking-[0.12em] text-[var(--text-secondary)]">
+                    #
                   </th>
-                  <th class="px-3 py-2 text-left">
-                    <Label>Key</Label>
+                  <th class="w-[32%] px-[var(--space-3)] py-[var(--space-2)] text-left text-[var(--fs-label)] font-semibold uppercase tracking-[0.12em] text-[var(--text-secondary)]">
+                    Key
                   </th>
-                  <th class="px-3 py-2 text-left">
-                    <Label>Value</Label>
+                  <th class="px-[var(--space-3)] py-[var(--space-2)] text-left text-[var(--fs-label)] font-semibold uppercase tracking-[0.12em] text-[var(--text-secondary)]">
+                    Value
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <For each={inspection()?.queryParams ?? []}>
                   {(param, index) => (
-                    <tr>
-                      <td class="px-3 py-2 text-[var(--text-muted)]">{index() + 1}</td>
-                      <td class="px-3 py-2 text-[var(--text-primary)]">
+                    <tr class="border-b border-[var(--border)] last:border-b-0">
+                      <td class="px-[var(--space-3)] py-[var(--space-2)] align-top text-[var(--text-muted)]">
+                        {index() + 1}
+                      </td>
+                      <td class="min-w-0 break-words px-[var(--space-3)] py-[var(--space-2)] align-top text-[var(--text-primary)]">
                         <code>{param.key || "—"}</code>
                       </td>
-                      <td class="px-3 py-2 text-[var(--text-primary)]">
+                      <td class="min-w-0 break-words px-[var(--space-3)] py-[var(--space-2)] align-top text-[var(--text-primary)]">
                         <code>{param.value || "—"}</code>
                       </td>
                     </tr>

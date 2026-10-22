@@ -4,10 +4,10 @@ import Input from "@/components/primitives/solid/Input";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
-import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
 import ToolPanel from "@/components/tool/ToolPanel";
 import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
+import ToolToolbar from "@/components/tool/ToolToolbar";
 import { CRON_FIELD_SPECS, SUPPORTED_CRON_SYNTAX } from "@/lib/cron";
 import { buildCron, CRON_PRESETS, type CronBuilderFields, cronFields } from "@/lib/cronBuilder";
 import { buildCronScheduleSummary, type CronTimeZoneMode } from "@/lib/cronSchedule";
@@ -80,7 +80,7 @@ export default function CronTool() {
             )}
           </For>
         </div>
-        <div class="grid gap-3 sm:grid-cols-2">
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           <For each={SUPPORTED_CRON_SYNTAX.fieldOrder}>
             {(field) => (
               <Input
@@ -119,7 +119,6 @@ export default function CronTool() {
             Load expression into builder
           </ToolActionButton>
         </div>
-        <ToolExampleNotice when={isBuilderExample()} label="Example builder output" />
         <ToolStatusMessage tone={built().ok ? "muted" : "error"}>
           {(() => {
             const result = built();
@@ -144,15 +143,17 @@ export default function CronTool() {
                 error={!!error()}
               />
             </div>
-            <ToolSegmentedControl
-              label="Timezone"
-              value={timeZone()}
-              onChange={setTimeZone}
-              options={[
-                { value: "local", label: "Local time" },
-                { value: "utc", label: "UTC" },
-              ]}
-            />
+            <ToolToolbar label="Timezone">
+              <ToolSegmentedControl
+                label="Timezone"
+                value={timeZone()}
+                onChange={setTimeZone}
+                options={[
+                  { value: "local", label: "Local time" },
+                  { value: "utc", label: "UTC" },
+                ]}
+              />
+            </ToolToolbar>
           </>
         }
         isExample={isExample()}
