@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.0.8](https://github.com/abijith-suresh/unwrapped/compare/0.0.7...0.0.8) (2026-10-22)
+
+
+### Features
+
+* add the shared design-token layer ([#293](https://github.com/abijith-suresh/unwrapped/issues/293)) ([e57e58e](https://github.com/abijith-suresh/unwrapped/commit/e57e58e43c03acc635a9546029343fb9eaab36c3))
+
+
+### Bug Fixes
+
+* **ui:** unify control metrics on tokens ([#294](https://github.com/abijith-suresh/unwrapped/issues/294)) ([7f9028b](https://github.com/abijith-suresh/unwrapped/commit/7f9028bf3aaeaa7bda9ad5a57536923aa70e373b))
+
 ## [0.0.7](https://github.com/abijith-suresh/unwrapped/compare/0.0.6...0.0.7) (2026-10-05)
 
 
