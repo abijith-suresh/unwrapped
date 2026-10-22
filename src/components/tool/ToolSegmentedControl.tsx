@@ -69,7 +69,7 @@ export default function ToolSegmentedControl<Value extends string = string>(
         class={
           local.hideLabel
             ? "sr-only"
-            : "shrink-0 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]"
+            : "shrink-0 text-[var(--fs-2xs)] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]"
         }
       >
         {local.label}
@@ -79,7 +79,7 @@ export default function ToolSegmentedControl<Value extends string = string>(
         aria-label={local.label}
         aria-orientation="horizontal"
         onKeyDown={handleRadioKeyDown}
-        class="flex min-h-11 min-w-0 w-full items-stretch gap-0.5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-primary)] p-0.5 sm:w-auto"
+        class="flex min-h-[var(--size-control)] min-w-0 w-full items-stretch gap-0.5 rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-primary)] p-0.5 sm:w-auto"
       >
         {local.options.map((option) => (
           <ToolActionButton

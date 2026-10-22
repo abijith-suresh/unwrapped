@@ -46,7 +46,7 @@ export default function ToolDropZone(props: ToolDropZoneProps) {
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       class={cn(
-        "relative min-w-0 transition-[border-color] duration-150 motion-reduce:transition-none",
+        "relative min-w-0 transition-[border-color] duration-[var(--motion-fast)] ease-[var(--motion-ease-standard)]",
         local.class
       )}
       classList={{ "border-2 border-dashed border-[var(--accent-primary)]": dragging() }}

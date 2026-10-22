@@ -121,11 +121,11 @@
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: var(--size-control);
+  height: var(--size-control);
   padding: 0;
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-control);
   background: var(--bg-secondary);
   color: var(--text-secondary);
   cursor: pointer;

@@ -95,7 +95,7 @@ export default function ToolCodeEditor(props: ToolCodeEditorProps) {
 
       <div
         class={cn(
-          "relative min-h-0 flex-1 overflow-hidden rounded-[var(--radius-control)] border bg-[var(--bg-secondary)]",
+          "relative min-h-0 flex-1 overflow-hidden rounded-[var(--radius-control)] border bg-[var(--bg-secondary)] transition-[border-color] duration-[var(--motion-fast)] ease-[var(--motion-ease-standard)]",
           local.error ? "border-[var(--accent-error)]" : "border-[var(--border)]"
         )}
       >
@@ -130,7 +130,7 @@ export default function ToolCodeEditor(props: ToolCodeEditorProps) {
           aria-describedby={local.describedBy}
           aria-invalid={local.error || undefined}
           class={cn(
-            "relative z-10 block h-full min-h-0 w-full resize-none overflow-auto rounded-[var(--radius-control)] border-0 bg-transparent p-4 font-mono text-sm leading-relaxed outline-none placeholder:text-[var(--text-muted)] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--focus-ring)] disabled:cursor-not-allowed disabled:opacity-60",
+            "relative z-10 block h-full min-h-0 w-full resize-none overflow-auto rounded-[var(--radius-control)] border-0 bg-transparent p-4 font-mono text-sm leading-relaxed outline-none placeholder:text-[var(--text-muted)] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--focus-ring)] disabled:cursor-not-allowed disabled:opacity-[var(--opacity-disabled)]",
             local.diagnostic
               ? "text-transparent caret-[var(--text-primary)]"
               : "text-[var(--text-primary)]",
