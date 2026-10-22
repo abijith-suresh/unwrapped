@@ -36,6 +36,9 @@
   --size-control-compact: 2rem;
   --opacity-disabled: 0.6;
 
+  /* Fixed-width numeric option fields in toolbars (indent, count, length). */
+  --size-numeric-field: 5.5rem;
+
   /* Radius: panels and controls keep their tokens; inline elements (badges,
      chips, code marks) use the smallest step. */
   --radius-sm: 0.375rem;
