@@ -2,6 +2,7 @@ import { createMemo, createSignal } from "solid-js";
 import Input from "@/components/primitives/solid/Input";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolToolbar from "@/components/tool/ToolToolbar";
 import ToolTransformWorkspace from "@/components/tool/ToolTransformWorkspace";
 import { useToolHandoff } from "@/components/toolHandoff";
 import { EXAMPLE_YAML_FORMAT } from "@/lib/exampleData";
@@ -28,26 +29,27 @@ export default function YamlFormatterTool() {
 
   return (
     <ToolContainer>
-      <div class="flex flex-col gap-3">
-        <div class="flex items-center gap-3 flex-wrap">
-          <Input
-            label="Indent"
-            name="yaml-indent"
-            autocomplete="off"
-            type="number"
-            min={2}
-            max={8}
-            inputmode="numeric"
-            value={String(indent())}
-            onInput={(value) => setIndent(Number(value) || 2)}
-            class="flex-row items-center gap-3"
-            controlClass="!w-20 rounded-lg !px-3 !py-2"
-          />
-          <ToolActionButton active={sortKeys()} onClick={() => setSortKeys((current) => !current)}>
-            Sort keys
-          </ToolActionButton>
-        </div>
-      </div>
+      <ToolToolbar label="Options">
+        <Input
+          label="Indent"
+          name="yaml-indent"
+          autocomplete="off"
+          type="number"
+          min={2}
+          max={8}
+          inputmode="numeric"
+          value={String(indent())}
+          onInput={(value) => setIndent(Number(value) || 2)}
+          controlClass="w-[var(--size-numeric-field)]"
+        />
+        <ToolActionButton
+          active={sortKeys()}
+          variant="toggle"
+          onClick={() => setSortKeys((current) => !current)}
+        >
+          Sort keys
+        </ToolActionButton>
+      </ToolToolbar>
       <ToolTransformWorkspace
         input={{
           label: "YAML input",
