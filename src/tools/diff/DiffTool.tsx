@@ -19,12 +19,12 @@ import ToolDropZone from "@/components/tool/ToolDropZone";
 import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolFilePicker from "@/components/tool/ToolFilePicker";
 import ToolInputPanel from "@/components/tool/ToolInputPanel";
+import ToolPanel from "@/components/tool/ToolPanel";
 import { useToolHandoff } from "@/components/toolHandoff";
 import type { DiffAnalysisResult } from "@/lib/diffAnalysis";
 import { createDiffAnalysisExecutor } from "@/lib/diffExecution";
 import { EXAMPLE_DIFF_MODIFIED, EXAMPLE_DIFF_ORIGINAL } from "@/lib/exampleData";
 import {
-  DEFAULT_IMPORT_MAX_BYTES,
   formatBytes,
   formatFileReadFailureMessage,
   formatFileTooLargeMessage,
@@ -246,7 +246,6 @@ export default function DiffTool() {
     latestAnalysisRun++;
     diffExecutor.cancel();
     setCancelled(false);
-    setAnalysis(null);
 
     if (debounceTimer !== null) clearTimeout(debounceTimer);
 
@@ -364,7 +363,6 @@ export default function DiffTool() {
     diffExecutor.cancel();
     setPending(false);
     setCancelled(true);
-    setAnalysis(null);
     setChangeAnnouncement("Comparison cancelled. Edit an input to compare again.");
   }
 
@@ -538,227 +536,239 @@ export default function DiffTool() {
           )}
         </For>
         <Show when={!isEmpty() || isExample()}>
-          <div class="flex flex-wrap items-center gap-2 px-3.5 py-2.5 bg-[var(--bg-secondary)] border border-[var(--border)] rounded-lg">
-            {/* Strategy badge */}
-            <span class="text-xs font-semibold tracking-widest uppercase text-[var(--accent-primary)] bg-[color-mix(in_srgb,var(--accent-primary)_12%,transparent)] border border-[color-mix(in_srgb,var(--accent-primary)_30%,transparent)] rounded px-2 py-0.5">
-              {STRATEGY_LABELS[strategy()] ?? "Text"}
-            </span>
-
-            {/* Pending spinner */}
-            <Show when={pending()}>
-              <span
-                role="status"
-                aria-live="polite"
-                aria-atomic="true"
-                class="text-sm text-[var(--text-muted)] italic"
-              >
-                Comparing…
-              </span>
-              <ToolActionButton onClick={cancelComparison}>Cancel comparison</ToolActionButton>
-            </Show>
-
-            {/* Identical label */}
-            <Show when={isIdentical()}>
-              <span class="text-sm font-medium text-[var(--accent-success)]">Identical</span>
-            </Show>
-
-            {/* Stats: +N / -N */}
-            <Show when={!pending() && analysis() !== null && !isIdentical() && diffData() !== null}>
-              <span class="text-sm font-semibold text-[var(--accent-success)]">
-                +{stats().added}
-              </span>
-              <span class="text-sm font-semibold text-[var(--accent-error)]">
-                -{stats().removed}
-              </span>
-            </Show>
-
-            {/* Spacer */}
-            <div class="flex-1" />
-
-            {/* Changes only toggle */}
-            <label class="flex items-center gap-1.5 cursor-pointer text-sm text-[var(--text-secondary)] select-none">
-              <input
-                aria-label="Show changes only"
-                name="changes-only"
-                type="checkbox"
-                checked={changesOnly()}
-                onChange={(e) => setChangesOnly(e.currentTarget.checked)}
-                class="cursor-pointer accent-[var(--accent-primary)]"
-              />
-              Changes only
-            </label>
-
-            {/* Next change button */}
-            <Show when={!pending() && analysis() !== null && changeIndices().length > 0}>
-              <ToolActionButton
-                type="button"
-                onClick={handleNextChange}
-                disabled={pending() || analysis() === null}
-                title="Jump to next change"
-              >
-                ↓ Next change
-              </ToolActionButton>
-            </Show>
-
-            <Show when={!isExample() && !pending() && analysis() !== null}>
-              <ToolDownloadButton
-                value={comparisonReport()}
-                format="json"
-                fileName="comparison.json"
-                label="Download comparison"
-              />
-              <ToolHandoffButton value={comparisonReport()} format="json" />
-            </Show>
-            {/* Swap button */}
-            <ToolActionButton type="button" onClick={handleSwap} title="Swap left and right">
-              ⇅ Swap
-            </ToolActionButton>
-
-            <span class="text-xs text-[var(--text-muted)]">
-              File limit {formatBytes(DEFAULT_IMPORT_MAX_BYTES)}
-            </span>
-          </div>
-
-          <Show when={cancelled()}>
-            <ToolStatusMessage>
-              Comparison cancelled. Edit an input to compare again.
-            </ToolStatusMessage>
-          </Show>
-          <Show when={analysisError()}>
-            <ToolStatusMessage tone="error">{analysisError()}</ToolStatusMessage>
-          </Show>
-
-          <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">
-            {changeAnnouncement()}
-          </span>
-          <Show when={structuredErrors().length > 0}>
-            <div class="flex flex-col gap-1.5">
-              <For each={structuredErrors()}>
-                {(err) => (
-                  <div
-                    role="alert"
-                    class="px-3.5 py-2.5 rounded-md border border-[var(--accent-error)] bg-[color-mix(in_srgb,var(--accent-error)_10%,transparent)] text-[var(--accent-error)] text-sm"
+          <ToolPanel
+            title="Differences"
+            titleAddon={
+              <>
+                <Show when={pending()}>
+                  <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-2 py-0.5 text-[var(--fs-2xs)] font-medium leading-none text-[var(--text-muted)]">
+                    <span
+                      aria-hidden="true"
+                      class="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--accent-primary)]"
+                    />
+                    Comparing…
+                  </span>
+                </Show>
+                <Show when={analysis() !== null && !isExample()}>
+                  <span class="inline-flex items-center rounded-full border border-[var(--border)] px-2 py-0.5 text-[var(--fs-2xs)] font-semibold uppercase tracking-[0.12em] leading-none text-[var(--text-muted)]">
+                    {STRATEGY_LABELS[strategy()] ?? "Text"}
+                  </span>
+                </Show>
+                <Show when={analysis() !== null && !pending()}>
+                  <Show
+                    when={isIdentical()}
+                    fallback={
+                      <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-2 py-0.5 text-[var(--fs-2xs)] font-semibold tabular-nums leading-none">
+                        <span class="text-[var(--accent-success)]">+{stats().added}</span>
+                        <span class="text-[var(--accent-error)]">−{stats().removed}</span>
+                      </span>
+                    }
                   >
-                    <strong class="capitalize">{err.side}</strong>: {err.message} — falling back to
-                    text diff.
-                  </div>
-                )}
-              </For>
-            </div>
-          </Show>
-          <Show
-            when={
-              !pending() && analysis() !== null && diffData() !== null && filteredRows().length > 0
+                    <span class="inline-flex items-center rounded-full border border-[var(--accent-success)] px-2 py-0.5 text-[var(--fs-2xs)] font-semibold leading-none text-[var(--accent-success)]">
+                      Identical
+                    </span>
+                  </Show>
+                </Show>
+              </>
+            }
+            actions={
+              <>
+                <ToolActionButton
+                  variant="toggle"
+                  active={changesOnly()}
+                  onClick={() => setChangesOnly((value) => !value)}
+                  title="Show only changed lines"
+                >
+                  Changes only
+                </ToolActionButton>
+                <Show when={changeIndices().length > 0}>
+                  <ToolActionButton
+                    onClick={handleNextChange}
+                    disabled={pending()}
+                    title="Jump to next change"
+                  >
+                    Next change
+                  </ToolActionButton>
+                </Show>
+                <Show when={!isExample() && analysis() !== null}>
+                  <ToolDownloadButton
+                    compact
+                    value={comparisonReport()}
+                    format="json"
+                    fileName="comparison.json"
+                    label="Download comparison"
+                  />
+                  <ToolHandoffButton compact value={comparisonReport()} format="json" />
+                </Show>
+                <ToolActionButton variant="ghost" onClick={handleSwap} title="Swap left and right">
+                  Swap
+                </ToolActionButton>
+              </>
             }
           >
-            <div class="overflow-x-auto border border-[var(--border)] rounded-lg bg-[var(--bg-secondary)]">
-              <table class="w-full border-collapse table-fixed text-sm leading-[1.5]">
-                <colgroup>
-                  <col style="width: 2.75rem" />
-                  <col style="width: 50%" />
-                  <col style="width: 2.75rem" />
-                  <col style="width: 50%" />
-                </colgroup>
-                <tbody>
-                  <For each={filteredRows()}>
-                    {(indexedRow, i) => {
-                      const { row, sourceIndex } = indexedRow;
-                      const prevSourceIndex =
-                        i() > 0 ? filteredRows()[i() - 1]?.sourceIndex : undefined;
-                      const showSeparator = isSeparator(sourceIndex, prevSourceIndex);
+            <div class="flex flex-col gap-3">
+              <Show when={pending()}>
+                <div
+                  aria-hidden="true"
+                  class="h-0.5 overflow-hidden rounded-full bg-[var(--border)]"
+                >
+                  <div class="h-full w-1/3 animate-pulse bg-[var(--accent-primary)]" />
+                </div>
+              </Show>
 
-                      return (
-                        <>
-                          <Show when={showSeparator}>
-                            <tr>
-                              <td
-                                colspan={4}
-                                class="px-3 py-0.5 bg-[var(--bg-primary)] text-[var(--text-muted)] text-xs font-mono tracking-wider border-t border-b border-[var(--border)]"
-                              >
-                                · · ·
-                              </td>
-                            </tr>
-                          </Show>
-                          <tr
-                            data-source-row={sourceIndex}
-                            classList={{
-                              "border-t border-[color-mix(in_srgb,var(--border)_50%,transparent)]":
-                                !showSeparator && i() !== 0,
-                            }}
-                          >
-                            {/* Left line number */}
-                            <td
-                              class="select-none text-right px-2 min-w-[2.5rem] text-[var(--text-muted)] tabular-nums border-r border-[var(--border)] text-xs"
-                              classList={{
-                                "bg-[color-mix(in_srgb,var(--accent-error)_18%,transparent)]":
-                                  row.type === "removed",
-                                "bg-[color-mix(in_srgb,var(--accent-error)_12%,transparent)]":
-                                  row.type === "changed",
-                              }}
-                            >
-                              <Show when={row.leftLineNum !== null}>{row.leftLineNum}</Show>
-                            </td>
-                            {/* Left content */}
-                            <td
-                              class="px-3 whitespace-pre font-mono text-xs overflow-visible w-1/2"
-                              classList={{
-                                "bg-[color-mix(in_srgb,var(--accent-error)_18%,transparent)]":
-                                  row.type === "removed",
-                                "bg-[color-mix(in_srgb,var(--accent-error)_12%,transparent)]":
-                                  row.type === "changed",
-                              }}
-                            >
-                              <Show when={row.left !== null}>{row.left}</Show>
-                            </td>
-                            {/* Right line number */}
-                            <td
-                              class="select-none text-right px-2 min-w-[2.5rem] text-[var(--text-muted)] tabular-nums border-r border-[var(--border)] border-l border-[var(--border)] text-xs"
-                              classList={{
-                                "bg-[color-mix(in_srgb,var(--accent-success)_18%,transparent)]":
-                                  row.type === "added",
-                                "bg-[color-mix(in_srgb,var(--accent-success)_12%,transparent)]":
-                                  row.type === "changed",
-                              }}
-                            >
-                              <Show when={row.rightLineNum !== null}>{row.rightLineNum}</Show>
-                            </td>
-                            {/* Right content */}
-                            <td
-                              class="px-3 whitespace-pre font-mono text-xs overflow-visible w-1/2"
-                              classList={{
-                                "bg-[color-mix(in_srgb,var(--accent-success)_18%,transparent)]":
-                                  row.type === "added",
-                                "bg-[color-mix(in_srgb,var(--accent-success)_12%,transparent)]":
-                                  row.type === "changed",
-                              }}
-                            >
-                              <Show when={row.right !== null}>{row.right}</Show>
-                            </td>
-                          </tr>
-                        </>
-                      );
-                    }}
+              <Show
+                when={pending() || cancelled() || analysisError() || structuredErrors().length > 0}
+              >
+                <div class="flex flex-col gap-2">
+                  <Show when={pending()}>
+                    <ToolStatusMessage>
+                      <span class="flex items-center justify-between gap-3">
+                        Comparing…
+                        <ToolActionButton
+                          variant="ghost"
+                          onClick={cancelComparison}
+                          class="!min-h-0 !px-2.5 !py-1"
+                        >
+                          Cancel
+                        </ToolActionButton>
+                      </span>
+                    </ToolStatusMessage>
+                  </Show>
+                  <Show when={cancelled()}>
+                    <ToolStatusMessage>
+                      Comparison cancelled. Edit an input to compare again.
+                    </ToolStatusMessage>
+                  </Show>
+                  <Show when={analysisError()}>
+                    <ToolStatusMessage tone="error">{analysisError()}</ToolStatusMessage>
+                  </Show>
+                  <For each={structuredErrors()}>
+                    {(err) => (
+                      <ToolStatusMessage tone="warning">
+                        <strong class="capitalize">{err.side}</strong>: {err.message} — falling back
+                        to text diff.
+                      </ToolStatusMessage>
+                    )}
                   </For>
-                </tbody>
-              </table>
-            </div>
-          </Show>
+                </div>
+              </Show>
 
-          {/* No changes in "changes only" mode but diffs exist */}
-          <Show
-            when={
-              !pending() &&
-              analysis() !== null &&
-              diffData() !== null &&
-              filteredRows().length === 0 &&
-              changesOnly() &&
-              !isIdentical()
-            }
-          >
-            <div class="text-center text-[var(--text-muted)] text-sm py-6">
-              No changes to display with current context settings.
+              <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+                {changeAnnouncement()}
+              </span>
+
+              <Show when={analysis() !== null && diffData() !== null}>
+                <div
+                  class="flex min-w-0 flex-col gap-2 transition-opacity duration-[var(--motion-base)] ease-[var(--motion-ease-standard)]"
+                  classList={{ "opacity-40": pending() }}
+                  aria-busy={pending() || undefined}
+                >
+                  <Show when={filteredRows().length > 0}>
+                    <div class="overflow-x-auto rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-secondary)]">
+                      <table class="w-full min-w-[40rem] border-collapse table-fixed text-sm leading-[1.5]">
+                        <colgroup>
+                          <col style="width: 2.75rem" />
+                          <col style="width: 50%" />
+                          <col style="width: 2.75rem" />
+                          <col style="width: 50%" />
+                        </colgroup>
+                        <tbody>
+                          <For each={filteredRows()}>
+                            {(indexedRow, i) => {
+                              const { row, sourceIndex } = indexedRow;
+                              const prevSourceIndex =
+                                i() > 0 ? filteredRows()[i() - 1]?.sourceIndex : undefined;
+                              const showSeparator = isSeparator(sourceIndex, prevSourceIndex);
+
+                              return (
+                                <>
+                                  <Show when={showSeparator}>
+                                    <tr>
+                                      <td
+                                        colspan={4}
+                                        class="px-3 py-0.5 bg-[var(--bg-primary)] text-[var(--text-muted)] text-xs font-mono tracking-wider border-t border-b border-[var(--border)]"
+                                      >
+                                        · · ·
+                                      </td>
+                                    </tr>
+                                  </Show>
+                                  <tr
+                                    data-source-row={sourceIndex}
+                                    classList={{
+                                      "border-t border-[color-mix(in_srgb,var(--border)_50%,transparent)]":
+                                        !showSeparator && i() !== 0,
+                                    }}
+                                  >
+                                    {/* Left line number */}
+                                    <td
+                                      class="select-none text-right px-2 min-w-[2.5rem] text-[var(--text-muted)] tabular-nums border-r border-[var(--border)] text-xs"
+                                      classList={{
+                                        "bg-[color-mix(in_srgb,var(--accent-error)_18%,transparent)]":
+                                          row.type === "removed",
+                                        "bg-[color-mix(in_srgb,var(--accent-error)_12%,transparent)]":
+                                          row.type === "changed",
+                                      }}
+                                    >
+                                      <Show when={row.leftLineNum !== null}>{row.leftLineNum}</Show>
+                                    </td>
+                                    {/* Left content */}
+                                    <td
+                                      class="px-3 whitespace-pre font-mono text-xs overflow-hidden"
+                                      classList={{
+                                        "bg-[color-mix(in_srgb,var(--accent-error)_18%,transparent)]":
+                                          row.type === "removed",
+                                        "bg-[color-mix(in_srgb,var(--accent-error)_12%,transparent)]":
+                                          row.type === "changed",
+                                      }}
+                                    >
+                                      <Show when={row.left !== null}>{row.left}</Show>
+                                    </td>
+                                    {/* Right line number */}
+                                    <td
+                                      class="select-none text-right px-2 min-w-[2.5rem] text-[var(--text-muted)] tabular-nums border-r border-[var(--border)] border-l border-[var(--border)] text-xs"
+                                      classList={{
+                                        "bg-[color-mix(in_srgb,var(--accent-success)_18%,transparent)]":
+                                          row.type === "added",
+                                        "bg-[color-mix(in_srgb,var(--accent-success)_12%,transparent)]":
+                                          row.type === "changed",
+                                      }}
+                                    >
+                                      <Show when={row.rightLineNum !== null}>
+                                        {row.rightLineNum}
+                                      </Show>
+                                    </td>
+                                    {/* Right content */}
+                                    <td
+                                      class="px-3 whitespace-pre font-mono text-xs overflow-hidden"
+                                      classList={{
+                                        "bg-[color-mix(in_srgb,var(--accent-success)_18%,transparent)]":
+                                          row.type === "added",
+                                        "bg-[color-mix(in_srgb,var(--accent-success)_12%,transparent)]":
+                                          row.type === "changed",
+                                      }}
+                                    >
+                                      <Show when={row.right !== null}>{row.right}</Show>
+                                    </td>
+                                  </tr>
+                                </>
+                              );
+                            }}
+                          </For>
+                        </tbody>
+                      </table>
+                    </div>
+                  </Show>
+
+                  {/* No changes in "changes only" mode but diffs exist */}
+                  <Show when={filteredRows().length === 0 && changesOnly() && !isIdentical()}>
+                    <div class="text-center text-[var(--text-muted)] text-sm py-6">
+                      No changes to display with current context settings.
+                    </div>
+                  </Show>
+                </div>
+              </Show>
             </div>
-          </Show>
+          </ToolPanel>
         </Show>
       </ToolComparerWorkspace>
     </ToolContainer>

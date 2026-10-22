@@ -1,16 +1,14 @@
 import { createEffect, createMemo, createSignal, For, onCleanup, Show } from "solid-js";
 import CopyButton from "@/components/CopyButton";
-import Card from "@/components/primitives/solid/Card";
 import Input from "@/components/primitives/solid/Input";
 import Label from "@/components/primitives/solid/Label";
 import ToolActionButton from "@/components/ToolActionButton";
-import ToolDownloadButton from "@/components/ToolDownloadButton";
-import ToolHandoffButton from "@/components/ToolHandoffButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolInputPanel from "@/components/tool/ToolInputPanel";
 import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
 import ToolOutputPanel from "@/components/tool/ToolOutputPanel";
+import ToolPanel from "@/components/tool/ToolPanel";
 import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
 import { useToolHandoff } from "@/components/toolHandoff";
 import { EXAMPLE_REGEX_PATTERN, EXAMPLE_REGEX_REPLACEMENT, EXAMPLE_TEXT } from "@/lib/exampleData";
@@ -40,7 +38,7 @@ type RegexMode = "match" | "replace";
 
 function CaptureCell(props: { value: string | null | undefined }) {
   return (
-    <td class="px-4 py-1.5 text-[var(--text-primary)] border-b border-[var(--border)] whitespace-nowrap">
+    <td class="px-[var(--space-3)] py-[var(--space-2)] align-top text-[var(--text-primary)] border-b border-[var(--border)] break-words min-w-0">
       <Show
         when={props.value !== null && props.value !== undefined}
         fallback={<span class="text-[var(--text-muted)]">Unmatched</span>}
@@ -96,7 +94,6 @@ export default function RegexTester() {
     executor.cancel();
     setPending(false);
     setCancelled(true);
-    setAnalysis(emptyAnalysis);
   }
 
   createEffect(() => {
@@ -161,10 +158,6 @@ export default function RegexTester() {
     const current = replaceResult();
     return "error" in current ? "" : current.output;
   });
-  const replaceCount = createMemo(() => {
-    const current = replaceResult();
-    return "error" in current ? 0 : current.replacements;
-  });
 
   const numberedGroups = createMemo(
     () => result().matches[0]?.groups.map((group) => group.number) ?? []
@@ -177,6 +170,29 @@ export default function RegexTester() {
   const matchesReport = createMemo(() =>
     JSON.stringify({ matches: result().matches, summary: result().summary }, null, 2)
   );
+
+  const statusLine = createMemo(() => {
+    const current = result();
+    const parts = [
+      matchCount() === 0
+        ? "No matches"
+        : `${matchCount()} ${matchCount() === 1 ? "match" : "matches"}`,
+      `${current.summary.captureGroupCount} capture ${
+        current.summary.captureGroupCount === 1 ? "group" : "groups"
+      }`,
+    ];
+    if (current.summary.firstMatchIndex !== null) {
+      parts.push(`First match at index ${current.summary.firstMatchIndex}`);
+    }
+    if (current.summary.emptyMatchCount > 0) {
+      parts.push(
+        `${current.summary.emptyMatchCount} empty ${
+          current.summary.emptyMatchCount === 1 ? "match" : "matches"
+        }`
+      );
+    }
+    return parts.join(" · ");
+  });
 
   return (
     <ToolContainer>
@@ -197,13 +213,13 @@ export default function RegexTester() {
 
               <Label for="regex-pattern">Pattern</Label>
               <div
-                class="flex items-center bg-[var(--bg-secondary)] rounded-lg overflow-hidden transition-[border-color] duration-150"
+                class="flex items-center bg-[var(--bg-secondary)] rounded-[var(--radius-control)] overflow-hidden transition-[border-color] duration-[var(--motion-fast)]"
                 classList={{
                   "border border-[var(--accent-error)]": !!result().error,
                   "border border-[var(--border)]": !result().error,
                 }}
               >
-                <span class="pl-3.5 pr-2 text-[var(--text-muted)] font-mono text-lg select-none">
+                <span class="pl-3.5 pr-2 text-[var(--text-muted)] font-mono text-[var(--fs-body)] select-none">
                   /
                 </span>
 
@@ -219,10 +235,12 @@ export default function RegexTester() {
                   placeholder={EXAMPLE_REGEX_PATTERN}
                   spellcheck={false}
                   autocomplete="off"
-                  class="min-w-0 flex-1 py-2.5 bg-transparent border-none outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] font-mono text-[0.9375rem]"
+                  class="min-w-0 flex-1 py-2.5 bg-transparent border-none outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] font-mono text-[var(--fs-body)]"
                 />
 
-                <span class="pr-3 text-[var(--text-muted)] font-mono text-lg select-none">/</span>
+                <span class="pr-3 text-[var(--text-muted)] font-mono text-[var(--fs-body)] select-none">
+                  /
+                </span>
               </div>
               <fieldset
                 aria-label="Regex flags"
@@ -289,78 +307,27 @@ export default function RegexTester() {
         errorId="regex-error"
       >
         <Show when={!pending() && !cancelled() && effectivePattern() && !result().error}>
-          <div class="flex gap-3 flex-wrap">
-            <ToolStatusMessage tone={matchCount() > 0 ? "success" : "muted"}>
-              {matchCount() === 0
-                ? "No matches"
-                : `${matchCount()} ${matchCount() === 1 ? "match" : "matches"}`}
-            </ToolStatusMessage>
-            <ToolStatusMessage tone="muted">
-              {result().summary.captureGroupCount} capture{" "}
-              {result().summary.captureGroupCount === 1 ? "group" : "groups"}
-            </ToolStatusMessage>
-            <Show when={result().summary.emptyMatchCount > 0}>
-              <ToolStatusMessage tone="warning">
-                {result().summary.emptyMatchCount} empty
-                {result().summary.emptyMatchCount === 1 ? " match" : " matches"}
-              </ToolStatusMessage>
-            </Show>
-            <Show when={!isExample()}>
-              <CopyButton text={matchesReport()} label="Copy matches report" />
-              <ToolDownloadButton
-                value={matchesReport()}
-                format="json"
-                fileName="matches.json"
-                label="Download matches"
-              />
-              <ToolHandoffButton value={matchesReport()} format="json" />
-            </Show>
-            <Show when={result().summary.firstMatchIndex !== null}>
-              <ToolStatusMessage tone="muted">
-                First match at index {result().summary.firstMatchIndex}
-              </ToolStatusMessage>
-            </Show>
-          </div>
+          <p class="m-0 text-[var(--fs-control)] text-[var(--text-muted)]">{statusLine()}</p>
         </Show>
 
         <Show when={isExample() || input().trim()}>
-          <Card class="overflow-hidden p-0">
-            <div class="flex items-center justify-between px-4 py-2 border-b border-[var(--border)]">
-              <Label>{mode() === "replace" ? "Match preview" : "Matches"}</Label>
-              <Show
-                when={!pending() && !cancelled() && effectivePattern() && !result().error}
-                fallback={<span class="text-xs text-[var(--text-muted)]">—</span>}
-              >
-                <span
-                  class="text-xs font-semibold"
-                  classList={{
-                    "text-[var(--accent-success)]": matchCount() > 0,
-                    "text-[var(--text-muted)]": matchCount() === 0,
-                  }}
-                >
-                  {mode() === "replace"
-                    ? `${replaceCount()} ${replaceCount() === 1 ? "replacement" : "replacements"}`
-                    : matchCount() === 0
-                      ? "No matches"
-                      : matchCount() === 1
-                        ? "1 match"
-                        : `${matchCount()} matches`}
-                </span>
-              </Show>
-            </div>
-
-            <pre class="m-0 p-4 overflow-x-auto text-sm leading-relaxed text-[var(--text-primary)] font-mono whitespace-pre-wrap break-all">
-              <For each={result().highlighted}>
-                {(segment) => (
-                  <Show when={segment.kind === "match"} fallback={<span>{segment.text}</span>}>
-                    <mark class="rounded-[2px] bg-[color-mix(in_srgb,var(--accent-primary)_30%,transparent)] text-inherit">
-                      {segment.text}
-                    </mark>
-                  </Show>
-                )}
-              </For>
-            </pre>
-          </Card>
+          <div
+            class="transition-opacity duration-[var(--motion-base)] ease-[var(--motion-ease-standard)]"
+            classList={{ "opacity-40": pending() }}
+            aria-busy={pending() || undefined}
+          >
+            <ToolOutputPanel
+              compact
+              showExampleNotice={false}
+              title={mode() === "replace" ? "Match preview" : "Matches"}
+              value={matchesReport()}
+              segments={result().highlighted}
+              isExample={isExample()}
+              copyLabel="Copy matches report"
+              download={{ format: "json", fileName: "matches.json" }}
+              handoff="json"
+            />
+          </div>
         </Show>
 
         <Show
@@ -384,81 +351,84 @@ export default function RegexTester() {
         </Show>
 
         <Show when={hasCaptures() && matchCount() > 0}>
-          <Card class="overflow-hidden p-0">
-            <div class="px-4 py-2 border-b border-[var(--border)]">
-              <Label>Capture groups</Label>
-            </div>
-
-            {/* biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users must be able to scroll the capture table. */}
-            <section class="overflow-auto" aria-label="Capture groups table" tabIndex={0}>
-              <table aria-label="Capture groups" class="w-full border-collapse font-mono text-sm">
-                <thead>
-                  <tr>
-                    <th class="px-4 py-2 text-left text-[var(--text-muted)] font-semibold border-b border-[var(--border)] whitespace-nowrap">
-                      Match #
-                    </th>
-                    <th class="px-4 py-2 text-left text-[var(--text-muted)] font-semibold border-b border-[var(--border)]">
-                      Full match
-                    </th>
-                    <For each={numberedGroups()}>
-                      {(number) => (
-                        <th
-                          scope="col"
-                          class="px-4 py-2 text-left text-[var(--text-muted)] font-semibold border-b border-[var(--border)] whitespace-nowrap"
-                        >
-                          Group {number}
-                        </th>
-                      )}
-                    </For>
-                    <For each={namedGroupNames()}>
-                      {(name) => (
-                        <th
-                          scope="col"
-                          class="px-4 py-2 text-left text-[var(--accent-primary)] font-semibold border-b border-[var(--border)] whitespace-nowrap"
-                        >
-                          {name} (alias)
-                        </th>
-                      )}
-                    </For>
-                  </tr>
-                </thead>
-                <tbody>
-                  <For each={result().matches}>
-                    {(match: MatchResult, index) => (
-                      <tr>
-                        <td class="px-4 py-1.5 text-[var(--text-muted)] border-b border-[var(--border)] whitespace-nowrap">
-                          {index() + 1}
-                        </td>
-                        <td class="px-4 py-1.5 text-[var(--text-primary)] border-b border-[var(--border)] max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap">
-                          <div class="flex items-center gap-2">
-                            <span class="flex-1 overflow-hidden text-ellipsis">
-                              {match.fullMatch}
-                            </span>
-                            <Show when={!isExample()}>
-                              <CopyButton
-                                text={match.fullMatch}
-                                label={`Copy match ${index() + 1}`}
+          <div
+            class="transition-opacity duration-[var(--motion-base)] ease-[var(--motion-ease-standard)]"
+            classList={{ "opacity-40": pending() }}
+            aria-busy={pending() || undefined}
+          >
+            <ToolPanel title="Capture groups">
+              {/* biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users must be able to scroll the capture table. */}
+              <section class="overflow-x-auto" aria-label="Capture groups table" tabIndex={0}>
+                <table aria-label="Capture groups" class="w-full border-collapse font-mono text-sm">
+                  <thead>
+                    <tr>
+                      <th class="px-[var(--space-3)] py-[var(--space-2)] text-left text-[var(--text-muted)] font-semibold border-b border-[var(--border)] whitespace-nowrap">
+                        Match #
+                      </th>
+                      <th class="px-[var(--space-3)] py-[var(--space-2)] text-left text-[var(--text-muted)] font-semibold border-b border-[var(--border)]">
+                        Full match
+                      </th>
+                      <For each={numberedGroups()}>
+                        {(number) => (
+                          <th
+                            scope="col"
+                            class="px-[var(--space-3)] py-[var(--space-2)] text-left text-[var(--text-muted)] font-semibold border-b border-[var(--border)] whitespace-nowrap"
+                          >
+                            Group {number}
+                          </th>
+                        )}
+                      </For>
+                      <For each={namedGroupNames()}>
+                        {(name) => (
+                          <th
+                            scope="col"
+                            class="px-[var(--space-3)] py-[var(--space-2)] text-left text-[var(--accent-primary)] font-semibold border-b border-[var(--border)] whitespace-nowrap"
+                          >
+                            {name} (alias)
+                          </th>
+                        )}
+                      </For>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <For each={result().matches}>
+                      {(match: MatchResult, index) => (
+                        <tr>
+                          <td class="px-[var(--space-3)] py-[var(--space-2)] text-[var(--text-muted)] border-b border-[var(--border)] whitespace-nowrap">
+                            {index() + 1}
+                          </td>
+                          <td class="px-[var(--space-3)] py-[var(--space-2)] align-top text-[var(--text-primary)] border-b border-[var(--border)] break-words min-w-0">
+                            <div class="flex items-start gap-2">
+                              <span class="min-w-0 flex-1 break-words">{match.fullMatch}</span>
+                              <Show when={!isExample()}>
+                                <CopyButton
+                                  compact
+                                  text={match.fullMatch}
+                                  label={`Copy match ${index() + 1}`}
+                                />
+                              </Show>
+                            </div>
+                          </td>
+                          <For each={numberedGroups()}>
+                            {(number) => <CaptureCell value={match.groups[number - 1]?.value} />}
+                          </For>
+                          <For each={namedGroupNames()}>
+                            {(name) => (
+                              <CaptureCell
+                                value={
+                                  match.namedGroups.find((group) => group.name === name)?.value
+                                }
                               />
-                            </Show>
-                          </div>
-                        </td>
-                        <For each={numberedGroups()}>
-                          {(number) => <CaptureCell value={match.groups[number - 1]?.value} />}
-                        </For>
-                        <For each={namedGroupNames()}>
-                          {(name) => (
-                            <CaptureCell
-                              value={match.namedGroups.find((group) => group.name === name)?.value}
-                            />
-                          )}
-                        </For>
-                      </tr>
-                    )}
-                  </For>
-                </tbody>
-              </table>
-            </section>
-          </Card>
+                            )}
+                          </For>
+                        </tr>
+                      )}
+                    </For>
+                  </tbody>
+                </table>
+              </section>
+            </ToolPanel>
+          </div>
         </Show>
       </ToolInspectorWorkspace>
     </ToolContainer>
