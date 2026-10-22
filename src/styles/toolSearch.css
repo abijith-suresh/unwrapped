@@ -4,21 +4,22 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  gap: 0.5rem;
-  min-width: var(--size-control);
-  min-height: var(--size-control);
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--border);
+  width: var(--size-control);
+  height: var(--size-control);
+  padding: 0;
+  border: 0;
   border-radius: var(--radius-control);
-  background: var(--bg-secondary);
+  background: transparent;
   color: var(--text-secondary);
-  font: 0.8125rem var(--font-sans);
   cursor: pointer;
   touch-action: manipulation;
+  transition:
+    color var(--motion-fast) var(--motion-ease-standard),
+    background-color var(--motion-fast) var(--motion-ease-standard);
 }
 .global-search-trigger:hover,
 .global-search-close:hover {
-  border-color: var(--border-strong);
+  background: var(--bg-tertiary);
   color: var(--text-primary);
 }
 
