@@ -133,8 +133,8 @@ import ToolSearch from "@/components/ToolSearch";
   .lp-home-search .lp-results {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.75rem;
-    margin-top: 1rem;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
     padding: 0;
     list-style: none;
   }
@@ -153,25 +153,27 @@ import ToolSearch from "@/components/ToolSearch";
     min-height: 10.75rem;
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.75rem;
+    gap: var(--space-3);
     padding: 1.15rem 1.15rem 1.2rem;
     border: 1px solid var(--lp-home-border);
     border-radius: 0.4rem;
     background: color-mix(in srgb, var(--lp-home-surface) 68%, var(--bg-primary));
     color: var(--lp-home-text);
     text-decoration: none;
-    transition: border-color 140ms ease, background-color 140ms ease;
+    transition:
+      border-color var(--motion-fast) var(--motion-ease-standard),
+      background-color var(--motion-fast) var(--motion-ease-standard);
   }
 
   .lp-home-search .lp-row::before {
     position: absolute;
     inset: 0 auto 0 0;
     width: 2px;
-    background: var(--lp-home-accent);
+    background: var(--accent-primary);
     content: "";
     transform: scaleY(0);
     transform-origin: bottom;
-    transition: transform 160ms ease;
+    transition: transform var(--motion-base) var(--motion-ease-standard);
   }
 
   .lp-home-search .lp-row:hover,
@@ -187,8 +189,8 @@ import ToolSearch from "@/components/ToolSearch";
   }
 
   .lp-home-search .lp-row:focus-visible {
-    border-color: var(--lp-home-accent);
-    outline: 2px solid var(--lp-home-accent);
+    border-color: var(--accent-primary);
+    outline: 2px solid var(--accent-primary);
     outline-offset: 2px;
   }
 
@@ -214,10 +216,13 @@ import ToolSearch from "@/components/ToolSearch";
     align-items: center;
     justify-content: center;
     border: 1px solid var(--lp-home-border);
-    border-radius: 0.4rem;
-    background: color-mix(in srgb, var(--bg-tertiary) 72%, transparent);
-    color: var(--lp-home-muted);
-    transition: border-color 140ms ease, color 140ms ease, background-color 140ms ease;
+    border-radius: var(--radius-control);
+    background: color-mix(in srgb, var(--accent-primary) 12%, var(--bg-secondary));
+    color: var(--accent-primary);
+    transition:
+      border-color var(--motion-fast) var(--motion-ease-standard),
+      color var(--motion-fast) var(--motion-ease-standard),
+      background-color var(--motion-fast) var(--motion-ease-standard);
   }
 
   .lp-home-search .lp-row-icon svg {
@@ -227,23 +232,23 @@ import ToolSearch from "@/components/ToolSearch";
 
   .lp-home-search .lp-row--active .lp-row-icon,
   .lp-home-search .lp-row:hover .lp-row-icon {
-    border-color: var(--lp-home-accent-soft);
-    background: color-mix(in srgb, var(--lp-home-accent) 9%, transparent);
-    color: var(--lp-home-accent);
+    border-color: var(--accent-primary);
+    background: color-mix(in srgb, var(--accent-primary) 20%, var(--bg-secondary));
+    color: var(--accent-secondary);
   }
 
   .lp-home-search .lp-row-name {
     display: block;
     margin-top: 0.15rem;
     color: var(--lp-home-text);
-    font-size: 0.94rem;
-    font-weight: 650;
-    transition: color 140ms ease;
+    font-size: var(--fs-body);
+    font-weight: 600;
+    transition: color var(--motion-fast) var(--motion-ease-standard);
   }
 
   .lp-home-search .lp-row--active .lp-row-name,
   .lp-home-search .lp-row:hover .lp-row-name {
-    color: var(--lp-home-accent-secondary);
+    color: var(--accent-secondary);
   }
 
   .lp-home-search .lp-row-desc {
@@ -251,7 +256,7 @@ import ToolSearch from "@/components/ToolSearch";
     overflow: hidden;
     min-block-size: 2.96em;
     margin-top: auto;
-    color: var(--lp-home-secondary);
+    color: var(--text-secondary);
     font-size: 0.79rem;
     line-height: 1.48;
     padding-right: 2rem;
@@ -263,11 +268,11 @@ import ToolSearch from "@/components/ToolSearch";
     position: absolute;
     right: 1.15rem;
     bottom: 1.05rem;
-    color: var(--lp-home-accent);
+    color: var(--accent-primary);
     font: 0.95rem/1 var(--font-mono);
     opacity: 0;
     transform: translate(-0.35rem, 0.35rem);
-    transition: opacity 140ms ease, transform 140ms ease;
+    transition: opacity var(--motion-fast) var(--motion-ease-standard), transform var(--motion-fast) var(--motion-ease-standard);
   }
 
   .lp-home-search .lp-row--active .lp-row-arrow,
@@ -279,10 +284,16 @@ import ToolSearch from "@/components/ToolSearch";
 
   .lp-home-search .lp-row-cat {
     order: 3;
-    color: var(--lp-home-muted);
+    color: var(--text-muted);
     font: 0.62rem var(--font-mono);
     letter-spacing: 0.05em;
     text-transform: lowercase;
+    transition: color var(--motion-fast) var(--motion-ease-standard);
+  }
+
+  .lp-home-search .lp-row--active .lp-row-cat,
+  .lp-home-search .lp-row:hover .lp-row-cat {
+    color: var(--accent-primary);
   }
 
   .lp-home-search .lp-empty {
@@ -320,6 +331,7 @@ import ToolSearch from "@/components/ToolSearch";
     .lp-home-search .lp-row-icon,
     .lp-home-search .lp-row-name,
     .lp-home-search .lp-row-index,
+    .lp-home-search .lp-row-cat,
     .lp-home-search .lp-row-arrow {
       transition: none;
     }
