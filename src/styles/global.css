@@ -70,10 +70,10 @@ body {
   background: var(--text-secondary);
 }
 
-/* Focus ring */
+/* Focus ring: one recipe for every focus-visible surface. */
 :focus-visible {
-  outline: 2px solid var(--accent-primary);
-  outline-offset: 2px;
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
 }
 
 /* Skeleton loading animation */
@@ -91,8 +91,18 @@ body {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* Reduced motion: one global policy. Every transition and animation collapses
+   to its end state; no component needs its own media query. !important is
+   required here: the reset must win over component and utility specificity. */
 @media (prefers-reduced-motion: reduce) {
-  .animate-pulse {
-    animation: none;
+  *,
+  *::before,
+  *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: the reduced-motion policy must override component and utility transitions */
+    animation: none !important;
+    /* biome-ignore lint/complexity/noImportantStyles: the reduced-motion policy must override component and utility transitions */
+    transition: none !important;
+    /* biome-ignore lint/complexity/noImportantStyles: the reduced-motion policy must override smooth-scroll behavior */
+    scroll-behavior: auto !important;
   }
 }
