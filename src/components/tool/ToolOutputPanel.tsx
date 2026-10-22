@@ -9,6 +9,7 @@ import ToolPanel, {
   TOOL_EDITOR_BODY_CLASSES,
   TOOL_EDITOR_PANEL_CLASSES,
 } from "@/components/tool/ToolPanel";
+import { cn } from "@/lib/cn";
 import type { CodeHighlightSegment } from "@/lib/codeHighlight";
 import type { TextDownloadOptions, TextFormat } from "@/lib/download";
 
@@ -73,11 +74,12 @@ export default function ToolOutputPanel(props: ToolOutputPanelProps) {
       >
         <ToolCodeBlock
           fill={!props.compact}
-          class={
+          class={cn(
+            "tool-appear",
             props.compact
               ? "!min-h-0 whitespace-pre-wrap break-all"
               : "whitespace-pre-wrap break-words"
-          }
+          )}
           segments={props.segments}
           aria-label={props.title}
         >

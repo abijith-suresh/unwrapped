@@ -91,6 +91,23 @@ body {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* Enter transition for conditional surfaces: statuses, errors, and swapped
+   output blocks. Elements that exist at first paint (SSR) fade in once on
+   page load; conditional elements animate on each mount. */
+@keyframes tool-appear {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.tool-appear {
+  animation: tool-appear var(--motion-base) var(--motion-ease-emphasized) both;
+}
 /* Reduced motion: one global policy. Every transition and animation collapses
    to its end state; no component needs its own media query. !important is
    required here: the reset must win over component and utility specificity. */
