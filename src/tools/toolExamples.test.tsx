@@ -17,19 +17,26 @@ afterEach(() => {
 });
 
 describe("Tool state transitions", () => {
-  it("keeps the URL encoding and decoding examples independent", () => {
+  it("encodes and decodes in one workspace, keeping examples per mode", () => {
     const { getByRole, queryByRole } = render(() => <UrlEncoderTool />);
-    fireEvent.input(getByRole("textbox", { name: "Plain text" }), {
-      target: { value: "Ada + Bob" },
-    });
+    const input = getByRole("textbox", { name: "Plain text" });
+    expect(input).toHaveValue("");
+    expect(getByRole("region", { name: "Encoded output" })).toContainElement(
+      getByRole("note", { name: "Example output" })
+    );
+    fireEvent.input(input, { target: { value: "Ada + Bob" } });
     expect(getByRole("region", { name: "Encoded output" })).toHaveTextContent("Ada%20%2B%20Bob");
-    expect(getByRole("button", { name: "Copy encoded" })).toBeEnabled();
-    expect(queryByRole("button", { name: "Copy decoded" })).not.toBeInTheDocument();
-    fireEvent.input(getByRole("textbox", { name: "Percent-encoded text" }), {
-      target: { value: "%ZZ" },
-    });
+    expect(getByRole("button", { name: "Copy" })).toBeEnabled();
+
+    fireEvent.click(getByRole("radio", { name: "Decode" }));
+    const encoded = getByRole("textbox", { name: "Encoded text" });
+    fireEvent.input(encoded, { target: { value: "%ZZ" } });
     expect(getByRole("alert")).toBeInTheDocument();
-    expect(getByRole("region", { name: "Encoded output" })).toHaveTextContent("Ada%20%2B%20Bob");
+    expect(queryByRole("note", { name: "Example output" })).not.toBeInTheDocument();
+
+    fireEvent.input(encoded, { target: { value: "Ada%20%2B%20Bob" } });
+    expect(getByRole("region", { name: "Decoded output" })).toHaveTextContent("Ada + Bob");
+    expect(queryByRole("alert")).not.toBeInTheDocument();
   });
 
   it("does not treat whitespace as an example in text statistics", () => {

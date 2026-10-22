@@ -11,6 +11,7 @@ export default function Tool() {
   const [input, setInput] = createSignal("");
   const [mode, setMode] = createSignal<"encode" | "decode">("encode");
   const [nonAscii, setNonAscii] = createSignal(false);
+
   const isExample = () => input() === "";
   const exampleInput = createMemo(() => {
     const encoded = transformEntities(EXAMPLE_HTML, "encode", nonAscii());
@@ -25,16 +26,32 @@ export default function Tool() {
     const current = result();
     return current.ok ? "" : current.error;
   };
+  const canSwap = () => !isExample() && !!output();
+
+  function swap() {
+    if (!canSwap()) return;
+    const current = output();
+    setMode((m) => (m === "encode" ? "decode" : "encode"));
+    setInput(current);
+  }
+
+  function clear() {
+    setMode("encode");
+    setInput("");
+  }
+
   return (
     <ToolContainer>
       <ToolToolbar
-        label="Options"
+        label="HTML entities options"
         actions={
           <>
-            <ToolActionButton active={nonAscii()} onClick={() => setNonAscii((value) => !value)}>
-              Encode non-ASCII
+            <ToolActionButton onClick={swap} title="Swap input/output" disabled={!canSwap()}>
+              ⇅ Swap
             </ToolActionButton>
-            <ToolActionButton onClick={() => setInput("")}>Clear input</ToolActionButton>
+            <ToolActionButton onClick={clear} variant="ghost">
+              Clear
+            </ToolActionButton>
           </>
         }
       >
@@ -48,22 +65,32 @@ export default function Tool() {
             { value: "decode", label: "Decode" },
           ]}
         />
+        <ToolActionButton
+          active={nonAscii()}
+          variant="toggle"
+          onClick={() => setNonAscii((v) => !v)}
+        >
+          Encode non-ASCII
+        </ToolActionButton>
       </ToolToolbar>
-
       <ToolTransformWorkspace
         input={{
-          label: "Source",
+          compact: true,
+          label: mode() === "encode" ? "Plain text" : "HTML entities",
+          name: "source",
           value: input(),
           onInput: setInput,
           placeholder: exampleInput(),
-          name: "source",
         }}
         output={{
+          download: { format: "text" },
+          handoff: "text",
+          compact: true,
           title: "Output",
           value: output(),
           isExample: isExample(),
-          error: error(),
-          copyLabel: "Copy output",
+          error: error() || undefined,
+          copyLabel: "Copy",
         }}
       />
     </ToolContainer>

@@ -31,7 +31,7 @@ describe("Base64 composed controls and panels", () => {
     expect(view.getByRole("button", { name: "Download file" })).toBeEnabled();
   });
 
-  it("ignores a pending file read after reset", async () => {
+  it("ignores a pending file read after clear", async () => {
     const read = vi.spyOn(fileImport, "readImportedFile");
     const view = render(() => <Base64Tool />);
     let finish!: (value: ArrayBuffer) => void;
@@ -45,14 +45,14 @@ describe("Base64 composed controls and panels", () => {
     fireEvent.change(view.container.querySelector('input[type="file"]') as HTMLInputElement, {
       target: { files: [file] },
     });
-    fireEvent.click(view.getByRole("button", { name: "Reset" }));
+    fireEvent.click(view.getByRole("button", { name: "Clear" }));
     finish(new TextEncoder().encode("Ada").buffer);
     await read.mock.results[0].value;
     expect(view.getByRole("textbox", { name: "Plain text" })).toHaveValue("");
     expect(view.getByRole("note")).toBeInTheDocument();
     expect(view.queryByRole("button", { name: "Remove file" })).not.toBeInTheDocument();
   });
-  it("keeps examples outside the input and supports a real swap and reset", () => {
+  it("keeps examples outside the input and supports a real swap and clear", () => {
     const view = render(() => <Base64Tool />);
     const input = view.getByRole("textbox", { name: "Plain text" });
     expect(input).toHaveValue("");
@@ -67,7 +67,7 @@ describe("Base64 composed controls and panels", () => {
     expect(view.getByRole("textbox", { name: "Base64" })).toHaveValue("QWRh");
     expect(view.container.querySelector("pre")).toHaveTextContent("Ada");
     expect(view.getByRole("radio", { name: "Decode" })).toHaveAttribute("aria-checked", "true");
-    fireEvent.click(view.getByRole("button", { name: "Reset" }));
+    fireEvent.click(view.getByRole("button", { name: "Clear" }));
     expect(view.getByRole("textbox", { name: "Plain text" })).toHaveValue("");
     expect(view.getByRole("note", { name: "Example output" })).toBeInTheDocument();
     expect(view.queryByRole("button", { name: "Copy" })).not.toBeInTheDocument();
