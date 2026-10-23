@@ -26,7 +26,7 @@ describe("Tool state transitions", () => {
     );
     fireEvent.input(input, { target: { value: "Ada + Bob" } });
     expect(getByRole("region", { name: "Encoded output" })).toHaveTextContent("Ada%20%2B%20Bob");
-    expect(getByRole("button", { name: "Copy" })).toBeEnabled();
+    expect(getByRole("button", { name: "Copy encoded URL" })).toBeEnabled();
 
     fireEvent.click(getByRole("radio", { name: "Decode" }));
     const encoded = getByRole("textbox", { name: "Encoded text" });
@@ -37,6 +37,24 @@ describe("Tool state transitions", () => {
     fireEvent.input(encoded, { target: { value: "Ada%20%2B%20Bob" } });
     expect(getByRole("region", { name: "Decoded output" })).toHaveTextContent("Ada + Bob");
     expect(queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("swaps output into the input and clears back to encode mode", () => {
+    const view = render(() => <UrlEncoderTool />);
+    const input = view.getByRole("textbox", { name: "Plain text" });
+    fireEvent.input(input, { target: { value: "Ada + Bob" } });
+    expect(view.getByRole("region", { name: "Encoded output" })).toHaveTextContent(
+      "Ada%20%2B%20Bob"
+    );
+    fireEvent.click(view.getByRole("button", { name: /Swap/ }));
+    expect(view.getByRole("textbox", { name: "Encoded text" })).toHaveValue("Ada%20%2B%20Bob");
+    expect(view.getByRole("radio", { name: "Decode" })).toBeChecked();
+    expect(view.getByRole("region", { name: "Decoded output" })).toHaveTextContent("Ada + Bob");
+
+    fireEvent.click(view.getByRole("button", { name: "Clear" }));
+    expect(view.getByRole("textbox", { name: "Plain text" })).toHaveValue("");
+    expect(view.getByRole("radio", { name: "Encode" })).toBeChecked();
+    view.unmount();
   });
 
   it("does not treat whitespace as an example in text statistics", () => {
