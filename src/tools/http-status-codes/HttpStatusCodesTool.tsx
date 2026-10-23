@@ -30,15 +30,7 @@ const CATEGORY_ORDER: { category: HttpStatusCategory; label: string }[] = [
 
 function StatusRow(props: { entry: HttpStatusCodeEntry }) {
   return (
-    <li
-      style={{
-        display: "grid",
-        "grid-template-columns": "var(--ref-term-width) minmax(0,1fr) auto",
-        gap: "var(--space-4)",
-        padding: "var(--space-3) var(--space-4)",
-      }}
-      class="min-w-0 items-center border-b border-[var(--border)] last:border-b-0"
-    >
+    <li class="grid min-w-0 grid-cols-1 items-center gap-2 border-b border-[var(--border)] px-3 py-2 last:border-b-0 sm:grid-cols-[minmax(4rem,6rem)_minmax(0,1fr)_auto] sm:gap-4 sm:px-4 sm:py-3">
       <div class="min-w-0">
         <div
           class="truncate font-mono font-semibold text-[var(--text-primary)]"
@@ -133,7 +125,7 @@ export default function HttpStatusCodesTool() {
           when={entries().length}
           fallback={<ToolStatusMessage tone="muted">No matching entries.</ToolStatusMessage>}
         >
-          <div class="flex min-w-0 flex-col gap-4" style={{ "--ref-term-width": "5rem" }}>
+          <div class="flex min-w-0 flex-col gap-4">
             <For each={sections()}>
               {(section) => (
                 <section
