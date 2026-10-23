@@ -151,7 +151,7 @@ export default function ToolSearch() {
             {(tool, idx) => {
               const Icon = ICON_MAP[tool.icon];
               return (
-                <li class="lp-tool-card">
+                <li class="lp-tool-card" data-tool-accent={tool.accent}>
                   <a
                     href={getToolRoute(tool.slug)}
                     classList={{
