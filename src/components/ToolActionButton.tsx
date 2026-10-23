@@ -47,6 +47,10 @@ export const TOOL_ACTION_CLASSES: ToolActionButtonClassMap = {
 const BASE_CLASSES =
   "inline-flex min-h-[var(--size-control)] shrink-0 items-center justify-center gap-2 rounded-[var(--radius-control)] border px-3.5 py-2 text-[var(--fs-control)] font-semibold leading-none whitespace-nowrap cursor-pointer touch-manipulation transition-[background-color,border-color,color,box-shadow] duration-[var(--motion-fast)] ease-[var(--motion-ease-standard)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-[var(--opacity-disabled)]";
 
+/** Shared class strings so composite controls (menus) can reuse the exact
+ * action-button look without duplicating it. */
+export const TOOL_ACTION_BASE_CLASSES = BASE_CLASSES;
+
 type PressedState = boolean | "true" | "false" | "mixed" | undefined;
 
 function getButtonClasses(variant: ToolActionButtonVariant, pressed: PressedState): string {
