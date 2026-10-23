@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, For, onMount, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import FavoriteButton from "@/components/FavoriteButton";
 import { useFavorites } from "@/components/favorites";
 import { useToolRotation } from "@/components/toolOrder";
@@ -48,6 +48,20 @@ export default function ToolSearch() {
     if (window.matchMedia("(pointer: fine)").matches) {
       inputRef?.focus();
     }
+    /* The landing header no longer hosts a search trigger, so this island owns
+       the documented shortcut: ⌘K/Ctrl+K (and /) focus the hero field. */
+    const focusShortcut = (event: KeyboardEvent) => {
+      const meta = event.metaKey || event.ctrlKey;
+      if (
+        (meta && event.key.toLowerCase() === "k") ||
+        (event.key === "/" && !(event.target instanceof HTMLInputElement))
+      ) {
+        event.preventDefault();
+        inputRef?.focus();
+      }
+    };
+    document.addEventListener("keydown", focusShortcut);
+    onCleanup(() => document.removeEventListener("keydown", focusShortcut));
   });
 
   function onKeyDown(e: KeyboardEvent) {
