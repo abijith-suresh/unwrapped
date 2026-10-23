@@ -56,7 +56,7 @@ describe("ToolMenu", () => {
     fireEvent.keyDown(screen.getByRole("menu", { name: "Open output in another tool" }), {
       key: "Escape",
     });
-    expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ id: "json-to-yaml" }));
+    expect(onSelect).not.toHaveBeenCalled();
     expect(screen.queryByRole("menuitem")).not.toBeInTheDocument();
   });
 
