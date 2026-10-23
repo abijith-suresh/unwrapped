@@ -1,6 +1,7 @@
 import { createMemo, createSignal } from "solid-js";
 import Input from "@/components/primitives/solid/Input";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolToolbar from "@/components/tool/ToolToolbar";
 import ToolTransformWorkspace from "@/components/tool/ToolTransformWorkspace";
 import { useToolHandoff } from "@/components/toolHandoff";
 import { EXAMPLE_XML } from "@/lib/exampleData";
@@ -23,7 +24,7 @@ export default function XmlFormatterTool() {
 
   return (
     <ToolContainer>
-      <div class="flex flex-col gap-3">
+      <ToolToolbar label="Options">
         <Input
           label="Indent"
           name="xml-indent"
@@ -34,10 +35,9 @@ export default function XmlFormatterTool() {
           inputmode="numeric"
           value={String(indent())}
           onInput={(value) => setIndent(Number(value) || 2)}
-          class="flex-row items-center gap-3"
-          controlClass="!w-20 rounded-lg !px-3 !py-2"
+          controlClass="w-[var(--size-numeric-field)]"
         />
-      </div>
+      </ToolToolbar>
       <ToolTransformWorkspace
         input={{
           label: "XML input",

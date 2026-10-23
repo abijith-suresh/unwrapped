@@ -35,7 +35,7 @@ export default function JsonFormatter() {
   };
   return (
     <ToolContainer>
-      <ToolToolbar label="Formatting controls">
+      <ToolToolbar label="Options">
         <ToolSegmentedControl
           label="Output format"
           value={outputFormat()}
