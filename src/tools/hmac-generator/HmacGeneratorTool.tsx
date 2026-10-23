@@ -5,6 +5,7 @@ import ToolActionButton from "@/components/ToolActionButton";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolGeneratorWorkspace from "@/components/tool/ToolGeneratorWorkspace";
 import ToolInputPanel from "@/components/tool/ToolInputPanel";
+import ToolSplitPane from "@/components/tool/ToolSplitPane";
 import { EXAMPLE_SECRET, EXAMPLE_TEXT } from "@/lib/exampleData";
 import { generateHmac, HMAC_ALGORITHMS, type HmacAlgorithm } from "@/lib/hmac";
 
@@ -34,6 +35,16 @@ export default function HmacGeneratorTool() {
     setError("");
   }
 
+  function clearMessage() {
+    invalidateOutput();
+    setMessage("");
+  }
+
+  function clearSecret() {
+    invalidateOutput();
+    setSecret("");
+  }
+
   async function handleGenerate() {
     if (isExample()) return;
     const run = ++generation;
@@ -58,7 +69,7 @@ export default function HmacGeneratorTool() {
 
   return (
     <ToolContainer>
-      <div class="grid gap-4 grid-cols-[repeat(auto-fit,minmax(min(100%,260px),1fr))]">
+      <ToolSplitPane>
         <ToolInputPanel
           compact
           label="Message"
@@ -69,6 +80,11 @@ export default function HmacGeneratorTool() {
           }}
           placeholder={EXAMPLE_TEXT}
           rows={6}
+          actions={
+            <ToolActionButton onClick={clearMessage} disabled={!message()}>
+              Clear
+            </ToolActionButton>
+          }
         />
         <ToolInputPanel
           compact
@@ -80,8 +96,13 @@ export default function HmacGeneratorTool() {
           }}
           placeholder={EXAMPLE_SECRET}
           rows={6}
+          actions={
+            <ToolActionButton onClick={clearSecret} disabled={!secret()}>
+              Clear
+            </ToolActionButton>
+          }
         />
-      </div>
+      </ToolSplitPane>
 
       <ToolGeneratorWorkspace
         configuration={
