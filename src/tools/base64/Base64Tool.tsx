@@ -261,11 +261,11 @@ export default function Base64Tool() {
             value: outputValue(),
             error: transformError() ?? undefined,
             isExample: isExample(),
-            copyLabel: "Copy",
+            copyLabel: mode() === "encode" ? "Copy encoded Base64" : "Copy decoded output",
             actions: decodedOutput() ? (
               <>
                 <Show when={!binaryOutput()}>
-                  <CopyButton text={outputValue()} compact />
+                  <CopyButton text={outputValue()} compact label="Copy decoded output" />
                 </Show>
                 <ToolDownloadButton
                   blob={

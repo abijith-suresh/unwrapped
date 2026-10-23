@@ -87,7 +87,7 @@ export default function UrlEncoderTool() {
           value: output(),
           error: error() ?? undefined,
           isExample: isExample(),
-          copyLabel: "Copy",
+          copyLabel: mode() === "encode" ? "Copy encoded URL" : "Copy decoded URL",
         }}
       />
     </ToolContainer>
