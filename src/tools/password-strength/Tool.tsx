@@ -9,6 +9,15 @@ import { EXAMPLE_PASSWORD } from "@/lib/exampleData";
 import { estimatePassword, type PasswordEstimate } from "@/lib/passwordStrength";
 
 const labels = ["Very weak", "Weak", "Fair", "Strong", "Very strong"];
+
+const SEGMENTS = [0, 1, 2, 3];
+
+function strengthColor(score: number): string {
+  if (score <= 1) return "var(--accent-error)";
+  if (score === 2) return "var(--accent-warning)";
+  return "var(--accent-success)";
+}
+
 export default function Tool() {
   const [password, setPassword] = createSignal("");
   const [visible, setVisible] = createSignal(false);
@@ -34,9 +43,30 @@ export default function Tool() {
         error={error()}
         errorId="password-error"
         input={
-          <ToolPanel title="Password">
+          <ToolPanel
+            title="Password to evaluate"
+            aria-label="Password to evaluate input panel"
+            actions={
+              <>
+                <ToolActionButton active={visible()} onClick={() => setVisible((value) => !value)}>
+                  {visible() ? "Hide password" : "Show password"}
+                </ToolActionButton>
+                <ToolActionButton
+                  onClick={() => {
+                    setPassword("");
+                    setResult(null);
+                    setError("");
+                    setVisible(false);
+                  }}
+                >
+                  Clear
+                </ToolActionButton>
+              </>
+            }
+          >
             <Input
               label="Password to evaluate"
+              labelClass="sr-only"
               type={visible() ? "text" : "password"}
               value={password()}
               placeholder={EXAMPLE_PASSWORD}
@@ -54,21 +84,6 @@ export default function Tool() {
               error={!!error()}
               describedBy={error() ? "password-error" : undefined}
             />
-            <div class="flex flex-wrap gap-2 mt-3">
-              <ToolActionButton active={visible()} onClick={() => setVisible((value) => !value)}>
-                {visible() ? "Hide password" : "Show password"}
-              </ToolActionButton>
-              <ToolActionButton
-                onClick={() => {
-                  setPassword("");
-                  setResult(null);
-                  setError("");
-                  setVisible(false);
-                }}
-              >
-                Clear
-              </ToolActionButton>
-            </div>
           </ToolPanel>
         }
       >
@@ -79,18 +94,35 @@ export default function Tool() {
                 <strong class="text-[var(--text-primary)]">
                   {labels[estimate().score]} · {estimate().score}/4
                 </strong>
-                <meter
-                  min={0}
-                  max={4}
-                  value={estimate().score}
+                {/* biome-ignore lint/a11y/useSemanticElements: a token-driven segmented bar keeps the meter role for screen readers without the native element. */}
+                <div
+                  role="meter"
                   aria-label="Estimated password strength"
-                  class="w-full"
-                />
+                  aria-valuemin={0}
+                  aria-valuemax={4}
+                  aria-valuenow={estimate().score}
+                  aria-valuetext={`${labels[estimate().score]} · ${estimate().score}/4`}
+                  class="flex gap-1"
+                >
+                  <For each={SEGMENTS}>
+                    {(index) => (
+                      <div
+                        class="h-2 flex-1 rounded-[var(--radius-sm)] transition-[background-color] duration-[var(--motion-fast)] ease-[var(--motion-ease-standard)] motion-reduce:transition-none"
+                        style={{
+                          "background-color":
+                            index < estimate().score
+                              ? strengthColor(estimate().score)
+                              : "var(--bg-tertiary)",
+                        }}
+                      />
+                    )}
+                  </For>
+                </div>
                 <p class="m-0 text-sm text-[var(--text-secondary)]">
                   Estimated search effort: 10^{estimate().guessesLog10.toFixed(1)} guesses.
                 </p>
                 <Show when={estimate().warning}>
-                  <ToolStatusMessage tone="muted">{estimate().warning}</ToolStatusMessage>
+                  <ToolStatusMessage tone="warning">{estimate().warning}</ToolStatusMessage>
                 </Show>
                 <For each={estimate().suggestions}>
                   {(suggestion) => <ToolStatusMessage tone="muted">{suggestion}</ToolStatusMessage>}
