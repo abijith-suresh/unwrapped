@@ -62,7 +62,7 @@ describe("Base64 composed controls and panels", () => {
     expect(view.queryByRole("button", { name: "Copy" })).not.toBeInTheDocument();
     fireEvent.input(input, { target: { value: "Ada" } });
     expect(view.container.querySelector("pre")).toHaveTextContent("QWRh");
-    expect(view.getByRole("button", { name: "Copy" })).toBeEnabled();
+    expect(view.getByRole("button", { name: "Copy encoded Base64" })).toBeEnabled();
     fireEvent.click(view.getByRole("button", { name: "⇅ Swap" }));
     expect(view.getByRole("textbox", { name: "Base64" })).toHaveValue("QWRh");
     expect(view.container.querySelector("pre")).toHaveTextContent("Ada");
@@ -92,7 +92,7 @@ describe("Base64 composed controls and panels", () => {
     expect(view.container.querySelector("pre")).toHaveTextContent("Ada");
     expect(view.queryByRole("radio", { name: "File / binary" })).not.toBeInTheDocument();
     expect(view.getByRole("button", { name: "Download file" })).toBeEnabled();
-    expect(view.getByRole("button", { name: "Copy" })).toBeEnabled();
+    expect(view.getByRole("button", { name: "Copy decoded output" })).toBeEnabled();
     fireEvent.input(input, { target: { value: "AP8Q" } });
     expect(view.container.querySelector("pre")).toHaveTextContent("00 ff 10");
     expect(view.getByRole("button", { name: "Download file" })).toBeEnabled();
