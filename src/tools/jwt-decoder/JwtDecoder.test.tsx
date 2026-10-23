@@ -1,4 +1,5 @@
-import { fireEvent, render, waitFor } from "@solidjs/testing-library";
+import { fireEvent, render, screen, waitFor } from "@solidjs/testing-library";
+
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as clipboard from "@/lib/clipboard";
 import { prettyJson } from "@/lib/jwt";
@@ -62,7 +63,7 @@ describe("JWT inspector integration", () => {
       name: "Open output in another tool",
     });
     fireEvent.click(handoffButtons[1]);
-    fireEvent.click(view.getByRole("menuitem", { name: "JSON Formatter" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "JSON Formatter" }));
     await waitFor(() => expect(navigate).toHaveBeenCalledWith("/tools/json-formatter"));
     view.unmount();
     const destination = render(() => <JsonFormatter />);
