@@ -590,7 +590,7 @@ export default function DiffTool() {
                     Next change
                   </ToolActionButton>
                 </Show>
-                <Show when={!isExample() && analysis() !== null}>
+                <Show when={!isExample() && analysis() !== null && !pending() && !cancelled()}>
                   <ToolDownloadButton
                     compact
                     value={comparisonReport()}
@@ -619,7 +619,7 @@ export default function DiffTool() {
               <Show
                 when={pending() || cancelled() || analysisError() || structuredErrors().length > 0}
               >
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-2" role="status" aria-live="polite">
                   <Show when={pending()}>
                     <ToolStatusMessage>
                       <span class="flex items-center justify-between gap-3">
@@ -660,17 +660,15 @@ export default function DiffTool() {
               <Show when={analysis() !== null && diffData() !== null}>
                 <div
                   class="flex min-w-0 flex-col gap-2 transition-opacity duration-[var(--motion-base)] ease-[var(--motion-ease-standard)]"
-                  classList={{ "opacity-40": pending() }}
+                  classList={{ "opacity-40": pending() || cancelled() }}
                   aria-busy={pending() || undefined}
                 >
                   <Show when={filteredRows().length > 0}>
                     <div class="overflow-x-auto rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-secondary)]">
-                      <table class="w-full min-w-[40rem] border-collapse table-fixed text-sm leading-[1.5]">
+                      <table class="w-max min-w-full border-collapse text-sm leading-[1.5]">
                         <colgroup>
                           <col style="width: 2.75rem" />
-                          <col style="width: 50%" />
                           <col style="width: 2.75rem" />
-                          <col style="width: 50%" />
                         </colgroup>
                         <tbody>
                           <For each={filteredRows()}>
@@ -713,7 +711,7 @@ export default function DiffTool() {
                                     </td>
                                     {/* Left content */}
                                     <td
-                                      class="px-3 whitespace-pre font-mono text-xs overflow-hidden"
+                                      class="px-3 whitespace-pre font-mono text-xs"
                                       classList={{
                                         "bg-[color-mix(in_srgb,var(--accent-error)_18%,transparent)]":
                                           row.type === "removed",
@@ -739,7 +737,7 @@ export default function DiffTool() {
                                     </td>
                                     {/* Right content */}
                                     <td
-                                      class="px-3 whitespace-pre font-mono text-xs overflow-hidden"
+                                      class="px-3 whitespace-pre font-mono text-xs"
                                       classList={{
                                         "bg-[color-mix(in_srgb,var(--accent-success)_18%,transparent)]":
                                           row.type === "added",
