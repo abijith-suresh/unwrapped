@@ -24,7 +24,15 @@ const KIND_SECTIONS: { value: ReferenceKind; label: string }[] = [
 
 function ReferenceRow(props: { entry: NetworkReferenceEntry }) {
   return (
-    <li class="grid min-w-0 grid-cols-1 items-center gap-2 border-b border-[var(--border)] px-3 py-2 last:border-b-0 sm:grid-cols-[minmax(6rem,9rem)_minmax(0,1fr)_auto] sm:gap-4 sm:px-4 sm:py-3">
+    <li
+      style={{
+        display: "grid",
+        "grid-template-columns": "var(--ref-term-width) minmax(0,1fr) auto",
+        gap: "var(--space-4)",
+        padding: "var(--space-3) var(--space-4)",
+      }}
+      class="min-w-0 items-center border-b border-[var(--border)] last:border-b-0"
+    >
       <div
         class="min-w-0 truncate font-mono font-semibold text-[var(--text-primary)]"
         style={{ "font-size": "var(--fs-body)" }}
@@ -46,14 +54,6 @@ function ReferenceRow(props: { entry: NetworkReferenceEntry }) {
         >
           {props.entry.example}
         </code>
-        <a
-          href={props.entry.source}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="w-fit text-[var(--fs-2xs)] text-[var(--accent-secondary)] underline decoration-dotted underline-offset-2 transition-colors duration-[var(--motion-fast)] ease-[var(--motion-ease-standard)] hover:text-[var(--accent-primary)]"
-        >
-          Source
-        </a>
       </div>
       <CopyButton text={props.entry.example} label={`Copy ${props.entry.name} example`} compact />
     </li>
@@ -106,7 +106,7 @@ export default function Tool() {
           when={entries().length}
           fallback={<ToolStatusMessage tone="muted">No matching entries.</ToolStatusMessage>}
         >
-          <div class="flex min-w-0 flex-col gap-4">
+          <div class="flex min-w-0 flex-col gap-4" style={{ "--ref-term-width": "9rem" }}>
             <For each={sections()}>
               {(section) => (
                 <section
