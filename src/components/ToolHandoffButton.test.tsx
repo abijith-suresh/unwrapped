@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor } from "@solidjs/testing-library";
+import { fireEvent, render, screen, waitFor } from "@solidjs/testing-library";
 import { createSignal } from "solid-js";
 import { afterEach, describe, expect, it } from "vitest";
 import ToolOutputPanel from "@/components/tool/ToolOutputPanel";
@@ -35,9 +35,9 @@ describe("output handoff controls", () => {
     fireEvent.input(getByRole("textbox"), { target: { value: '{"n":9007199254740993}' } });
     expect(getByRole("button", { name: "Open output in another tool" })).toBeInTheDocument();
     openMenu(getByRole);
-    expect(getByRole("menuitem", { name: "JSON to YAML" })).toBeEnabled();
-    expect(queryByRole("menuitem", { name: "YAML to JSON" })).not.toBeInTheDocument();
-    expect(queryByRole("menuitem", { name: "JSON Formatter" })).not.toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: "JSON to YAML" })).toBeEnabled();
+    expect(screen.queryByRole("menuitem", { name: "YAML to JSON" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("menuitem", { name: "JSON Formatter" })).not.toBeInTheDocument();
     fireEvent.input(getByRole("textbox"), { target: { value: "bad" } });
     expect(queryByRole("button", { name: "Open output in another tool" })).not.toBeInTheDocument();
   });
@@ -56,7 +56,7 @@ describe("output handoff controls", () => {
       </div>
     ));
     openMenu(getByRole);
-    fireEvent.click(getByRole("menuitem", { name: "JSON to YAML" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "JSON to YAML" }));
     await waitFor(() => expect(getByRole("alert")).toHaveTextContent("Could not open the tool"));
     expect(getByText('{"private":"unchanged"}')).toBeInTheDocument();
     expect(toolHandoffs.consume("json-to-yaml")).toBeUndefined();
