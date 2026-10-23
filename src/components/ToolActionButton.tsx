@@ -52,6 +52,10 @@ const SIZE_CLASSES = "min-h-[var(--size-control)] px-3.5 text-[var(--fs-control)
 
 const COMPACT_CLASSES = "min-h-[var(--size-control-compact)] px-2.5 text-[var(--fs-label)]";
 
+/** Shared class strings so composite controls (menus) can reuse the exact
+ * action-button look without duplicating it. */
+export const TOOL_ACTION_BASE_CLASSES = BASE_CLASSES;
+
 type PressedState = boolean | "true" | "false" | "mixed" | undefined;
 
 function getButtonClasses(variant: ToolActionButtonVariant, pressed: PressedState): string {
