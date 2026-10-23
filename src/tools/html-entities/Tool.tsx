@@ -90,7 +90,7 @@ export default function Tool() {
           value: output(),
           isExample: isExample(),
           error: error() || undefined,
-          copyLabel: "Copy",
+          copyLabel: mode() === "encode" ? "Copy encoded entities" : "Copy decoded text",
         }}
       />
     </ToolContainer>
