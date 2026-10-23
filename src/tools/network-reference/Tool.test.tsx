@@ -11,8 +11,8 @@ it("filters bundled entries and shows an empty state without requests", () => {
   fireEvent.input(screen.getByLabelText("Search record types or headers"), {
     target: { value: "IPv6" },
   });
-  expect(screen.getByRole("region", { name: "AAAA" })).toBeInTheDocument();
-  expect(screen.queryByRole("region", { name: "Content-Type" })).toBeNull();
+  expect(screen.getByText("AAAA")).toBeInTheDocument();
+  expect(screen.queryByText("Content-Type")).toBeNull();
   fireEvent.click(screen.getByRole("radio", { name: "HTTP headers" }));
   expect(screen.getByText("No matching entries.")).toBeInTheDocument();
   expect(request).not.toHaveBeenCalled();

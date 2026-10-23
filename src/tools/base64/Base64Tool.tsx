@@ -95,9 +95,8 @@ export default function Base64Tool() {
     setInput(current);
   }
 
-  function reset() {
+  function clear() {
     setMode("encode");
-    setVariant("standard");
     setInput("");
     clearFile();
   }
@@ -181,8 +180,8 @@ export default function Base64Tool() {
             <ToolActionButton onClick={swap} title="Swap input/output" disabled={!canSwap()}>
               ⇅ Swap
             </ToolActionButton>
-            <ToolActionButton onClick={reset} variant="ghost">
-              Reset
+            <ToolActionButton onClick={clear} variant="ghost">
+              Clear
             </ToolActionButton>
           </>
         }
@@ -240,7 +239,6 @@ export default function Base64Tool() {
             placeholder: exampleInput(),
             file: mode() === "encode" && loadedFileBytes() ? loadedFile() : null,
             onRemoveFile: clearFile,
-            rows: 8,
             actions: (
               <ToolFilePicker
                 label={loadedFile() ? "Replace file" : "Open file"}
@@ -263,11 +261,11 @@ export default function Base64Tool() {
             value: outputValue(),
             error: transformError() ?? undefined,
             isExample: isExample(),
-            copyLabel: "Copy",
+            copyLabel: mode() === "encode" ? "Copy encoded Base64" : "Copy decoded output",
             actions: decodedOutput() ? (
               <>
                 <Show when={!binaryOutput()}>
-                  <CopyButton text={outputValue()} compact />
+                  <CopyButton text={outputValue()} compact label="Copy decoded output" />
                 </Show>
                 <ToolDownloadButton
                   blob={
