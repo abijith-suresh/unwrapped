@@ -5,6 +5,7 @@ import ToolComparerWorkspace from "@/components/tool/ToolComparerWorkspace";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolInputPanel from "@/components/tool/ToolInputPanel";
 import ToolOutputPanel from "@/components/tool/ToolOutputPanel";
+import ToolToolbar from "@/components/tool/ToolToolbar";
 import { useToolHandoff } from "@/components/toolHandoff";
 import { EXAMPLE_JSON_SCHEMA, EXAMPLE_SCHEMA_DOCUMENT } from "@/lib/exampleData";
 import { validateJsonSchema } from "@/lib/jsonSchema";
@@ -69,6 +70,20 @@ export default function Tool() {
 
   return (
     <ToolContainer>
+      <ToolToolbar label="Validation actions">
+        <ToolActionButton variant="primary" disabled={isExample()} onClick={() => void validate()}>
+          Validate document
+        </ToolActionButton>
+        <ToolActionButton
+          onClick={() => {
+            resetValidation();
+            setInput("");
+            setSchema("");
+          }}
+        >
+          Clear inputs
+        </ToolActionButton>
+      </ToolToolbar>
       <ToolComparerWorkspace
         left={
           <ToolInputPanel
@@ -93,36 +108,20 @@ export default function Tool() {
           />
         }
       >
-        <div class="flex gap-2 flex-wrap">
-          <ToolActionButton
-            variant="primary"
-            disabled={isExample()}
-            onClick={() => void validate()}
-          >
-            Validate document
-          </ToolActionButton>
-          <ToolActionButton
-            onClick={() => {
-              resetValidation();
-              setInput("");
-              setSchema("");
-            }}
-          >
-            Clear inputs
-          </ToolActionButton>
-        </div>
         <Show when={pending()}>
-          <div class="flex flex-wrap items-center gap-2" role="status">
-            <span class="text-sm text-[var(--text-muted)]">Validating…</span>
-            <ToolActionButton
-              onClick={() => {
-                resetValidation();
-                setCancelled(true);
-              }}
-            >
-              Cancel validation
-            </ToolActionButton>
-          </div>
+          <ToolStatusMessage role="status">
+            <span class="flex flex-wrap items-center gap-2">
+              Validating…
+              <ToolActionButton
+                onClick={() => {
+                  resetValidation();
+                  setCancelled(true);
+                }}
+              >
+                Cancel validation
+              </ToolActionButton>
+            </span>
+          </ToolStatusMessage>
         </Show>
         <Show when={cancelled()}>
           <ToolStatusMessage>Validation cancelled. Validate again when ready.</ToolStatusMessage>
