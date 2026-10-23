@@ -26,10 +26,30 @@ const TOGGLE_ACTIVE_CLASSES =
   "border-[var(--accent-primary)] bg-[color-mix(in_srgb,var(--accent-primary)_12%,transparent)] text-[var(--accent-primary)]";
 
 const SEGMENT_ACTIVE_CLASSES =
-  "border-transparent bg-[var(--accent-primary)] text-[var(--bg-primary)] shadow-sm hover:bg-[var(--accent-secondary)]";
+  "border-transparent bg-[var(--accent-primary)] text-[var(--bg-primary)] shadow-sm hover:bg-[color-mix(in_srgb,var(--accent-secondary)_35%,var(--accent-primary))]";
+
+/** Shared class strings so composite controls (menus, selects) can reuse the
+ * action-button look without duplicating it. */
+type ToolActionButtonClassMap = Record<ToolActionButtonVariant, string> & {
+  toggleActive: string;
+  segmentActive: string;
+};
+export const TOOL_ACTION_CLASSES: ToolActionButtonClassMap = {
+  primary: VARIANT_CLASSES.primary,
+  secondary: VARIANT_CLASSES.secondary,
+  ghost: VARIANT_CLASSES.ghost,
+  toggle: VARIANT_CLASSES.toggle,
+  segment: VARIANT_CLASSES.segment,
+  segmentActive: SEGMENT_ACTIVE_CLASSES,
+  toggleActive: TOGGLE_ACTIVE_CLASSES,
+};
 
 const BASE_CLASSES =
   "inline-flex min-h-[var(--size-control)] shrink-0 items-center justify-center gap-2 rounded-[var(--radius-control)] border px-3.5 py-2 text-[var(--fs-control)] font-semibold leading-none whitespace-nowrap cursor-pointer touch-manipulation transition-[background-color,border-color,color,box-shadow] duration-[var(--motion-fast)] ease-[var(--motion-ease-standard)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-[var(--opacity-disabled)]";
+
+/** Shared class strings so composite controls (menus) can reuse the exact
+ * action-button look without duplicating it. */
+export const TOOL_ACTION_BASE_CLASSES = BASE_CLASSES;
 
 type PressedState = boolean | "true" | "false" | "mixed" | undefined;
 

@@ -1,4 +1,4 @@
-import { fireEvent, render, waitFor, within } from "@solidjs/testing-library";
+import { fireEvent, render, screen, waitFor, within } from "@solidjs/testing-library";
 import { afterEach, expect, it, vi } from "vitest";
 import * as clipboard from "@/lib/clipboard";
 import * as download from "@/lib/download";
@@ -110,9 +110,8 @@ it("renders fixed capture columns and shares the complete report through copy, d
     report,
     expect.objectContaining({ format: "json", fileName: "matches.json" })
   );
-  fireEvent.change(getByRole("combobox", { name: "Open output in another tool" }), {
-    target: { value: "json-formatter" },
-  });
+  fireEvent.click(getByRole("button", { name: "Open output in another tool" }));
+  fireEvent.click(screen.getByRole("menuitem", { name: "JSON Formatter" }));
   await waitFor(() => expect(navigate).toHaveBeenCalledWith("/tools/json-formatter"));
   expect(toolHandoffs.consume("json-formatter")).toEqual({
     sourceId: "regex-tester",

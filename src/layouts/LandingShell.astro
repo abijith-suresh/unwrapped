@@ -1,5 +1,4 @@
 ---
-import GlobalToolSearch from "@/components/GlobalToolSearch";
 import Base from "@/layouts/Base.astro";
 import { ClientRouter } from "astro:transitions";
 
@@ -36,7 +35,6 @@ const FOOTER_LINKS = [
       <a class="ls-brand" href="/" translate="no">
         unwrapped<span class="ls-brand-tld">.tools</span>
       </a>
-      <GlobalToolSearch client:load />
     </header>
 
     <main id="main-content" class="ls-main" tabindex="-1">

@@ -92,11 +92,10 @@ export default function GlobalToolSearch() {
         aria-label="Search tools"
         aria-haspopup="dialog"
         aria-keyshortcuts="Meta+K Control+K"
-        title="Search tools"
+        title="Search tools (⌘K)"
         onClick={open}
       >
         <Search size={18} aria-hidden="true" />
-        <span class="global-search-label">Search</span>
       </button>
       <dialog
         ref={dialog}
