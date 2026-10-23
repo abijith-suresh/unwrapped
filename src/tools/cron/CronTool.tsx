@@ -119,12 +119,17 @@ export default function CronTool() {
             Load expression into builder
           </ToolActionButton>
         </div>
-        <ToolStatusMessage tone={built().ok ? "muted" : "error"}>
-          {(() => {
-            const result = built();
-            return result.ok ? result.output : result.error;
-          })()}
-        </ToolStatusMessage>
+        <div class="flex flex-col gap-1.5">
+          <span class="text-[var(--fs-2xs)] font-semibold uppercase tracking-[0.12em] text-[var(--text-muted)]">
+            Built expression
+          </span>
+          <ToolStatusMessage tone={built().ok ? "muted" : "error"}>
+            {(() => {
+              const result = built();
+              return result.ok ? result.output : result.error;
+            })()}
+          </ToolStatusMessage>
+        </div>
       </ToolPanel>
       <ToolInspectorWorkspace
         input={
