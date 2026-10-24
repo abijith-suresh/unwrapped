@@ -25,6 +25,7 @@ export interface ToolOutputPanelProps {
   download?: TextDownloadOptions | false;
   handoff?: TextFormat | false;
   actions?: JSX.Element;
+  actionsEnabled?: boolean;
   compact?: boolean;
   segments?: readonly CodeHighlightSegment[];
 }
@@ -39,7 +40,9 @@ export default function ToolOutputPanel(props: ToolOutputPanelProps) {
       actions={
         <>
           <ToolExampleNotice when={!!props.isExample && props.showExampleNotice !== false} />
-          <Show when={!props.isExample && !props.error && props.value}>
+          <Show
+            when={props.actionsEnabled !== false && !props.isExample && !props.error && props.value}
+          >
             {props.actions ?? (
               <CopyButton text={props.value} label={props.copyLabel ?? "Copy output"} compact />
             )}

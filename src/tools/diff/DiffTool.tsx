@@ -13,7 +13,6 @@ import ToolActionButton from "@/components/ToolActionButton";
 import ToolDownloadButton from "@/components/ToolDownloadButton";
 import ToolHandoffButton from "@/components/ToolHandoffButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
-import ToolBadge from "@/components/tool/ToolBadge";
 import ToolComparerWorkspace from "@/components/tool/ToolComparerWorkspace";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolDropZone from "@/components/tool/ToolDropZone";
@@ -542,24 +541,32 @@ export default function DiffTool() {
             titleAddon={
               <>
                 <Show when={pending()}>
-                  <ToolBadge tone="muted" pulse>
+                  <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-2 py-0.5 text-[var(--fs-2xs)] font-medium leading-none text-[var(--text-muted)]">
+                    <span
+                      aria-hidden="true"
+                      class="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--accent-primary)]"
+                    />
                     Comparing…
-                  </ToolBadge>
+                  </span>
                 </Show>
                 <Show when={analysis() !== null && !isExample()}>
-                  <ToolBadge tone="muted">{STRATEGY_LABELS[strategy()] ?? "Text"}</ToolBadge>
+                  <span class="inline-flex items-center rounded-full border border-[var(--border)] px-2 py-0.5 text-[var(--fs-2xs)] font-semibold uppercase tracking-[0.12em] leading-none text-[var(--text-muted)]">
+                    {STRATEGY_LABELS[strategy()] ?? "Text"}
+                  </span>
                 </Show>
                 <Show when={analysis() !== null && !pending()}>
                   <Show
                     when={isIdentical()}
                     fallback={
-                      <ToolBadge tone="muted" class="tabular-nums">
+                      <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] px-2 py-0.5 text-[var(--fs-2xs)] font-semibold tabular-nums leading-none">
                         <span class="text-[var(--accent-success)]">+{stats().added}</span>
                         <span class="text-[var(--accent-error)]">−{stats().removed}</span>
-                      </ToolBadge>
+                      </span>
                     }
                   >
-                    <ToolBadge tone="success">Identical</ToolBadge>
+                    <span class="inline-flex items-center rounded-full border border-[var(--accent-success)] px-2 py-0.5 text-[var(--fs-2xs)] font-semibold leading-none text-[var(--accent-success)]">
+                      Identical
+                    </span>
                   </Show>
                 </Show>
               </>
@@ -583,7 +590,7 @@ export default function DiffTool() {
                     Next change
                   </ToolActionButton>
                 </Show>
-                <Show when={!isExample() && analysis() !== null}>
+                <Show when={!isExample() && analysis() !== null && !pending() && !cancelled()}>
                   <ToolDownloadButton
                     compact
                     value={comparisonReport()}
@@ -612,12 +619,16 @@ export default function DiffTool() {
               <Show
                 when={pending() || cancelled() || analysisError() || structuredErrors().length > 0}
               >
-                <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-2" role="status" aria-live="polite">
                   <Show when={pending()}>
                     <ToolStatusMessage>
                       <span class="flex items-center justify-between gap-3">
                         Comparing…
-                        <ToolActionButton variant="ghost" onClick={cancelComparison} compact>
+                        <ToolActionButton
+                          variant="ghost"
+                          onClick={cancelComparison}
+                          class="!min-h-0 !px-2.5 !py-1"
+                        >
                           Cancel
                         </ToolActionButton>
                       </span>
@@ -649,17 +660,15 @@ export default function DiffTool() {
               <Show when={analysis() !== null && diffData() !== null}>
                 <div
                   class="flex min-w-0 flex-col gap-2 transition-opacity duration-[var(--motion-base)] ease-[var(--motion-ease-standard)]"
-                  classList={{ "opacity-40": pending() }}
+                  classList={{ "opacity-40": pending() || cancelled() }}
                   aria-busy={pending() || undefined}
                 >
                   <Show when={filteredRows().length > 0}>
                     <div class="overflow-x-auto rounded-[var(--radius-control)] border border-[var(--border)] bg-[var(--bg-secondary)]">
-                      <table class="w-full min-w-[40rem] border-collapse table-fixed text-sm leading-[1.5]">
+                      <table class="w-max min-w-full border-collapse text-sm leading-[1.5]">
                         <colgroup>
                           <col style="width: 2.75rem" />
-                          <col style="width: 50%" />
                           <col style="width: 2.75rem" />
-                          <col style="width: 50%" />
                         </colgroup>
                         <tbody>
                           <For each={filteredRows()}>
@@ -702,7 +711,7 @@ export default function DiffTool() {
                                     </td>
                                     {/* Left content */}
                                     <td
-                                      class="px-3 whitespace-pre font-mono text-xs overflow-hidden"
+                                      class="px-3 whitespace-pre font-mono text-xs"
                                       classList={{
                                         "bg-[color-mix(in_srgb,var(--accent-error)_18%,transparent)]":
                                           row.type === "removed",
@@ -728,7 +737,7 @@ export default function DiffTool() {
                                     </td>
                                     {/* Right content */}
                                     <td
-                                      class="px-3 whitespace-pre font-mono text-xs overflow-hidden"
+                                      class="px-3 whitespace-pre font-mono text-xs"
                                       classList={{
                                         "bg-[color-mix(in_srgb,var(--accent-success)_18%,transparent)]":
                                           row.type === "added",

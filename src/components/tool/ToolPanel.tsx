@@ -66,7 +66,11 @@ export default function ToolPanel(props: ToolPanelProps) {
         </div>
 
         <Show when={local.actions}>
-          {(actions) => <div class="flex shrink-0 items-center gap-1 sm:gap-2">{actions()}</div>}
+          {(actions) => (
+            <div class="flex min-w-0 shrink-0 flex-wrap items-center justify-end gap-1 sm:gap-2">
+              {actions()}
+            </div>
+          )}
         </Show>
       </header>
 
