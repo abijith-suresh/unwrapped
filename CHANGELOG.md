@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.0.9](https://github.com/abijith-suresh/unwrapped/compare/0.0.8...0.0.9) (2026-10-24)
+
+
+### Features
+
+* **cmp:** diff and regex result surfaces on the kit ([#304](https://github.com/abijith-suresh/unwrapped/issues/304)) ([61193ed](https://github.com/abijith-suresh/unwrapped/commit/61193ed52dfb94060383f55b620b835bb1c89a84))
+* **enc:** unify the encoder family ([#302](https://github.com/abijith-suresh/unwrapped/issues/302)) ([481dd8c](https://github.com/abijith-suresh/unwrapped/commit/481dd8cf3f50b37c230ea4c3d9b7f6eb811b8f80))
+* **home:** per-tool accent identity on the card grid ([#300](https://github.com/abijith-suresh/unwrapped/issues/300)) ([687bdea](https://github.com/abijith-suresh/unwrapped/commit/687bdeab525a8e84c680e25c24183f160b62ea00))
+* **ref:** dense grouped reference tables ([#301](https://github.com/abijith-suresh/unwrapped/issues/301)) ([b31eee1](https://github.com/abijith-suresh/unwrapped/commit/b31eee10d407e8b784c3f6f49168ef294b7ce9ec))
+* **sec:** kit idioms for security and generator tools ([#303](https://github.com/abijith-suresh/unwrapped/issues/303)) ([0dfc393](https://github.com/abijith-suresh/unwrapped/commit/0dfc3937996f677ed0c50a4d5a3691c489803f49))
+* **tn:** polish the time and network tools ([#307](https://github.com/abijith-suresh/unwrapped/issues/307)) ([7526ebe](https://github.com/abijith-suresh/unwrapped/commit/7526ebe16c7c3ddf13e3295115542a33b4d1485a))
+* **ui:** one control band across the data tools ([#296](https://github.com/abijith-suresh/unwrapped/issues/296)) ([072a580](https://github.com/abijith-suresh/unwrapped/commit/072a5805c90200e5a945a7a45cb0668498a7f146))
+* **ui:** one search system, icon chrome, no tool footer ([#298](https://github.com/abijith-suresh/unwrapped/issues/298)) ([f9452fb](https://github.com/abijith-suresh/unwrapped/commit/f9452fb71efe61390b797c6eadaba0ca412ad4e4))
+* **ui:** real menus for handoff, segment ramp, gen error placement ([#299](https://github.com/abijith-suresh/unwrapped/issues/299)) ([a29283a](https://github.com/abijith-suresh/unwrapped/commit/a29283a5750ec2907375e655ac56fe4e4de975b1))
+
 ## [0.0.8](https://github.com/abijith-suresh/unwrapped/compare/0.0.7...0.0.8) (2026-10-22)
 
 
