@@ -15,6 +15,7 @@ import type { TextDownloadOptions, TextFormat } from "@/lib/download";
 
 export interface ToolOutputPanelProps {
   title: string;
+  titleAddon?: JSX.Element;
   value: string;
   isExample?: boolean;
   showExampleNotice?: boolean;
@@ -33,6 +34,7 @@ export default function ToolOutputPanel(props: ToolOutputPanelProps) {
   return (
     <ToolPanel
       title={props.title}
+      titleAddon={props.titleAddon}
       class={props.compact ? undefined : TOOL_EDITOR_PANEL_CLASSES}
       bodyClass={props.compact ? undefined : TOOL_EDITOR_BODY_CLASSES}
       actions={

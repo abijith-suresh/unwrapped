@@ -17,6 +17,14 @@ const FORMATS: Record<TextFormat, { extension: string; mime: string }> = {
 export interface TextDownloadOptions {
   format?: TextFormat;
   fileName?: string;
+  /**
+   * Optional binary payload for non-text downloads. When set, download buttons
+   * write this blob verbatim instead of encoding `value` with `format`.
+   * The base64 tool's binary output still passes `blob` directly to
+   * `ToolDownloadButton`; migrating it to flow through `ToolOutputPanel.download`
+   * is owned by a separate change.
+   */
+  blob?: Blob;
 }
 
 export function createTextDownload(value: string, options: TextDownloadOptions = {}) {

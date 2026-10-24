@@ -5,7 +5,6 @@ import { downloadBlob, downloadText, type TextDownloadOptions } from "@/lib/down
 
 interface Props extends TextDownloadOptions {
   value?: string;
-  blob?: Blob;
   label?: string;
   compact?: boolean;
 }

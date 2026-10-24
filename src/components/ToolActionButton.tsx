@@ -7,6 +7,7 @@ export type ToolActionButtonVariant = "primary" | "secondary" | "ghost" | "toggl
 interface ToolActionButtonProps extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
   active?: boolean;
   variant?: ToolActionButtonVariant;
+  compact?: boolean;
 }
 
 const VARIANT_CLASSES: Record<ToolActionButtonVariant, string> = {
@@ -45,7 +46,11 @@ export const TOOL_ACTION_CLASSES: ToolActionButtonClassMap = {
 };
 
 const BASE_CLASSES =
-  "inline-flex min-h-[var(--size-control)] shrink-0 items-center justify-center gap-2 rounded-[var(--radius-control)] border px-3.5 py-2 text-[var(--fs-control)] font-semibold leading-none whitespace-nowrap cursor-pointer touch-manipulation transition-[background-color,border-color,color,box-shadow] duration-[var(--motion-fast)] ease-[var(--motion-ease-standard)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-[var(--opacity-disabled)]";
+  "inline-flex shrink-0 items-center justify-center gap-2 rounded-[var(--radius-control)] border py-2 font-semibold leading-none whitespace-nowrap cursor-pointer touch-manipulation transition-[background-color,border-color,color,box-shadow] duration-[var(--motion-fast)] ease-[var(--motion-ease-standard)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus-ring)] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-[var(--opacity-disabled)]";
+
+const SIZE_CLASSES = "min-h-[var(--size-control)] px-3.5 text-[var(--fs-control)]";
+
+const COMPACT_CLASSES = "min-h-[var(--size-control-compact)] px-2.5 text-[var(--fs-label)]";
 
 /** Shared class strings so composite controls (menus) can reuse the exact
  * action-button look without duplicating it. */
@@ -74,6 +79,7 @@ export default function ToolActionButton(props: ToolActionButtonProps) {
     "aria-pressed",
     "aria-selected",
     "class",
+    "compact",
     "role",
     "style",
     "tabIndex",
@@ -96,7 +102,12 @@ export default function ToolActionButton(props: ToolActionButtonProps) {
       aria-checked={isRadio ? (local["aria-checked"] ?? local.active) : undefined}
       aria-selected={isTab ? (local["aria-selected"] ?? local.active) : undefined}
       tabIndex={local.tabIndex ?? (isRadio || isTab ? (isSelected() ? 0 : -1) : undefined)}
-      class={cn(BASE_CLASSES, getButtonClasses(local.variant ?? "secondary", state()), local.class)}
+      class={cn(
+        BASE_CLASSES,
+        local.compact ? COMPACT_CLASSES : SIZE_CLASSES,
+        getButtonClasses(local.variant ?? "secondary", state()),
+        local.class
+      )}
       style={local.style}
     />
   );
