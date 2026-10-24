@@ -70,10 +70,12 @@ const { title, description, notes = [] } = Astro.props;
     transition: color var(--motion-fast) var(--motion-ease-standard),
       background-color var(--motion-fast) var(--motion-ease-standard);
   }
-  .tool-help-trigger:hover,
-  aside button:hover {
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
+  @media (hover: hover) {
+    .tool-help-trigger:hover,
+    aside button:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
   }
   button:focus-visible {
     outline: 2px solid var(--accent-primary);

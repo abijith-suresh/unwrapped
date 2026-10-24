@@ -4,6 +4,7 @@ import Input from "@/components/primitives/solid/Input";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
 import ToolPanel from "@/components/tool/ToolPanel";
 import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
@@ -148,7 +149,7 @@ export default function CronTool() {
                 error={!!error()}
               />
             </div>
-            <ToolToolbar label="Timezone">
+            <ToolToolbar label="Timezone" actions={<ToolExampleNotice when={isExample()} />}>
               <ToolSegmentedControl
                 label="Timezone"
                 value={timeZone()}

@@ -67,11 +67,16 @@
   content: "";
 }
 
-.ts-brand:hover,
 .ts-brand:focus-visible,
-.ls-brand:hover,
 .ls-brand:focus-visible {
   color: var(--accent-secondary);
+}
+
+@media (hover: hover) {
+  .ts-brand:hover,
+  .ls-brand:hover {
+    color: var(--accent-secondary);
+  }
 }
 
 .ts-brand-tld,
@@ -102,9 +107,11 @@
   transition: color var(--motion-fast) var(--motion-ease-standard);
 }
 
-.ts-footer-link:hover,
-.ls-footer-link:hover {
-  color: var(--text-primary);
+@media (hover: hover) {
+  .ts-footer-link:hover,
+  .ls-footer-link:hover {
+    color: var(--text-primary);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -134,17 +141,19 @@
     transform var(--motion-fast) var(--motion-ease-standard),
     background-color var(--motion-fast) var(--motion-ease-standard);
 }
-.favorite-button:hover {
-  background: var(--bg-tertiary);
-  color: var(--accent-primary);
-}
-.favorite-button:active {
-  transform: scale(0.9);
-}
-/* The result-list overlay instance centers itself with a translate; the press
-   scale must preserve that centering. */
-.global-search-favorite:active {
-  transform: translateY(-50%) scale(0.9);
+@media (hover: hover) {
+  .favorite-button:hover {
+    background: var(--bg-tertiary);
+    color: var(--accent-primary);
+  }
+  .favorite-button:active {
+    transform: scale(0.9);
+  }
+  /* The result-list overlay instance centers itself with a translate; the press
+     scale must preserve that centering. */
+  .global-search-favorite:active {
+    transform: translateY(-50%) scale(0.9);
+  }
 }
 .favorite-button[aria-pressed="true"] {
   color: var(--accent-primary);
