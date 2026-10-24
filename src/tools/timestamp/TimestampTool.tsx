@@ -1,13 +1,12 @@
 import { batch, createMemo, createSignal, createUniqueId, For, Show } from "solid-js";
 
 import CopyButton from "@/components/CopyButton";
-import Card from "@/components/primitives/solid/Card";
 import Input from "@/components/primitives/solid/Input";
-import Label from "@/components/primitives/solid/Label";
 import Select from "@/components/primitives/solid/Select";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolContainer from "@/components/tool/ToolContainer";
 import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
+import ToolPanel from "@/components/tool/ToolPanel";
 import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
 import ToolToolbar from "@/components/tool/ToolToolbar";
 import { EXAMPLE_EPOCH } from "@/lib/exampleData";
@@ -155,25 +154,18 @@ export default function TimestampTool() {
               />
             </ToolToolbar>
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div class="flex flex-col gap-1.5">
-                <Input
-                  label="Unix timestamp"
-                  name="unix-timestamp"
-                  autocomplete="off"
-                  inputmode="decimal"
-                  type="text"
-                  value={epochInput()}
-                  onInput={handleEpochInput}
-                  placeholder={EXAMPLE_EPOCH}
-                  error={source() === "epoch" && !!error()}
-                  describedBy={source() === "epoch" && error() ? errorId : undefined}
-                />
-                <Show when={!isExample() && source() === "epoch" && date()}>
-                  <span class="text-xs text-[var(--text-muted)]">
-                    Interpreted as {interpretedUnit() === "s" ? "seconds" : "milliseconds"}
-                  </span>
-                </Show>
-              </div>
+              <Input
+                label="Unix timestamp"
+                name="unix-timestamp"
+                autocomplete="off"
+                inputmode="decimal"
+                type="text"
+                value={epochInput()}
+                onInput={handleEpochInput}
+                placeholder={EXAMPLE_EPOCH}
+                error={source() === "epoch" && !!error()}
+                describedBy={source() === "epoch" && error() ? errorId : undefined}
+              />
               <Input
                 label="Date & time (local)"
                 name="local-datetime"
@@ -186,29 +178,30 @@ export default function TimestampTool() {
                 describedBy={source() === "datetime" && error() ? errorId : undefined}
               />
             </div>
-            <Show when={unit() === "auto"}>
-              <p class="text-xs text-[var(--text-muted)]">
-                Auto uses milliseconds when the absolute value exceeds 1,000,000,000,000; otherwise
-                seconds. Choose units for early or short millisecond timestamps.
-              </p>
-            </Show>
+            <div class="flex min-h-[var(--space-5)] items-center">
+              <Show when={!isExample() && source() === "epoch" && date()}>
+                <span class="text-[var(--fs-label)] leading-[var(--space-5)] text-[var(--text-muted)]">
+                  Interpreted as {interpretedUnit() === "s" ? "seconds" : "milliseconds"}
+                </span>
+              </Show>
+            </div>
+            <p class="m-0 text-[var(--fs-label)] leading-relaxed text-[var(--text-muted)]">
+              Auto uses milliseconds when the absolute value exceeds 1,000,000,000,000; otherwise
+              seconds. Choose units for early or short millisecond timestamps.
+            </p>
           </div>
         }
         fields={fields()}
       >
         <Show when={date()}>
           {(d) => (
-            <Card class="overflow-hidden p-0">
-              <div class="px-4 py-2.5 border-b border-[var(--border)]">
-                <Label>Timezone conversions</Label>
-              </div>
-
-              <div class="p-3 flex flex-col gap-3">
+            <ToolPanel title="Timezone conversions">
+              <div class="flex flex-col gap-3">
                 <For each={zones()}>
                   {(zone, i) => (
-                    <div class="grid grid-cols-1 gap-3 items-center sm:grid-cols-[minmax(0,180px)_minmax(0,1fr)_auto]">
+                    <div class="grid grid-cols-1 items-end gap-3 sm:grid-cols-[minmax(0,180px)_minmax(0,1fr)_auto]">
                       <Select
-                        aria-label={`Timezone ${i() + 1}`}
+                        label={`Timezone ${i() + 1}`}
                         name={`timezone-${i() + 1}`}
                         autocomplete="off"
                         value={zone.tz}
@@ -216,7 +209,7 @@ export default function TimestampTool() {
                         options={PRESET_ZONES.map((z) => ({ value: z.tz, label: z.label }))}
                       />
 
-                      <code class="text-sm text-[var(--text-primary)] font-mono">
+                      <code class="font-mono text-[var(--fs-body)] text-[var(--text-primary)]">
                         {formatInZone(d(), zone.tz)}
                       </code>
 
@@ -230,7 +223,7 @@ export default function TimestampTool() {
                   )}
                 </For>
               </div>
-            </Card>
+            </ToolPanel>
           )}
         </Show>
       </ToolInspectorWorkspace>
