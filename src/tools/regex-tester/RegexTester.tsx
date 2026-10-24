@@ -307,13 +307,19 @@ export default function RegexTester() {
         errorId="regex-error"
       >
         <Show when={!pending() && !cancelled() && effectivePattern() && !result().error}>
-          <p class="m-0 text-[var(--fs-control)] text-[var(--text-muted)]">{statusLine()}</p>
+          <p
+            class="m-0 text-[var(--fs-control)] text-[var(--text-muted)]"
+            role="status"
+            aria-live="polite"
+          >
+            {statusLine()}
+          </p>
         </Show>
 
         <Show when={isExample() || input().trim()}>
           <div
             class="transition-opacity duration-[var(--motion-base)] ease-[var(--motion-ease-standard)]"
-            classList={{ "opacity-40": pending() }}
+            classList={{ "opacity-40": pending() || cancelled() }}
             aria-busy={pending() || undefined}
           >
             <ToolOutputPanel
@@ -326,6 +332,7 @@ export default function RegexTester() {
               copyLabel="Copy matches report"
               download={{ format: "json", fileName: "matches.json" }}
               handoff="json"
+              actionsEnabled={!pending() && !cancelled()}
             />
           </div>
         </Show>
