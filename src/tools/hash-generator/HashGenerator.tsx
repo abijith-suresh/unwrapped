@@ -152,6 +152,7 @@ export default function HashGenerator() {
           <ToolDropZone onFile={(file) => void handleFile(file)}>
             <ToolInputPanel
               compact
+              isExample={isExample()}
               label={workflow() === "text" ? "Input text" : "Input file"}
               name="hash-input"
               autocomplete="off"

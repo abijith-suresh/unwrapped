@@ -34,6 +34,7 @@ export default function CaseConverter() {
         input={
           <ToolInputPanel
             compact
+            isExample={isExample()}
             label="Source text"
             value={input()}
             onInput={setInput}

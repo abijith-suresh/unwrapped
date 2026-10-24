@@ -26,6 +26,7 @@ export default function TextStatisticsTool() {
         input={
           <ToolInputPanel
             compact
+            isExample={isExample()}
             label="Text input"
             value={input()}
             onInput={setInput}

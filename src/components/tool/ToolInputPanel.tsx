@@ -11,16 +11,24 @@ export interface ToolInputPanelProps extends Omit<ToolCodeEditorProps, "class" |
   actions?: JSX.Element;
   compact?: boolean;
   file?: ImportedFileMeta | null;
+  isExample?: boolean;
   onRemoveFile?: () => void;
 }
 
 export default function ToolInputPanel(props: ToolInputPanelProps) {
-  const [local, editor] = splitProps(props, ["actions", "compact", "file", "onRemoveFile"]);
+  const [local, editor] = splitProps(props, [
+    "actions",
+    "compact",
+    "file",
+    "isExample",
+    "onRemoveFile",
+  ]);
   return (
     <ToolPanel
       title={props.label}
       aria-label={`${props.label} input panel`}
       actions={local.actions}
+      isExample={local.isExample}
       class={
         local.file
           ? undefined

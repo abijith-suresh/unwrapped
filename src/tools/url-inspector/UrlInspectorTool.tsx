@@ -45,6 +45,7 @@ export default function UrlInspectorTool() {
         input={
           <ToolInputPanel
             compact
+            isExample={isExample()}
             label="URL or raw query string"
             value={input()}
             onInput={setInput}

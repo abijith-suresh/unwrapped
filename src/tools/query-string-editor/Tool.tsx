@@ -38,6 +38,7 @@ export default function Tool() {
         input={
           <ToolInputPanel
             compact
+            isExample={isExample()}
             label="URL or query string"
             actions={<ToolActionButton onClick={clear}>Clear inputs</ToolActionButton>}
             value={source()}
