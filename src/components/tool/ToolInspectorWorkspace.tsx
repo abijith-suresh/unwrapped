@@ -1,6 +1,5 @@
 import { type JSX, Show } from "solid-js";
 import ToolStatusMessage from "@/components/ToolStatusMessage";
-import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolResultList, { type ToolResultField } from "@/components/tool/ToolResultList";
 
 interface Props {
@@ -18,7 +17,6 @@ export default function ToolInspectorWorkspace(props: Props) {
     <>
       {props.input}
       {props.status}
-      <ToolExampleNotice when={!!props.isExample} />
       <Show
         when={!props.error}
         fallback={

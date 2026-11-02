@@ -46,6 +46,7 @@ export default function Tool() {
           <ToolPanel
             title="Password to evaluate"
             aria-label="Password to evaluate input panel"
+            isExample={isExample()}
             actions={
               <>
                 <ToolActionButton active={visible()} onClick={() => setVisible((value) => !value)}>

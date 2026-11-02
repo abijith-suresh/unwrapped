@@ -1,5 +1,6 @@
 import { type JSX, Show, splitProps } from "solid-js";
 
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import { cn } from "@/lib/cn";
 
 type ToolPanelTone = "default" | "error";
@@ -9,6 +10,7 @@ export interface ToolPanelProps extends JSX.HTMLAttributes<HTMLElement> {
   titleAddon?: JSX.Element;
   description?: string;
   actions?: JSX.Element;
+  isExample?: boolean;
   tone?: ToolPanelTone;
   bodyClass?: string;
   children?: JSX.Element;
@@ -27,6 +29,7 @@ export default function ToolPanel(props: ToolPanelProps) {
     "children",
     "class",
     "description",
+    "isExample",
     "title",
     "titleAddon",
     "tone",
@@ -65,12 +68,11 @@ export default function ToolPanel(props: ToolPanelProps) {
           </Show>
         </div>
 
-        <Show when={local.actions}>
-          {(actions) => (
-            <div class="flex min-w-0 shrink-0 flex-wrap items-center justify-end gap-1 sm:gap-2">
-              {actions()}
-            </div>
-          )}
+        <Show when={local.actions || local.isExample}>
+          <div class="flex min-w-0 shrink-0 flex-wrap items-center justify-end gap-1 sm:gap-2">
+            <ToolExampleNotice when={!!local.isExample} />
+            {local.actions}
+          </div>
         </Show>
       </header>
 
