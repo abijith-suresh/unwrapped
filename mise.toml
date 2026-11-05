@@ -1,2 +1,5 @@
+# The only tool version source: exact versions, no .node-version, .nvmrc, or
+# .bun-version. Keep package.json packageManager at the same Bun version.
 [tools]
 bun = "1.4.1"
+node = "24.22.2"
