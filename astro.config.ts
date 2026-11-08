@@ -6,6 +6,10 @@ import { defineConfig } from "astro/config";
 export default defineConfig({
   site: "https://unwrapped-tools.vercel.app",
   integrations: [solid(), sitemap()],
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: "hover",
+  },
   vite: {
     plugins: [...tailwindcss()],
     resolve: {

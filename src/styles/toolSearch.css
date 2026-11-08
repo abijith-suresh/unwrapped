@@ -17,10 +17,12 @@
     color var(--motion-fast) var(--motion-ease-standard),
     background-color var(--motion-fast) var(--motion-ease-standard);
 }
-.global-search-trigger:hover,
-.global-search-close:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
+@media (hover: hover) {
+  .global-search-trigger:hover,
+  .global-search-close:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+  }
 }
 
 .global-search-dialog {
@@ -110,10 +112,16 @@
   color: var(--text-primary);
   text-decoration: none;
 }
-.global-search-result-active,
-.global-search-result:hover {
+.global-search-result-active {
   border-color: var(--border);
   background: var(--bg-tertiary);
+}
+
+@media (hover: hover) {
+  .global-search-result:hover {
+    border-color: var(--border);
+    background: var(--bg-tertiary);
+  }
 }
 .global-search-icon {
   display: flex;
