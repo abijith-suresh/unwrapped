@@ -265,6 +265,7 @@ export default function RegexTester() {
             <div class="flex flex-col gap-1.5">
               <ToolInputPanel
                 compact
+                isExample={isExample()}
                 label="Test string"
                 name="regex-test-string"
                 autocomplete="off"

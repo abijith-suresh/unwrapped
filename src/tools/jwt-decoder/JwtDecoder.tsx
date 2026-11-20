@@ -49,6 +49,7 @@ export default function JwtDecoder() {
         input={
           <ToolInputPanel
             compact
+            isExample={isExample()}
             label="JWT token"
             name="jwt-token"
             value={input()}

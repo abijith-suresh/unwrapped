@@ -126,8 +126,10 @@ import ToolSearch from "@/components/ToolSearch";
     font: 1.2rem/1 var(--font-sans);
   }
 
-  .lp-home-search .lp-search-clear:hover {
-    color: var(--lp-home-text);
+  @media (hover: hover) {
+    .lp-home-search .lp-search-clear:hover {
+      color: var(--lp-home-text);
+    }
   }
 
   .lp-home-search .lp-results {
@@ -176,16 +178,25 @@ import ToolSearch from "@/components/ToolSearch";
     transition: transform var(--motion-base) var(--motion-ease-standard);
   }
 
-  .lp-home-search .lp-row:hover,
   .lp-home-search .lp-row--active {
     border-color: var(--lp-home-border-strong);
     background: color-mix(in srgb, var(--lp-home-surface-hover) 76%, var(--bg-primary));
   }
 
-  .lp-home-search .lp-row:hover::before,
   .lp-home-search .lp-row--active::before,
   .lp-home-search .lp-row:focus-visible::before {
     transform: scaleY(1);
+  }
+
+  @media (hover: hover) {
+    .lp-home-search .lp-row:hover {
+      border-color: var(--lp-home-border-strong);
+      background: color-mix(in srgb, var(--lp-home-surface-hover) 76%, var(--bg-primary));
+    }
+
+    .lp-home-search .lp-row:hover::before {
+      transform: scaleY(1);
+    }
   }
 
   .lp-home-search .lp-row:focus-visible {
@@ -215,11 +226,18 @@ import ToolSearch from "@/components/ToolSearch";
     height: 1rem;
   }
 
-  .lp-home-search .lp-row--active .lp-row-icon,
-  .lp-home-search .lp-row:hover .lp-row-icon {
+  .lp-home-search .lp-row--active .lp-row-icon {
     border-color: var(--accent-primary);
     background: color-mix(in srgb, var(--accent-primary) 20%, var(--bg-secondary));
     color: var(--accent-secondary);
+  }
+
+  @media (hover: hover) {
+    .lp-home-search .lp-row:hover .lp-row-icon {
+      border-color: var(--accent-primary);
+      background: color-mix(in srgb, var(--accent-primary) 20%, var(--bg-secondary));
+      color: var(--accent-secondary);
+    }
   }
 
   .lp-home-search .lp-row-name {
@@ -231,9 +249,14 @@ import ToolSearch from "@/components/ToolSearch";
     transition: color var(--motion-fast) var(--motion-ease-standard);
   }
 
-  .lp-home-search .lp-row--active .lp-row-name,
-  .lp-home-search .lp-row:hover .lp-row-name {
+  .lp-home-search .lp-row--active .lp-row-name {
     color: var(--accent-secondary);
+  }
+
+  @media (hover: hover) {
+    .lp-home-search .lp-row:hover .lp-row-name {
+      color: var(--accent-secondary);
+    }
   }
 
   .lp-home-search .lp-row-desc {
@@ -261,10 +284,16 @@ import ToolSearch from "@/components/ToolSearch";
   }
 
   .lp-home-search .lp-row--active .lp-row-arrow,
-  .lp-home-search .lp-row:hover .lp-row-arrow,
   .lp-home-search .lp-row:focus-visible .lp-row-arrow {
     opacity: 1;
     transform: translate(0, 0);
+  }
+
+  @media (hover: hover) {
+    .lp-home-search .lp-row:hover .lp-row-arrow {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
   }
 
   .lp-home-search .lp-row-cat {
@@ -276,9 +305,14 @@ import ToolSearch from "@/components/ToolSearch";
     transition: color var(--motion-fast) var(--motion-ease-standard);
   }
 
-  .lp-home-search .lp-row--active .lp-row-cat,
-  .lp-home-search .lp-row:hover .lp-row-cat {
+  .lp-home-search .lp-row--active .lp-row-cat {
     color: var(--accent-primary);
+  }
+
+  @media (hover: hover) {
+    .lp-home-search .lp-row:hover .lp-row-cat {
+      color: var(--accent-primary);
+    }
   }
 
   .lp-home-search .lp-empty {

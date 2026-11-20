@@ -5,6 +5,7 @@ import Input from "@/components/primitives/solid/Input";
 import Select from "@/components/primitives/solid/Select";
 import ToolActionButton from "@/components/ToolActionButton";
 import ToolContainer from "@/components/tool/ToolContainer";
+import ToolExampleNotice from "@/components/tool/ToolExampleNotice";
 import ToolInspectorWorkspace from "@/components/tool/ToolInspectorWorkspace";
 import ToolPanel from "@/components/tool/ToolPanel";
 import ToolSegmentedControl from "@/components/tool/ToolSegmentedControl";
@@ -104,7 +105,7 @@ export default function TimestampTool() {
     );
   }
 
-  const fields = createMemo(() => {
+  const fields = createMemo<Array<{ label: string; value: string; copyLabel?: string }>>(() => {
     const current = date();
     if (!current) return [];
     return [
@@ -133,6 +134,7 @@ export default function TimestampTool() {
               label="Timestamp controls"
               actions={
                 <>
+                  <ToolExampleNotice when={isExample()} />
                   <ToolActionButton onClick={useNow} variant="primary">
                     Use now
                   </ToolActionButton>
@@ -191,39 +193,62 @@ export default function TimestampTool() {
             </p>
           </div>
         }
-        fields={fields()}
       >
         <Show when={date()}>
           {(d) => (
-            <ToolPanel title="Timezone conversions">
-              <div class="flex flex-col gap-3">
-                <For each={zones()}>
-                  {(zone, i) => (
-                    <div class="grid grid-cols-1 items-end gap-3 sm:grid-cols-[minmax(0,180px)_minmax(0,1fr)_auto]">
-                      <Select
-                        label={`Timezone ${i() + 1}`}
-                        name={`timezone-${i() + 1}`}
-                        autocomplete="off"
-                        value={zone.tz}
-                        onChange={(tz) => changeZone(i(), tz)}
-                        options={PRESET_ZONES.map((z) => ({ value: z.tz, label: z.label }))}
-                      />
-
-                      <code class="font-mono text-[var(--fs-body)] text-[var(--text-primary)]">
-                        {formatInZone(d(), zone.tz)}
-                      </code>
-
-                      <Show when={!isExample()}>
-                        <CopyButton
-                          text={formatInZone(d(), zone.tz)}
-                          label={`Copy ${zone.label} time`}
+            <>
+              <ToolPanel title="Converted formats" bodyClass="p-0 sm:p-0">
+                <div class="flex min-w-0 flex-col">
+                  <For each={fields()}>
+                    {(field) => (
+                      <div class="grid min-w-0 grid-cols-1 items-start gap-1.5 border-b border-[var(--border)] px-3 py-2.5 last:border-b-0 sm:grid-cols-[minmax(0,auto)_minmax(0,1fr)_auto] sm:items-center sm:gap-3 sm:px-4">
+                        <span class="whitespace-nowrap font-mono text-[var(--fs-2xs)] font-semibold uppercase tracking-[0.12em] text-[var(--text-secondary)]">
+                          {field.label}
+                        </span>
+                        <code class="min-w-0 whitespace-pre-wrap break-words font-mono text-[var(--fs-control)] text-[var(--text-primary)]">
+                          {field.value || "—"}
+                        </code>
+                        <Show when={!isExample() && field.value}>
+                          <CopyButton
+                            text={field.value}
+                            label={field.copyLabel ?? `Copy ${field.label}`}
+                            compact
+                          />
+                        </Show>
+                      </div>
+                    )}
+                  </For>
+                </div>
+              </ToolPanel>
+              <ToolPanel title="Timezone conversions" bodyClass="p-0 sm:p-0">
+                <div class="flex min-w-0 flex-col">
+                  <For each={zones()}>
+                    {(zone, i) => (
+                      <div class="grid grid-cols-1 items-center gap-3 border-b border-[var(--border)] px-3 py-2.5 last:border-b-0 sm:grid-cols-[minmax(0,14rem)_minmax(0,1fr)_auto] sm:px-4">
+                        <Select
+                          label={`Timezone ${i() + 1}`}
+                          name={`timezone-${i() + 1}`}
+                          autocomplete="off"
+                          value={zone.tz}
+                          onChange={(tz) => changeZone(i(), tz)}
+                          options={PRESET_ZONES.map((z) => ({ value: z.tz, label: z.label }))}
                         />
-                      </Show>
-                    </div>
-                  )}
-                </For>
-              </div>
-            </ToolPanel>
+                        <code class="min-w-0 whitespace-pre-wrap break-words font-mono text-[var(--fs-control)] text-[var(--text-primary)]">
+                          {formatInZone(d(), zone.tz)}
+                        </code>
+                        <Show when={!isExample()}>
+                          <CopyButton
+                            text={formatInZone(d(), zone.tz)}
+                            label={`Copy ${zone.label} time`}
+                            compact
+                          />
+                        </Show>
+                      </div>
+                    )}
+                  </For>
+                </div>
+              </ToolPanel>
+            </>
           )}
         </Show>
       </ToolInspectorWorkspace>
